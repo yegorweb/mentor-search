@@ -3,7 +3,8 @@
 </script>
 
 <template>
-  <v-btn></v-btn>
+  <div>app</div>
+  <router-view></router-view>
 </template>
 
 <style lang="scss" scoped>
