@@ -1,16 +1,73 @@
-# Tauri + Vue 3 + TypeScript
+# <p align="center">:mortar_board: **Ищу наставника**</p>
+[![Tauri](https://img.shields.io/badge/tauri-%2324C8DB.svg?style=for-the-badge&logo=tauri&logoColor=%23FFFFFF)](https://tauri.app)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![Vue.js](https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![SASS](https://img.shields.io/badge/SASS-hotpink.svg?style=for-the-badge&logo=SASS&logoColor=white)
+![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
+[![Licence](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE)
+&nbsp;
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+[![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white)](https://www.figma.com/file/cWibFB7i4LWVg2Vt3JZOCl/%D0%98%D1%89%D1%83-%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D0%B2%D0%BD%D0%B8%D0%BA%D0%B0?node-id=0%3A1&t=DFQHuJG1MJ159Spn-1)
+<!--[![Go to site](https://img.shields.io/badge/go%20to%20site-Click%20me-yellow?style=for-the-badge&logo=appveyor)](https://yegorweb.github.io/lyrics-creator/)-->
+&nbsp;
 
-## Recommended IDE Setup
+## **Состояние проекта**:&nbsp; :x: Не сделан &nbsp;&nbsp;![5%](https://progress-bar.dev/5)
+&nbsp;
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+Проект для моей любимой Гимназии №8. Любой умный человек сможет рассказать о своем стремлении к наставничеству, а любой другой человек сможет откликнуться. В проекте используются [Tauri](https://tauri.app), Vite, Vue, `мозг` (самое важное)
 
-## Type Support For `.vue` Imports in TS
+<details>
+<summary>Show translate</summary>
+Project for my beloved Gymnasium No. 8. Any intelligent person will be able to talk about their desire for mentoring, and any other person will be able to respond. The project uses Tauri, Vite, Vue, brain (most important)
+</details>
+&nbsp;
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
+----------
+## Copy project:
+```
+    git clone https://github.com/yegorweb/mentor-search
+```
+----------
+## If you use Yarn:
+#### Install dependencies first
+```
+    yarn
+```
+#### Run in window:
+```
+    yarn tauri dev
+```
+#### Run in browser:
+```
+    yarn dev
+```
+#### Build project:
+```
+    yarn tauri build
+```
 
-1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
-2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
+----------
 
-You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+## If you use npm:
+#### Install dependencies first
+```
+    npm install
+```
+#### Run in window:
+```
+    npm run tauri dev
+```
+#### Run in browser:
+```
+    npm run dev
+```
+#### Build project:
+```
+    npm run tauri build
+```
+
+----------
+
+## Application and design author:
+Making with :heart: by `Егор Князев` (Yegor Knyazev)
