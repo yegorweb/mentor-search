@@ -1,8 +1,37 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import Header from '../components/Header.vue'
 
+let router = useRouter()
+
 let navigation_drawer_is_open = ref(false)
+let nav_buttons = [
+  {
+    route: '/',
+    title: 'Главная',
+  },
+  {
+    route: '/searchMentors',
+    title: 'Поиск наставников',
+  },
+  {
+    route: '/serchLessons',
+    title: 'Поиск уроков',
+  },
+	{
+		route: '/searchGroups',
+		title: 'Поиск кружков'
+	},
+  {
+    route: '/account',
+    title: 'Мой профиль',
+  },
+  {
+    route: '/myResponses',
+    title: 'Мои отклики',
+  },
+]
 </script>
 
 <template>
@@ -29,7 +58,14 @@ let navigation_drawer_is_open = ref(false)
       v-model="navigation_drawer_is_open"
     >
       <v-list>
-        <v-list-item>Hello</v-list-item>
+        <v-list-item
+          v-for="button in nav_buttons"
+          :key="button.title"
+          @click="router.push(button.route)"
+          class="font-weight-bold"
+        >
+          {{ button.title }}
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
