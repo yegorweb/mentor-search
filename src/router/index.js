@@ -8,7 +8,6 @@ const routes = [
     children: [
       {
         path: '/',
-        name: 'Home',
         component: () => import('@/pages/HomePage.vue')
       },
       {
@@ -34,7 +33,7 @@ const routes = [
       {
         path: '/settings',
         name: 'AccountSettingsPage',
-        component: () => import('@/pages/account/AccountSettingPage.vue')
+        component: () => import('@/pages/account/AccountSettingsPage.vue')
       },
       {
         path: '/myResponses',
@@ -46,7 +45,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(process.env.BASE_URL),
   routes
 })
 

@@ -3,5 +3,5 @@
 </script>
 
 <template>
-  
+  groups searching
 </template>

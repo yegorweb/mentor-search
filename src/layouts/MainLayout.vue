@@ -40,13 +40,14 @@ let nav_buttons = [
     <v-app-bar :elevation="0" density="compact" color="primary">
       <v-container class="d-flex align-center header-container justify-space-between">
         <v-icon 
+          class="pa-5"
           icon="mdi-menu"
           @click="navigation_drawer_is_open = !navigation_drawer_is_open"
         />
 
         <div class="header-title text-h6 font-weight-bold">Ищу наставника</div>
 
-        <v-avatar size="30" color="#FFFFFF" />
+        <v-avatar class="cursor-pointer" size="30" color="#FFFFFF" />
       </v-container>
     </v-app-bar>
 
@@ -62,7 +63,7 @@ let nav_buttons = [
           v-for="button in nav_buttons"
           :key="button.title"
           @click="router.push(button.route)"
-          class="font-weight-bold"
+          style="font-weight: 600;"
         >
           {{ button.title }}
         </v-list-item>

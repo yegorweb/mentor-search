@@ -3,5 +3,5 @@
 </script>
 
 <template>
-  
+  lessons searching
 </template>
