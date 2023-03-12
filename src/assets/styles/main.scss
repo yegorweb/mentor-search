@@ -1,0 +1,20 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto !important;
+}
+
+// html {
+//   margin-left: calc(100vw - 100%);
+// }
+
+$font-family: 'Montserrat';
+
+.v-application {
+  [class*='text-'] {
+    // color: #36405a;
+    font-family: $font-family, sans-serif !important;
+  }
+  font-family: $font-family, sans-serif !important;
+}

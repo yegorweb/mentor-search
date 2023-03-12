@@ -1,19 +1,10 @@
-/**
- * plugins/vuetify.js
- *
- * Framework documentation: https://vuetifyjs.com`
- */
-
-// Styles
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
-// Composables
 import { createVuetify } from 'vuetify'
 
-// https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   components,
   directives,
@@ -21,24 +12,14 @@ export default createVuetify({
     themes: {
       light: {
         colors: {
-          primary: '#4D6A79',
-          success: '#BBF551',
-          accent: '#FC5259',
-          secondary: '#17AECA',
-          attention:'#4ADEC8',
-          info:'F3E12E'
-          // primary: '#FFE89C',
-          // success: '#8EE894',
-          // accent: '#CD87DA',
-          // // TODO
-          // secondary: '#000000',
+          primary: '#5F5566',
+          secondary: '#80ADA0',
+          accent: '#8AEA92',
+          // success: '#BBF551',
+          // attention:'#4ADEC8',
+          // info:'F3E12E'
         },
       },
     },
   },
 })
-
-// primary: '#1D191A',
-// success: '#8EE894',
-// accent: '#BD8D14',
-// secondary: '#582801',
