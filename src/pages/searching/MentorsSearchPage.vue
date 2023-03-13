@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import BackButton from '@/components/BackButton.vue'
+import MentorEntry from '../../components/entries/MentorEntry.vue'
+import { mentorship_entries } from '../../fakeDB/mentorship-entries';
 </script>
 
 <template>
   <v-container class="mt-1">
-    <BackButton>назад</BackButton>
+    <BackButton />
     <div class="text-h4 mt-1 font-weight-bold">Поиск наставнков</div>
     <v-btn class="mt-4 text-capitalize text-body-1" variant="tonal" prepend-icon="mdi-filter">Фильтр</v-btn>
 
@@ -16,9 +18,13 @@ import BackButton from '@/components/BackButton.vue'
          Не показывать если чел стал наставляемым
          Расставляем в рандомном порядке - имитируем индивидуальный подбор))))
     -->
-    <v-row>
-      <v-col>
-        
+    <v-row class="mt-5">
+      <v-col 
+        v-for="entry in mentorship_entries" 
+        :key="entry.id"
+        cols="12" sm="6" xs="12"
+      >
+        <MentorEntry :entry="entry" />
       </v-col>
     </v-row>
   </v-container>
