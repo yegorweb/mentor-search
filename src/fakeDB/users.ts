@@ -3,7 +3,9 @@ export let users: User[] = [
     id: '640f4b30cde42820d332b0e9',
     name: 'Булдаков Ярослав',
     description: 'Увлекаюсь воркаутом и немного паркуром',
+    avatar_url: 'https://ss.sport-express.ru/userfiles/materials/177/1776648/large.jpg',
     type: 'Наставник',
+    achievements: ['знаток'],
     answers: [{
       question: '',
       answer: ''
@@ -23,7 +25,9 @@ interface User {
   id: string,
   name: string,
   description: string,
+  avatar_url: string,
   type: string, // можно "Учитель" или "Автор"
+  achievements: string[],
   answers?: {
     question: string,
     answer: string
