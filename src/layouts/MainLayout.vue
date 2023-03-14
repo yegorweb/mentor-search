@@ -45,7 +45,7 @@ let nav_buttons = [
           @click="navigation_drawer_is_open = !navigation_drawer_is_open"
         />
 
-        <div class="header-title text-h6 font-weight-bold">Ищу наставника</div>
+        <div class="header-title text-h6 font-weight-bold text-no-wrap">Ищу наставника</div>
 
         <v-avatar class="cursor-pointer" size="30" color="#FFFFFF" />
       </v-container>
