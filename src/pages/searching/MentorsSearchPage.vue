@@ -20,7 +20,7 @@ shuffle(mentorship_entries)
 <template>
   <v-container class="mt-1">
     <BackButton />
-    <div class="text-md-h4 text-sm-h5 mt-1 font-weight-bold">Поиск наставнков</div>
+    <div class="text-h4 mt-1 font-weight-bold">Поиск наставнков</div>
     <v-btn class="mt-4 text-capitalize text-body-1" variant="tonal" prepend-icon="mdi-filter">Фильтр</v-btn>
 
     <!-- Не показывать если забанили
