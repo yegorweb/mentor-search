@@ -33,11 +33,11 @@ let user = users.find(user => user.id === props.entry.author_id)
     <div class="text-h6 mt-2 font-weight-black">{{ entry.subject }}</div>
     <div class="mt-1">{{ entry.description }}</div>
 
-    <div class="d-flex mt-4 flex-row justify-start align-center">
+    <div style="gap: 4px;" class="d-flex mt-4 flex-row flex-wrap justify-start align-center">
       <v-btn 
         size="small"
         variant="tonal" 
-        class="text-body-2 pl-5 pr-5 font-weight-semibold bg-button"
+        class="text-body-2 pl-5 pr-5 mr-3 font-weight-semibold bg-button"
       >
         Откликнуться
       </v-btn>
@@ -45,7 +45,7 @@ let user = users.find(user => user.id === props.entry.author_id)
       <v-btn 
         size="small"
         variant="tonal" 
-        class="text-body-2 pl-5 pr-5 ml-3 font-weight-semibold bg-button"
+        class="text-body-2 pl-5 pr-5 font-weight-semibold bg-button"
       >
         Посмотреть профиль
       </v-btn>
