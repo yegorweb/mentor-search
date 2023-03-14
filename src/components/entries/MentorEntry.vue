@@ -35,7 +35,7 @@ let user = users.find(user => user.id === props.entry.author_id)
       <div class="mt-1">{{ entry.description }}</div>
     </div>
 
-    <div style="gap: 4px;" class="d-flex mt-4 flex-row flex-wrap justify-start align-center">
+    <div style="row-gap: 6px;" class="d-flex mt-4 flex-row flex-wrap justify-start align-center">
       <v-btn 
         size="small"
         variant="tonal" 
