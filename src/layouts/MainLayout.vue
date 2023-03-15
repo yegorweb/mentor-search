@@ -40,7 +40,7 @@ let nav_buttons = [
     <v-app-bar :elevation="0" density="compact" color="primary">
       <v-container class="d-flex align-center header-container justify-space-between">
         <v-icon 
-          class="pa-5"
+          class="pt-5 pr-5 pb-5 pl-4"
           icon="mdi-menu"
           @click="navigation_drawer_is_open = !navigation_drawer_is_open"
         />
