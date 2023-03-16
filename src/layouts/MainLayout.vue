@@ -31,6 +31,10 @@ let nav_buttons = [
     route: '/myResponses',
     title: 'Мои отклики',
   },
+  {
+    route: '/myAchievements',
+    title: 'Мои награды',
+  },
 ]
 </script>
 

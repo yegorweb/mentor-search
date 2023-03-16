@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BackButton from '@/components/BackButton.vue'
+import MainTitle from '../../components/MainTitle.vue';
 import MentorEntry from '../../components/entries/MentorEntry.vue'
 import { mentorship_entries } from '../../fakeDB/mentorship-entries';
 
@@ -18,9 +19,8 @@ shuffle(mentorship_entries)
 </script>
 
 <template>
-  <v-container class="mt-1">
-    <BackButton />
-    <div class="text-h4 mt-1 font-weight-bold">Поиск наставнков</div>
+  <v-container>
+    <MainTitle>Поиск наставников</MainTitle>
     <v-btn class="mt-4 text-capitalize text-body-1" variant="tonal" prepend-icon="mdi-filter">Фильтр</v-btn>
 
     <!-- Не показывать если забанили

@@ -40,6 +40,11 @@ const routes = [
         name: 'Home',
         component: () => import('@/pages/account/MyResponsesPage.vue')
       },
+      {
+        path: '/myAchievements',
+        name: 'Home',
+        component: () => import('@/pages/account/MyAchievementsPage.vue')
+      },
     ]
   }
 ]
