@@ -37,12 +37,12 @@ const routes = [
       },
       {
         path: '/myResponses',
-        name: 'Home',
+        name: 'MyResponses',
         component: () => import('@/pages/account/MyResponsesPage.vue')
       },
       {
         path: '/myAchievements',
-        name: 'Home',
+        name: 'MyAchievements',
         component: () => import('@/pages/account/MyAchievementsPage.vue')
       },
     ]
