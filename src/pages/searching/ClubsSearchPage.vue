@@ -1,0 +1,9 @@
+<script setup lang="ts">
+import MainTitle from '../../components/MainTitle.vue';
+</script>
+
+<template>
+  <v-container>
+    <MainTitle>Поиск клубов</MainTitle>
+  </v-container>
+</template>

@@ -21,9 +21,9 @@ const routes = [
         component: () => import('@/pages/searching/LessonsSearchPage.vue')
       },
       {
-        path: '/searchGroups',
-        name: 'GroupsSearching',
-        component: () => import('@/pages/searching/GroupsSearchPage.vue')
+        path: '/searchClubs',
+        name: 'ClubsSearching',
+        component: () => import('@/pages/searching/ClubsSearchPage.vue')
       },
       {
         path: '/account',

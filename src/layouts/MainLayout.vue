@@ -20,8 +20,8 @@ let nav_buttons = [
     title: 'Поиск уроков',
   },
 	{
-		route: '/searchGroups',
-		title: 'Поиск кружков'
+		route: '/searchClubs',
+		title: 'Поиск клубов'
 	},
   {
     route: '/account',
