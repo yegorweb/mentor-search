@@ -7,7 +7,7 @@ export let towns: Town[] = [
   {
     id: '640f4ac914567da782eb1asd',
     name: 'Ижевск',
-    schools: []
+    schools: ['640f4af989029a9dsddbd34f']
   }
 ]
 

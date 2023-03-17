@@ -9,6 +9,11 @@ export let schools: School[] = [
     name: 'ФМЛ',
     town_id: '640f4ac9145a0da782eb1a95'
   },
+  {
+    id: '640f4af989029a9dsddbd34f',
+    name: 'Школа №84',
+    town_id: '640f4ac914567da782eb1asd'
+  },
 ]
 
 interface School {
