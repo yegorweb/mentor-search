@@ -24,50 +24,6 @@ Project for my beloved Gymnasium No. 8. Any intelligent person will be able to t
 &nbsp;
 
 ----------
-## Copy project:
-```
-    git clone https://github.com/yegorweb/mentor-search
-```
-----------
-## If you use Yarn:
-#### Install dependencies first
-```
-    yarn
-```
-#### Run in window:
-```
-    yarn tauri dev
-```
-#### Run in browser:
-```
-    yarn dev
-```
-#### Build project:
-```
-    yarn tauri build
-```
-
-----------
-
-## If you use npm:
-#### Install dependencies first
-```
-    npm install
-```
-#### Run in window:
-```
-    npm run tauri dev
-```
-#### Run in browser:
-```
-    npm run dev
-```
-#### Build project:
-```
-    npm run tauri build
-```
-
-----------
 
 ## Application and design author:
 Making with :heart: by `Егор Князев` (Yegor Knyazev)
