@@ -10,34 +10,45 @@ let nav_buttons = [
   {
     route: '/',
     title: 'Главная',
+    group: false
   },
   {
-    route: '/searchMentors',
-    title: 'Поиск наставников',
+    title: 'Поиск',
+    group: true,
+    routes: [
+      {
+        route: '/searchMentors',
+        title: 'Поиск наставников',
+      },
+      {
+        route: '/serchLessons',
+        title: 'Поиск уроков',
+      },
+      {
+        route: '/searchClubs',
+        title: 'Поиск клубов'
+      }
+    ]
   },
-  {
-    route: '/serchLessons',
-    title: 'Поиск уроков',
-  },
-	{
-		route: '/searchClubs',
-		title: 'Поиск клубов'
-	},
   {
     route: '/account',
     title: 'Мой профиль',
+    group: false
   },
   {
     route: '/myResponses',
     title: 'Мои отклики',
+    group: false
   },
   {
     route: '/myAchievements',
     title: 'Мои награды',
+    group: false
   },
   {
     route: '/about',
     title: 'О проекте',
+    group: false
   },
 ]
 </script>
@@ -67,14 +78,41 @@ let nav_buttons = [
       v-model="navigation_drawer_is_open"
     >
       <v-list>
-        <v-list-item
+        <template
           v-for="button in nav_buttons"
           :key="button.title"
-          @click="router.push(button.route)"
-          style="font-weight: 600;"
         >
-          {{ button.title }}
-        </v-list-item>
+          <v-list-item
+            v-if="!button.group"
+            @click="router.push(button.route)"
+            style="font-weight: 600;"
+          >
+            {{ button.title }}
+          </v-list-item>
+
+          <v-list-group
+            v-if="button.group"
+            :value="button.title"
+          >
+            <template v-slot:activator="{ props }">
+              <v-list-item
+                v-bind="props"
+                :key="button.title"
+                style="font-weight: 600;"
+              >
+                {{ button.title }}
+              </v-list-item>
+            </template>
+            <v-list-item
+              v-for="btn in button.routes"
+              :key="btn.title"
+              @click="router.push(btn.route)"
+              style="font-weight: 600;"
+            >
+              {{ btn.title }}
+            </v-list-item>
+          </v-list-group>
+        </template>
       </v-list>
     </v-navigation-drawer>
 
