@@ -82,14 +82,17 @@ let nav_buttons = [
           v-for="button in nav_buttons"
           :key="button.title"
         >
+          <!-- Usually -->
           <v-list-item
             v-if="!button.group"
-            @click="router.push(button.route)"
+            @click="router.push(button.route);
+              navigation_drawer_is_open = !navigation_drawer_is_open"
             style="font-weight: 600;"
           >
             {{ button.title }}
           </v-list-item>
 
+          <!-- If group -->
           <v-list-group
             v-if="button.group"
             :value="button.title"
@@ -103,10 +106,12 @@ let nav_buttons = [
                 {{ button.title }}
               </v-list-item>
             </template>
+            
             <v-list-item
               v-for="btn in button.routes"
               :key="btn.title"
-              @click="router.push(btn.route)"
+              @click="router.push(btn.route);
+                navigation_drawer_is_open = !navigation_drawer_is_open"
               style="font-weight: 600;"
             >
               {{ btn.title }}
