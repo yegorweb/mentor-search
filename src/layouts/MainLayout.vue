@@ -18,15 +18,15 @@ let nav_buttons = [
     routes: [
       {
         route: '/searchMentors',
-        title: 'Поиск наставников',
+        title: 'Наставники',
       },
       {
         route: '/serchLessons',
-        title: 'Поиск уроков',
+        title: 'Уроки',
       },
       {
         route: '/searchClubs',
-        title: 'Поиск клубов'
+        title: 'Клубы'
       }
     ]
   },
