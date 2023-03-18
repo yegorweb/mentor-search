@@ -13,11 +13,31 @@ export let users: User[] = [
     roles: ['student', 'mentor'],
     contacts: [{
       name: 'Telegram',
-      link: 't.me/HeT_Ha3BaHuya'
+      link: 'https://t.me/HeT_Ha3BaHuya'
     }],
     grade: 8,
     town_id: '640f4ac9145a0da782eb1a95',
     school_id: '640f4af989029a9d95db4b19'
+  },
+  {
+    id: '640f4b30cde42820d332b0d1',
+    name: 'Данила Васильев',
+    description: 'Ты кто?',
+    avatar_url: 'https://ss.sport-express.ru/userfiles/materials/177/1776648/large.jpg',
+    type: 'Наставник',
+    achievements: [],
+    answers: [{
+      question: '',
+      answer: ''
+    }],
+    roles: ['student', 'mentor'],
+    contacts: [{
+      name: 'ВК',
+      link: 'https://vk.com/danya'
+    }],
+    grade: 9,
+    town_id: '640f4ac9145a0da782eb1a95',
+    school_id: '640f4af989029a9dsddb4bd3'
   },
 ]
 
