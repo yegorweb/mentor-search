@@ -27,7 +27,7 @@ let user = users.find(user => user.id === id)
           class="d-flex mt-1 align-center justify-center justify-sm-start flex-wrap flex-row font-weight-bold text-text_gray"
         >
           <div>{{ user?.type.toLocaleLowerCase() }}</div>
-          <div>
+          <div v-if="user?.achievements.length != 0">
             <span><v-icon icon="mdi-star"></v-icon></span>
             {{ user?.achievements.join(', ') }}
           </div>
