@@ -52,6 +52,7 @@ let schools_in_town = (): any => { return towns.find(town => town.id === town_id
           v-model="school_id"
           :items="[{name: 'Все', id: 'all'}, ...schools_in_town().map(el => el = schools.find(i => i.id === el))]"
           item-title="name"
+          @update:model-value="shuffle(mentorship_entries)"
           item-value="id"
           variant="solo"
           hide-details
@@ -76,7 +77,7 @@ let schools_in_town = (): any => { return towns.find(town => town.id === town_id
           v-if="entry.school_id == school_id || (entry.town_id === town_id && school_id === 'all')"
           cols="12" sm="6" xs="12"
         >
-          <MentorEntry :entry="entry" />
+          <MentorEntry :entry="entry" :show_location="school_id === 'all'" />
         </v-col>
       </template>
     </v-row>
