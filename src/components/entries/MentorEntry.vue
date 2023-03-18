@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import { schools } from '../../fakeDB/schools';
+import { towns } from '../../fakeDB/towns';
 import { users } from '../../fakeDB/users';
 import EntryContainer from './EntryContainer.vue';
 
@@ -7,6 +9,11 @@ let props = defineProps({
   entry: {
     type: Object,
     required: true
+  },
+  show_location: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 })
 
@@ -18,7 +25,7 @@ let user = users.find(user => user.id === props.entry.author_id)
   <EntryContainer class="justify-space-between">
     <div class="d-flex w-100 justify-start flex-column">
       <v-row 
-        @click="router.push('account/?_id=${user.id}')" 
+        @click="router.push(`account?id=${entry.author_id}`)" 
         class="flex-row ma-0 pa-0 flex-nowrap align-center justify-start cursor-pointer"
       >
         <v-avatar 
@@ -35,22 +42,30 @@ let user = users.find(user => user.id === props.entry.author_id)
       <div class="mt-1">{{ entry.description }}</div>
     </div>
 
-    <div style="row-gap: 6px;" class="d-flex mt-4 flex-row flex-wrap justify-start align-center">
-      <v-btn 
-        size="small"
-        variant="tonal" 
-        class="text-body-2 pl-5 pr-5 mr-3 font-weight-semibold bg-button"
+    <div class="d-flex mt-4 flex-column justify-start">
+      <div 
+        v-if="entry.town_id != '640f4ac9145a0da782eb1a95' || entry.school_id != '640f4af989029a9d95db4b19' || props.show_location"
       >
-        Откликнуться
-      </v-btn>
-
-      <v-btn 
-        size="small"
-        variant="tonal" 
-        class="text-body-2 pl-5 pr-5 font-weight-semibold bg-button"
-      >
-        Посмотреть профиль
-      </v-btn>
+        <span><v-icon icon="mdi-map-marker" color="teal-lighten-1"></v-icon></span>
+        <span v-if="entry.town_id != '640f4ac9145a0da782eb1a95'">{{ 
+          towns.find(town => town.id === entry.town_id)?.name + ', ' }}
+        </span>
+        {{ schools.find(sch => sch.id === entry.school_id)?.name }}
+      </div>
+  
+      <div style="row-gap: 6px;" class="d-flex mt-2 flex-row flex-wrap justify-start align-center">
+        <v-btn 
+          size="small"
+          variant="tonal" 
+          class="text-body-2 pl-5 pr-5 mr-3 font-weight-semibold bg-button"
+        >Откликнуться</v-btn>
+        <v-btn 
+          size="small"
+          :to="`account?id=${entry.author_id}`"
+          variant="tonal" 
+          class="text-body-2 pl-5 pr-5 font-weight-semibold bg-button"
+        >Посмотреть профиль</v-btn>
+      </div>
     </div>
   </EntryContainer>
 </template>
