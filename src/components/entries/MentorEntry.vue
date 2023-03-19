@@ -34,7 +34,7 @@ let user = users.find(user => user.id === props.entry.author_id)
         />
         <div class="d-flex ml-4 flex-column justify-start">
           <div class="font-author font-weight-semibold">{{ user?.name }}</div>
-          <div class="text-gray text-body-2">{{ user?.achievements.join(', ') }}</div>
+          <div class="text-gray text-body-2">{{ user?.ranks.join(', ') }}</div>
         </div>
       </v-row>
   

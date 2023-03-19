@@ -4,8 +4,13 @@ export let users: User[] = [
     name: 'Булдаков Ярослав',
     description: 'Увлекаюсь воркаутом и немного паркуром',
     avatar_url: 'https://ss.sport-express.ru/userfiles/materials/177/1776648/large.jpg',
-    type: 'Наставник',
-    achievements: ['знаток'],
+    ranks: ['знаток'],
+    achievements: [{
+      achievement: 'миска рис',
+      forever: false,
+      duration: 1000000,
+      date: 1000000000
+    }],
     answers: [{
       question: '',
       answer: ''
@@ -24,7 +29,7 @@ export let users: User[] = [
     name: 'Данила Васильев',
     description: 'Ты кто?',
     avatar_url: 'https://ss.sport-express.ru/userfiles/materials/177/1776648/large.jpg',
-    type: 'Наставник',
+    ranks: [],
     achievements: [],
     answers: [{
       question: '',
@@ -46,8 +51,13 @@ interface User {
   name: string,
   description: string,
   avatar_url: string,
-  type: string, // можно "Учитель" или "Автор"
-  achievements: string[],
+  ranks: string[],
+  achievements: {
+    achievement: string,
+    forever: boolean,
+    duration: number,
+    date: number
+  }[],
   answers?: {
     question: string,
     answer: string
@@ -61,3 +71,6 @@ interface User {
   town_id: string,
   school_id: string
 }
+
+// ROLES: 
+// student, mentor, school-admin, global-admin
