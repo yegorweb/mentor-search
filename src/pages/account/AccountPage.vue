@@ -7,6 +7,17 @@ import { users } from '../../fakeDB/users';
 
 var id = (new URL(document.location.href)).searchParams.get('id')
 let user = users.find(user => user.id === id)
+
+function getType(): string {
+  if (user?.roles.includes('school-admin') || user?.roles.includes('global-admin')) {
+    return 'админ'
+  }
+  if (user?.roles.includes('mentor')) {
+    return 'наставник'
+  }
+
+  return 'наставляемый'
+}
 </script>
 
 <template>
@@ -29,7 +40,7 @@ let user = users.find(user => user.id === id)
           style="column-gap: 20px;" 
           class="d-flex mt-1 align-center justify-center justify-sm-start flex-wrap flex-row font-weight-bold text-text_gray"
         >
-          <div>{{ user?.type.toLocaleLowerCase() }}</div>
+          <div>{{ getType() }}</div>
           <div v-if="user?.ranks.length != 0">
             <span><v-icon icon="mdi-star"></v-icon></span>
             {{ user?.ranks.join(', ') }}
