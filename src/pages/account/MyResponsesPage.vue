@@ -17,7 +17,7 @@ let mentorship = mentorship_entries.filter(entry => entry.responses.includes('64
     <BackButton />
     <div class="text-h4 mt-1 font-weight-bold">Мои отклики</div>
 
-    <v-row class="mt-5">
+    <v-row class="mt-4">
       <v-col 
         v-for="entry in mentorship" 
         :key="entry?.id"
