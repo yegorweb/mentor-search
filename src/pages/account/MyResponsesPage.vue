@@ -4,6 +4,8 @@ import BackButton from '../../components/BackButton.vue';
 import MentorEntry from '../../components/entries/MentorEntry.vue';
 import { mentorship_entries } from '../../fakeDB/mentorship-entries';
 
+document.title = 'Мои отклики — Ищу наставника'
+
 let router = useRouter()
 
 let mentorship = mentorship_entries.filter(entry => entry.responses.includes('640f4b30cde42820d332b0e9'))

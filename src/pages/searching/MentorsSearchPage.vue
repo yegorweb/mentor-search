@@ -7,6 +7,8 @@ import { ref } from 'vue';
 import { towns } from '../../fakeDB/towns';
 import { schools } from '../../fakeDB/schools';
 
+document.title = 'Поиск наставников — Ищу наставника'
+
 function shuffle(arr: any[]){
 	var j, temp;
 	for(var i = arr.length - 1; i > 0; i--){

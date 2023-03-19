@@ -18,6 +18,8 @@ function getType(): string {
 
   return 'наставляемый'
 }
+
+document.title = user?.name
 </script>
 
 <template>

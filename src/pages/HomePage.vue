@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router"
 
+document.title = 'Ищу наставника'
+
 let buttons = [
   {
     route: '/searchMentors',
