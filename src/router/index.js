@@ -50,6 +50,11 @@ const routes = [
         name: 'About',
         component: () => import('@/pages/AboutProjectPage.vue')
       },
+      {
+        path: '/termsOfUse',
+        name: 'TermsOfUse',
+        component: () => import('@/pages/TermsOfUse.vue')
+      },
     ]
   }
 ]
