@@ -22,8 +22,8 @@ let user = users.find(user => user.id === props.entry.author_id)
 </script>
 
 <template>
-  <EntryContainer class="justify-space-between">
-    <div class="d-flex w-100 justify-start flex-column">
+  <EntryContainer class="justify-space-between" style="position: relative;">
+    <div class="d-flex align-start w-100 justify-start flex-column">
       <v-row 
         @click="router.push(`account?id=${entry.author_id}`)" 
         class="flex-row ma-0 pa-0 flex-nowrap align-center justify-start cursor-pointer"
@@ -67,5 +67,25 @@ let user = users.find(user => user.id === props.entry.author_id)
         >Посмотреть профиль</v-btn>
       </div>
     </div>
+
+    <v-menu location="start">
+      <template v-slot:activator="{ props }">
+        <v-icon
+          class="pa-4"
+          style="position: absolute;right: 12px;top: 12px;"
+          icon="mdi-dots-vertical"
+          v-bind="props"
+        />
+      </template>
+
+      <v-list density="compact" nav :lines="false">
+        <v-list-item prepend-icon="mdi-pen" rounded>
+          Редактировать
+        </v-list-item>
+        <v-list-item prepend-icon="mdi-delete" rounded>
+          Удалить
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </EntryContainer>
 </template>
