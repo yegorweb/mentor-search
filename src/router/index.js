@@ -55,6 +55,16 @@ const routes = [
         name: 'TermsOfUse',
         component: () => import('@/pages/TermsOfUse.vue')
       },
+      {
+        path: '/login',
+        name: 'Login',
+        component: () => import('@/pages/LoginPage.vue')
+      },
+      {
+        path: '/registration',
+        name: 'Registration',
+        component: () => import('@/pages/RegistrationPage.vue')
+      },
     ]
   }
 ]
