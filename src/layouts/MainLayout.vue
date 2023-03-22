@@ -50,6 +50,11 @@ let nav_buttons = [
     title: 'О проекте',
     group: false
   },
+  {
+    route: '/termsOfUse',
+    title: 'Пользовательское соглашение',
+    group: false
+  },
 ]
 </script>
 
@@ -77,54 +82,47 @@ let nav_buttons = [
       temporary
       v-model="navigation_drawer_is_open"
     >
-      <v-list class="d-flex flex-column justify-space-between h-100">
-        <div class="w-100">
-          <template
-            v-for="button in nav_buttons"
-            :key="button.title"
+      <v-list class="d-flex flex-column justify-space-between">
+        <template
+          v-for="button in nav_buttons"
+          :key="button.title"
+        >
+          <!-- Usually -->
+          <v-list-item
+            v-if="!button.group"
+            @click="router.push(button.route);
+              navigation_drawer_is_open = !navigation_drawer_is_open"
+            style="font-weight: 600;"
           >
-            <!-- Usually -->
+            {{ button.title }}
+          </v-list-item>
+
+          <!-- If group -->
+          <v-list-group
+            v-if="button.group"
+            :value="button.title"
+          >
+            <template v-slot:activator="{ props }">
+              <v-list-item
+                v-bind="props"
+                :key="button.title"
+                style="font-weight: 600;"
+              >
+                {{ button.title }}
+              </v-list-item>
+            </template>
+            
             <v-list-item
-              v-if="!button.group"
-              @click="router.push(button.route);
+              v-for="btn in button.routes"
+              :key="btn.title"
+              @click="router.push(btn.route);
                 navigation_drawer_is_open = !navigation_drawer_is_open"
               style="font-weight: 600;"
             >
-              {{ button.title }}
+              {{ btn.title }}
             </v-list-item>
-  
-            <!-- If group -->
-            <v-list-group
-              v-if="button.group"
-              :value="button.title"
-            >
-              <template v-slot:activator="{ props }">
-                <v-list-item
-                  v-bind="props"
-                  :key="button.title"
-                  style="font-weight: 600;"
-                >
-                  {{ button.title }}
-                </v-list-item>
-              </template>
-              
-              <v-list-item
-                v-for="btn in button.routes"
-                :key="btn.title"
-                @click="router.push(btn.route);
-                  navigation_drawer_is_open = !navigation_drawer_is_open"
-                style="font-weight: 600;"
-              >
-                {{ btn.title }}
-              </v-list-item>
-            </v-list-group>
-          </template>
-        </div>
-
-        <v-list-item 
-          style="font-weight: 600;"
-          to="/termsOfUse"
-        >Пользовательское соглашение</v-list-item>
+          </v-list-group>
+        </template>
       </v-list>
     </v-navigation-drawer>
 
