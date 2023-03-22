@@ -8,8 +8,8 @@ export let users: User[] = [
     achievements: [{
       achievement: 'миска рис',
       forever: false,
-      duration: 1000000,
-      date: 1000000000
+      duration: 100000000,
+      date: 1679230369000
     }],
     answers: [{
       question: '',
@@ -55,7 +55,7 @@ interface User {
   achievements: {
     achievement: string,
     forever: boolean,
-    duration: number,
+    duration?: number,
     date: number
   }[],
   answers?: {
