@@ -1,7 +1,7 @@
 import { defineStore } from "pinia"
 import AuthService from "../services/AuthService"
 
-export const useAuth = defineStore(() => {
+export const useAuth = defineStore('auth', () => {
   let isAuth = false
   let user
 
@@ -56,4 +56,6 @@ export const useAuth = defineStore(() => {
       user = null
     } catch (err) {}
   }
+
+  return { getAuthStatus, getUser, registration, login, checkAuth, logout }
 })
