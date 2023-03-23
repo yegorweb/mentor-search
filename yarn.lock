@@ -777,6 +777,13 @@ upath@^2.0.1:
   resolved "https://registry.yarnpkg.com/upath/-/upath-2.0.1.tgz#50c73dea68d6f6b990f51d279ce6081665d61a8b"
   integrity sha512-1uEe95xksV1O0CYKXo8vQvN1JEbtJp7lb7C5U9HMsIp6IVwntkH/oNUzyVNQSd4S1sYk2FpSSW44FqMc8qee5w==
 
+vee-validate@^4.8.3:
+  version "4.8.3"
+  resolved "https://registry.yarnpkg.com/vee-validate/-/vee-validate-4.8.3.tgz#9fe4d4aeabab75e3340aa0cf27a30f142044f042"
+  integrity sha512-/RcxZH7mnyG1DLXMxc+70llcDFagwkfebs2Yhd5Xmoe95cosNDus5L2g5iDsShZBVUTRBE0ceLHW/FcURvaeDA==
+  dependencies:
+    "@vue/devtools-api" "^6.5.0"
+
 vite-plugin-vuetify@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/vite-plugin-vuetify/-/vite-plugin-vuetify-1.0.2.tgz#d1777c63aa1b3a308756461b3d0299fd101ee8f4"
