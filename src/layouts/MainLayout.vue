@@ -69,7 +69,7 @@ let nav_buttons = [
           @click="navigation_drawer_is_open = !navigation_drawer_is_open"
         />
 
-        <div class="header-title text-h6 font-weight-bold text-no-wrap">Ищу наставника</div>
+        <router-link style="text-decoration: none;color: #FFFFFF;" to="/" class="header-title text-h6 font-weight-bold text-no-wrap">Ищу наставника</router-link>
 
         <v-avatar class="cursor-pointer" size="30" color="#FFFFFF" />
       </v-container>
