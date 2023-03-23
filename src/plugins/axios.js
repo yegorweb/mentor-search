@@ -17,8 +17,6 @@ $api.interceptors.request.use((config) => {
 
 $api.interceptors.response.use(
 	function (response) {
-		toast.success(response.data?.message)
-
 		return response
 	}, 
 	function (error) {
