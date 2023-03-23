@@ -128,7 +128,9 @@ let nav_buttons = [
 
     <!-- Content -->
     <v-main>
-      <router-view></router-view>
+      <Suspense>
+        <router-view></router-view>
+      </Suspense>
     </v-main>
   </v-app>
 </template>
