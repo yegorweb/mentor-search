@@ -8,7 +8,7 @@ export let users: User[] = [
     achievements: [{
       achievement: 'миска рис',
       forever: false,
-      duration: 100000000,
+      duration: 10000000000,
       date: 1679230369000
     }],
     answers: [{
