@@ -1,113 +1,299 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import BackButton from '../components/BackButton.vue'
 import TownService from '../services/TownService'
 import SchoolService from '../services/SchoolService'
+import { useAuth } from '../stores/auth'
+import { Form, Field, ErrorMessage } from 'vee-validate'
+import * as yup from 'yup'
 
 document.title = 'Регистрация — Ищу наставника'
 
 let router = useRouter()
 
-let name = ref('')
-let email = ref('')
-let password = ref('')
-let grade = ref(0)
-let town_id = ref('')
-let school_id = ref('')
-let agree = ref(true)
+let questions = [
+  {
+    question: 'Я учусь:',
+    answers: ['Отлично, все пятёрки', 'Хорошо', 'Нормально', 'Плохо']
+  },
+  {
+    question: 'Трудности?',
+    answers: ['Нет', 'Да']
+  },
+  {
+    question: 'Почему я?',
+    answer: ''
+  }
+]
 
-let form = ref(false)
-let passkeys_support = ref(false)
+let formState = reactive({
+  name: '',
+  email: '',
+  password: '',
+  town: {
+    name: '',
+    _id: ''
+  },
+  school: {
+    name: '',
+    _id: ''
+  },
+  grade: 0,
+  roles: ['student'],
+  agree: false,
+  mentor: false,
+  answers: [{
+    question: 'Я учусь:',
+    answer: ''
+  },
+  {
+    question: 'Трудности?',
+    answer: ''
+  },
+  {
+    question: 'Почему я?',
+    answer: ''
+  }]
+})
 
-let towns = await TownService.getTowns()
-let selected_town_id = ref('')
+let towns = (await TownService.getTowns()).data
 
-async function schools_in_town() {
-  return await SchoolService.get_all_in_town(selected_town_id.value)
+let schools = (await SchoolService.get_all()).data
+
+function schools_in_town() {
+  return schools.filter(sch => sch.town_id === formState.town._id)
 }
 
-function submit() {
+console.log(schools)
 
+function grades() {
+  let result = [{ digit: '—', number: 0 }]
+
+  for (let i = 1; i <= 11; i++) result.push({ digit: i.toString(), number: i })
+
+  return result
 }
+
+async function submit() {
+  let auth = useAuth()
+
+  let status = await auth.registration({ 
+    name: formState.name, 
+    email: formState.email, 
+    password: formState.password, 
+    grade: formState.grade, 
+    town_id: formState.town._id,
+    school_id: formState.school._id,
+    roles: formState.mentor ? ['student', 'mentor'] : ['student'],
+    answers: formState.mentor ? formState.answers : {}
+  })
+
+  if (status?.success) router.push('/')
+}
+
+const formSchema = yup.object({
+  name: yup.string().required('заполните поле').min(4, 'слишком короткое имя и фамилия'),
+  email: yup.string().required('заполните поле').email('неверный формат'),
+  password: yup.string().required('заполните поле').min(6, 'минимум 6 символов'),
+  town: yup.object().required('заполните поле'),
+  school: yup.object().required('заполните поле'),
+  grade: yup.number().required('заполните поле'),
+  agree: yup.boolean().required('нужно ваше согласие'),
+})
 </script>
 
 <template>
-  <Suspense>
   <v-container>
     <BackButton />
 
-    <v-col cols="12" xs="12" md="6" lg="5" class="mt-4 ma-auto">
-      <v-card 
-        class="d-flex flex-column justify-center align-center text-center 
-               w-100 pl-6 pr-6 pt-4 pb-6"
-      >
-        <div class="text-h6 font-weight-bold">Вход</div>
+    <v-col cols="12" xs="12" sm="10" md="7" lg="5" class="mt-4 ma-auto">
+      <v-card class="d-flex flex-column justify-center align-center text-center w-100 pl-6 pr-6 pt-4 pb-6">
+        <div class="text-h6 font-weight-bold">Регистрация</div>
   
-        <v-form
-          v-model="form"
-          @submit="submit"
+        <Form
           class="mt-4 w-100"
+          :validation-schema="formSchema"
+          v-slot="{ meta }"
+          @submit="submit"
         >
-          <v-text-field 
-            label="Имя Фамилия"
-            placeholder="Иван Иванов"
-            v-model="name"
-            variant="underlined"
+          <Field name="name" v-slot="{ value, handleChange }">
+            <v-text-field 
+              label="Имя Фамилия"
+              type="name"
+              placeholder="Иван Иванов"
+              @update:model-value="handleChange"
+              v-model="formState.name"
+              variant="underlined"
+              class="w-100 mb-1"
+              hide-details
+            />    
+          </Field>
+          <Transition name="fade">
+            <ErrorMessage name="name" class="error-message" />
+          </Transition>
+
+          <Field name="email" v-slot="{ value, handleChange }">
+            <v-text-field 
+              label="Email"
+              type="email"
+              placeholder="vasya@ya.ru"
+              v-model="formState.email"
+              @update:model-value="handleChange"
+              variant="underlined"
+              class="w-100 mb-1 mt-2"
+              hide-details
+            />          
+          </Field>
+          <Transition name="fade">
+            <ErrorMessage name="email" class="error-message" />
+          </Transition>
+
+          <Field name="password" v-slot="{ value, handleChange }">
+            <v-text-field 
+              label="Пароль"
+              type="password"
+              v-model="formState.password"
+              @update:model-value="handleChange"
+              variant="underlined"
+              class="w-100 mb-1 mt-2"
+              hide-details
+            />
+          </Field>
+          <Transition name="fade">
+            <ErrorMessage name="password" class="error-message" />
+          </Transition>
+
+          <Field name="town" v-slot="{ value, handleChange }">
+            <v-select
+              label="Город"
+              v-model="formState.town"
+              @update:model-value="handleChange"
+              :items="towns"
+              item-title="name"
+              return-object
+              variant="underlined"
+              class="w-100 mb-1 mt-8"
+              hide-details
+            ></v-select>
+          </Field>
+          <Transition name="fade">
+            <ErrorMessage name="town" class="error-message" />
+          </Transition>
+
+          <Field name="school" v-slot="{ value, handleChange }">
+            <v-select
+              label="Школа"
+              :disabled="formState.town._id.length==0"
+              v-model="formState.school"
+              @update:model-value="handleChange"
+              :items="schools_in_town()"
+              item-title="name"
+              return-object
+              variant="underlined"
+              class="w-100 mb-1 mt-8"
+              hide-details
+            ></v-select>
+          </Field>
+          <Transition name="fade">
+            <ErrorMessage name="school" class="error-message" />
+          </Transition>
+
+          <Field name="grade" v-slot="{ value, handleChange }">
+            <v-select
+              label="Класс"
+              v-model="formState.grade"
+              @update:model-value="handleChange"
+              :items="grades()"
+              item-title="digit"
+              item-value="number"
+              variant="underlined"
+              class="w-100 mb-1 mt-6"
+              hide-details
+            ></v-select>
+          </Field>
+          <Transition name="fade">
+            <ErrorMessage name="grade" class="error-message" />
+          </Transition>
+
+          <v-radio-group
+            v-model="formState.mentor"
+            label="Кто вы?"
             hide-details
-            class="w-100"
-          />
-          <v-text-field 
-            label="Email"
-            placeholder="vasya@ya.ru"
-            v-model="email"
-            variant="underlined"
-            hide-details
-            class="mt-2 w-100"
-          />
-          <v-text-field 
-            label="Пароль"
-            v-model="password"
-            variant="underlined"
-            hide-details
-            class="mt-2 w-100"
-          />
-          <v-select
-            label="Город"
-            v-model="selected_town_id"
-            :items="towns"
-            item-title="name"
-            item-value="id"
-            variant="solo"
-            hide-details
-          ></v-select>
-          <v-select
-            label="Школа"
-            v-model="school_id"
-            :items="schools_in_town()"
-            item-title="name"
-            item-value="id"
-            variant="solo"
-            hide-details
-          ></v-select>
+            class="mt-8"
+            column
+          >
+            <v-radio
+              label="Наставляемый"
+              :value="false"
+            ></v-radio>
+            <v-radio
+              label="Наставник"
+              :value="true"
+            ></v-radio>
+          </v-radio-group>
           
-          <v-checkbox v-model="agree" class="w-100 ma-0 pa-0">
-            <template v-slot:label>
-              <div>
-                Принимаю <router-link to="/registration">пользовательское соглашение</router-link>
-              </div>
+          <div v-if="formState.mentor" style="gap: 6px;" class="w-100 mt-6 d-flex flex-column flex-nowrap align-start">
+            <div class="d-flex flex-column flex-nowrap align-start mb-2">
+              <div class="text-body-1 font-weight-semibold">Ответьте на несколько вопросов</div>
+              <div class="text-caption text-gray">Это не повлияет на использование</div>
+            </div>
+
+            <template
+              v-for="(item, index) in questions"
+              :key="index"
+            >
+              <v-radio-group
+                v-if="typeof item.answers !== 'undefined'"
+                v-model="formState.answers[index].answer"
+                :label="item.question"
+                hide-details
+                column
+              >
+                <v-radio
+                  v-for="answer_item in item.answers"
+                  :key="answer_item"
+                  :label="answer_item"
+                  :value="answer_item"
+                />
+              </v-radio-group>
+
+              <v-text-field 
+                v-if="typeof item.answer !== 'undefined'"
+                :label="item.question"
+                v-model="formState.answers[index].answer"
+                variant="solo"
+                class="w-100"
+                hide-details
+              />    
             </template>
-          </v-checkbox>
-        </v-form>
-  
-        <v-btn color="accent" class="mt-6">войти</v-btn>
+          </div>
+
+          <Field name="agree" v-slot="{ value, handleChange }">
+            <v-checkbox 
+              v-model="formState.agree"
+              @change="handleChange"
+              class="w-100 mt-4 ma-0 pa-0 align-start"
+            >  
+              <template v-slot:label>
+                <div class="text-start">
+                  Принимаю <router-link to="/registration">пользовательское соглашение</router-link>
+                </div>  
+              </template>  
+            </v-checkbox>  
+          </Field>  
+          <Transition name="fade">
+            <ErrorMessage name="agree" class="error-message" />
+          </Transition>  
+
+          <v-btn type="submit" :disabled="!meta.valid" color="accent" class="mt-6">Отправить</v-btn>
+        </Form>
   
         <div 
           @click="router.push('/login')" 
-          class="text-body-2 w-100 cursor-pointer font-weight-semibold pa-1 mt-4"
+          class="text-subtitle-1 w-100 cursor-pointer font-weight-semibold pa-1 mt-2"
         >вход</div>
       </v-card>
     </v-col>
   </v-container>
-  </Suspense>
 </template>
