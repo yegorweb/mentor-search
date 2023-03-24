@@ -2,19 +2,27 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Header from '../components/Header.vue'
+import { useAuth } from '../stores/auth';
 
 let router = useRouter()
+let auth = useAuth()
+
+await auth.checkAuth()
+
+let isAuth = auth.getAuthStatus()
 
 let navigation_drawer_is_open = ref(false)
 let nav_buttons = [
   {
     route: '/',
     title: 'Главная',
-    group: false
+    group: false,
+    condition: true
   },
   {
     title: 'Поиск',
     group: true,
+    condition: true,
     routes: [
       {
         route: '/searchMentors',
@@ -33,27 +41,32 @@ let nav_buttons = [
   {
     route: '/account',
     title: 'Мой профиль',
-    group: false
+    group: false,
+    condition: isAuth
   },
   {
     route: '/myResponses',
     title: 'Мои отклики',
-    group: false
+    group: false,
+    condition: isAuth
   },
   {
     route: '/myAchievements',
     title: 'Мои награды',
-    group: false
+    group: false,
+    condition: isAuth
   },
   {
     route: '/about',
     title: 'О проекте',
-    group: false
+    group: false,
+    condition: true
   },
   {
     route: '/termsOfUse',
     title: 'Пользовательское соглашение',
-    group: false
+    group: false,
+    condition: true
   },
 ]
 </script>
@@ -89,7 +102,7 @@ let nav_buttons = [
         >
           <!-- Usually -->
           <v-list-item
-            v-if="!button.group"
+            v-if="!button.group && button.condition"
             @click="router.push(button.route);
               navigation_drawer_is_open = !navigation_drawer_is_open"
             style="font-weight: 600;"
