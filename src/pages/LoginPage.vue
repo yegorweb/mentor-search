@@ -1,22 +1,32 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import BackButton from '../components/BackButton.vue'
+import { useAuth } from '../stores/auth'
+import { Form, Field, ErrorMessage } from 'vee-validate'
+import * as yup from 'yup'
 
 document.title = 'Авторизация — Ищу наставника'
 
 let router = useRouter()
 
-let email = ref('')
-let password = ref('')
-let agree = ref(true)
+let formState = reactive({
+  email: '',
+  password: '',
+})
 
-let form = ref(false)
-let passkeys_support = ref(false)
+async function submit() {
+  let auth = useAuth()
 
-function submit() {
+  let status = await auth.login(formState.email, formState.password)
 
+  if (status?.success) router.push('/')
 }
+
+const formSchema = yup.object({
+  email: yup.string().required('заполните поле').email('неверный формат'),
+  password: yup.string().required('заполните поле').min(6, 'минимум 6 символов'),
+})
 </script>
 
 <template>
@@ -30,38 +40,45 @@ function submit() {
       >
         <div class="text-h6 font-weight-bold">Вход</div>
   
-        <v-form
-          v-model="form"
-          @submit="submit"
+        <Form
           class="mt-4 w-100"
+          :validation-schema="formSchema"
+          v-slot="{ meta }"
+          @submit="submit"
         >
-          <v-text-field 
-            label="Email"
-            placeholder="vasya@ya.ru"
+          <Field name="email" v-slot="{ value, handleChange }">
+            <v-text-field 
+              label="Email"
+              type="email"
+              placeholder="vasya@ya.ru"
+              v-model="formState.email"
+              @update:model-value="handleChange"
+              variant="underlined"
+              class="w-100 mb-1"
+              hide-details
+            />          
+          </Field>
+          <Transition name="fade">
+            <ErrorMessage name="email" class="error-message" />
+          </Transition>
 
-            v-model="email"
-            variant="underlined"
-            hide-details
-            class="w-100"
-          />
-          <v-text-field 
-            label="Пароль"
-            v-model="password"
-            variant="underlined"
-            hide-details
-            class="mt-2 w-100"
-          />
+          <Field name="password" v-slot="{ value, handleChange }">
+            <v-text-field 
+              label="Пароль"
+              type="password"
+              v-model="formState.password"
+              @update:model-value="handleChange"
+              variant="underlined"
+              class="w-100 mb-1 mt-2"
+              hide-details
+            />
+          </Field>
+          <Transition name="fade">
+            <ErrorMessage name="password" class="error-message" />
+          </Transition>
 
-          <v-checkbox v-model="agree" class="w-100 ma-0 pa-0">
-            <template v-slot:label>
-              <div>
-                Принимаю <router-link to="/registration">пользовательское соглашение</router-link>
-              </div>
-            </template>
-          </v-checkbox>
-        </v-form>
-  
-        <v-btn color="accent" class="mt-6">войти</v-btn>
+          <v-btn type="submit" :disabled="!meta.valid" color="accent" class="mt-6">Войти</v-btn>
+        </Form>
   
         <div 
           @click="router.push('/registration')" 
