@@ -1,16 +1,17 @@
 import { defineStore } from "pinia"
 import AuthService from "../services/AuthService"
+import { ref } from "vue"
 
 export const useAuth = defineStore('auth', () => {
-  let isAuth = false
-  let user
+  let isAuth = ref(false)
+  let user = ref()
 
   function getAuthStatus() {
-    return isAuth
+    return isAuth.value
   }
 
   function getUser() {
-    return user
+    return user.value
   }
 
   async function registration(user) {
@@ -18,8 +19,8 @@ export const useAuth = defineStore('auth', () => {
       const response = await AuthService.registration(user)
       localStorage.setItem('token', response.data.accessToken)
 
-      isAuth = true
-      user = response.data.user
+      isAuth.value = true
+      user.value = response.data.user
       
       return { success: true }
     } catch (err) { }
@@ -30,8 +31,8 @@ export const useAuth = defineStore('auth', () => {
       const response = await AuthService.login(email, password)
       localStorage.setItem('token', response.data.accessToken)
 
-      isAuth = true
-      user = response.data.user
+      isAuth.value = true
+      user.value = response.data.user
 
       return { success: true }
     } catch (err) { }
@@ -42,9 +43,11 @@ export const useAuth = defineStore('auth', () => {
       const response = await AuthService.refresh()
       localStorage.setItem('token', response.data.accessToken)
 
-      isAuth = true
-      user = response.data.user
-    } catch (err) {}
+      isAuth.value = true
+      user.value = response.data.user
+    } catch (err) {
+      await logout()
+    }
   }
 
   async function logout() {
@@ -52,10 +55,10 @@ export const useAuth = defineStore('auth', () => {
       const response = await AuthService.logout()
       localStorage.removeItem('token')
 
-      isAuth = false
-      user = null
+      isAuth.value = false
+      user.value = null
     } catch (err) {}
   }
 
-  return { getAuthStatus, getUser, registration, login, checkAuth, logout }
+  return { isAuth, getAuthStatus, getUser, registration, login, checkAuth, logout }
 })
