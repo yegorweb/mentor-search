@@ -89,7 +89,9 @@ async function submit() {
     answers: formState.mentor ? formState.answers : {}
   })
 
-  if (status?.success) router.push('/')
+  if (status?.success) {
+    router.push(localStorage.getItem('requestedLink') ? localStorage.getItem('requestedLink') : '/')
+  }
 }
 
 const formSchema = yup.object({

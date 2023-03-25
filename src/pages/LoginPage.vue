@@ -20,7 +20,13 @@ async function submit() {
 
   let status = await auth.login(formState.email, formState.password)
 
-  if (status?.success) router.push('/')
+  if (status?.success) {
+    if (localStorage.getItem('requestedLink')) {
+      router.push(localStorage.getItem('requestedLink'))
+    } else {
+      router.push('')
+    }
+  }
 }
 
 const formSchema = yup.object({
