@@ -1,25 +1,29 @@
 <script setup lang="ts">
 import BackButton from '../../components/BackButton.vue';
 import EntryContainer from '../../components/entries/EntryContainer.vue';
-import { schools } from '../../fakeDB/schools';
-import { towns } from '../../fakeDB/towns';
-import { users } from '../../fakeDB/users';
+import SchoolService from '../../services/SchoolService';
+import TownService from '../../services/TownService';
+import UserService from '../../services/UserService'
 
-var id = (new URL(document.location.href)).searchParams.get('id')
-let user = users.find(user => user.id === id)
+let props = defineProps(['id'])
+
+let id = props.id
+let user = (await UserService.get_by_id(id)).data
+let town = (await TownService.getTownById(user.town_id)).data
+let school = (await SchoolService.get_by_id(user.school_id)).data
 
 function getType(): string {
-  if (user?.roles.includes('school-admin') || user?.roles.includes('global-admin')) {
+  if (user.roles.includes('school-admin') || user.roles.includes('global-admin')) {
     return 'админ'
   }
-  if (user?.roles.includes('mentor')) {
+  if (user.roles.includes('mentor')) {
     return 'наставник'
   }
 
   return 'наставляемый'
 }
 
-document.title = user?.name
+document.title = user.name
 </script>
 
 <template>
@@ -35,7 +39,7 @@ document.title = user?.name
   
       <div class="d-flex flex-column justify-center justify-sm-start w-sm-100 align-center align-sm-start">
         <!-- Name -->
-        <div class="text-h5 text-center font-weight-bold">{{ user?.name }}</div>
+        <div class="text-h5 text-center font-weight-bold">{{ user.name }}</div>
         
         <!-- Info -->
         <div 
@@ -43,19 +47,19 @@ document.title = user?.name
           class="d-flex mt-1 align-center justify-center justify-sm-start flex-wrap flex-row font-weight-bold text-text_gray"
         >
           <div>{{ getType() }}</div>
-          <div v-if="user?.ranks.length != 0">
+          <div v-if="user.ranks.length != 0">
             <span><v-icon icon="mdi-star"></v-icon></span>
-            {{ user?.ranks.join(', ') }}
+            {{ user.ranks.join(', ') }}
           </div>
-          <div v-if="user?.grade != 0">{{ user?.grade }} класс</div>
+          <div v-if="user.grade != 0">{{ user.grade }} класс</div>
         </div>
 
         <!-- Town, school -->
         <div class="font-weight-bold text-text_gray">
           <span v-if="user?.town_id != '640f4ac9145a0da782eb1a95'">{{ 
-            towns.find(town => town.id === user?.town_id)?.name + ', ' }}
+            town.name + ', ' }}
           </span>
-          {{ schools.find(sch => sch.id === user?.school_id)?.name }}
+          {{ school.name }}
         </div>
 
         <!-- Description -->
