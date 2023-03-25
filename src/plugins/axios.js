@@ -20,9 +20,13 @@ $api.interceptors.response.use(
 		return response
 	}, 
 	function (error) {
-		toast.error(error.response?.data?.message)
-		console.log("ERROR: ", error)
-
+		if (error.response?.status !== 401) {
+			toast.error(error.response?.data?.message, {
+				position: 'top-center'
+			})
+			console.log("ERROR: ", error)	
+		}
+		
 		return error
 	}
 )
