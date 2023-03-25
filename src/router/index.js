@@ -1,5 +1,6 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuth } from '../stores/auth'
 
 const routes = [
   {
@@ -33,17 +34,32 @@ const routes = [
       {
         path: '/settings',
         name: 'AccountSettingsPage',
-        component: () => import('@/pages/account/AccountSettingsPage.vue')
+        component: () => import('@/pages/account/AccountSettingsPage.vue'),
+        beforeEnter: async (to, from) => {
+          if (!useAuth().isAuth)
+            localStorage.setItem('requestedLink', to.fullPath)
+            return '/login'
+        }
       },
       {
         path: '/myResponses',
         name: 'MyResponses',
-        component: () => import('@/pages/account/MyResponsesPage.vue')
+        component: () => import('@/pages/account/MyResponsesPage.vue'),
+        beforeEnter: async (to, from) => {
+          if (!useAuth().isAuth)
+            localStorage.setItem('requestedLink', to.fullPath)
+            return '/login'
+        }
       },
       {
         path: '/myAchievements',
         name: 'MyAchievements',
-        component: () => import('@/pages/account/MyAchievementsPage.vue')
+        component: () => import('@/pages/account/MyAchievementsPage.vue'),
+        beforeEnter: async (to, from) => {
+          if (!useAuth().isAuth)
+            localStorage.setItem('requestedLink', to.fullPath)
+            return '/login'
+        }
       },
       {
         path: '/about',
