@@ -2,12 +2,15 @@
 import BackButton from '@/components/BackButton.vue'
 import MainTitle from '../../components/MainTitle.vue';
 import MentorEntry from '../../components/entries/MentorEntry.vue'
-import { mentorship_entries } from '../../fakeDB/mentorship-entries';
 import { ref } from 'vue';
-import { towns } from '../../fakeDB/towns';
-import { schools } from '../../fakeDB/schools';
+import { useAuth } from '../../stores/auth';
+import TownService from '../../services/TownService';
+import SchoolService from '../../services/SchoolService';
+import EntryService from '../../services/EntryService';
 
 document.title = 'Поиск наставников — Ищу наставника'
+
+let auth = useAuth()
 
 function shuffle(arr: any[]){
 	var j, temp;
@@ -20,15 +23,32 @@ function shuffle(arr: any[]){
 	return arr;
 }
 
-shuffle(mentorship_entries)
+let towns = (await TownService.getTowns()).data
+let schools = (await SchoolService.get_all()).data
 
-// КОСТЫЛЬ
-// Надо по умолчанию город и школу пользователя
-let town_id = ref('640f4ac9145a0da782eb1a95')
-let school_id = ref('640f4af989029a9d95db4b19')
+console.log(towns)
 
-let school = (): any => { return schools.find(sch => sch.id === school_id.value) }
-let schools_in_town = (): any => { return towns.find(town => town.id === town_id.value)?.schools }
+let town = ref(auth.getAuthStatus() ? 
+  towns.find(town => town._id === auth.getUser().town_id) : 
+  towns.find(town => town._id === '641c882f9a4751bf88848223')
+)
+
+let school = ref(auth.getAuthStatus() ? 
+  schools.find(sch => sch._id === auth.getUser().school_id) : 
+  { name: 'Все', id: 'all' }
+)
+
+let mentorship_entries = ref((await EntryService.get('mentor', town.value._id, school.value._id)).data)
+
+async function updateEntries() {
+  mentorship_entries.value = (await EntryService.get('mentor', town.value._id, school.value._id)).data
+  shuffle(mentorship_entries)
+}
+
+function schools_in_town() {
+  console.log(town.value)
+  return schools.filter(sch => sch.town_id === town.value._id)
+}
 </script>
 
 <template>
@@ -40,10 +60,10 @@ let schools_in_town = (): any => { return towns.find(town => town.id === town_id
       <v-col cols="12" md="4" sm="8" xs="12" class="ml-0 pa-0">
         <v-select
           label="Город"
-          v-model="town_id"
+          v-model="town"
           :items="towns"
           item-title="name"
-          item-value="id"
+          return-object
           variant="solo"
           hide-details
         ></v-select>
@@ -51,11 +71,10 @@ let schools_in_town = (): any => { return towns.find(town => town.id === town_id
       <v-col cols="12" md="4" sm="8" xs="12" class="ma-0 pa-0">
         <v-select
           label="Школа"
-          v-model="school_id"
-          :items="[{name: 'Все', id: 'all'}, ...schools_in_town().map(el => el = schools.find(i => i.id === el))]"
+          v-model="school"
+          :items="[{name: 'Все', id: 'all'}, ...schools_in_town()]"
           item-title="name"
-          @update:model-value="shuffle(mentorship_entries)"
-          item-value="id"
+          @update:model-value="updateEntries"
           variant="solo"
           hide-details
         ></v-select>
