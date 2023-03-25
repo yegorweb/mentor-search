@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Header from '../components/Header.vue'
@@ -9,7 +10,7 @@ let auth = useAuth()
 
 await auth.checkAuth()
 
-let isAuth = auth.getAuthStatus()
+let { isAuth } = storeToRefs(auth)
 
 let navigation_drawer_is_open = ref(false)
 let nav_buttons = [
