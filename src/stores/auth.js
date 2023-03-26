@@ -3,15 +3,15 @@ import AuthService from "../services/AuthService"
 import { ref } from "vue"
 
 export const useAuth = defineStore('auth', () => {
-  let isAuth = ref(false)
-  let user = ref()
+  let isAuth = false
+  let user
 
   function getAuthStatus() {
-    return isAuth.value
+    return isAuth
   }
 
   function getUser() {
-    return user.value
+    return user
   }
 
   async function registration(user) {
@@ -19,8 +19,8 @@ export const useAuth = defineStore('auth', () => {
       const response = await AuthService.registration(user)
       localStorage.setItem('token', response.data.accessToken)
 
-      isAuth.value = true
-      user.value = response.data.user
+      isAuth = true
+      user = response.data.user
       
       return { success: true }
     } catch (err) { }
@@ -31,8 +31,8 @@ export const useAuth = defineStore('auth', () => {
       const response = await AuthService.login(email, password)
       localStorage.setItem('token', response.data.accessToken)
 
-      isAuth.value = true
-      user.value = response.data.user
+      isAuth = true
+      user = response.data.user
 
       return { success: true }
     } catch (err) { }
@@ -43,8 +43,8 @@ export const useAuth = defineStore('auth', () => {
       const response = await AuthService.refresh()
       localStorage.setItem('token', response.data.accessToken)
 
-      isAuth.value = true
-      user.value = response.data.user
+      isAuth = true
+      user = response.data.user
     } catch (err) {
       await logout()
     }
@@ -55,10 +55,10 @@ export const useAuth = defineStore('auth', () => {
       const response = await AuthService.logout()
       localStorage.removeItem('token')
 
-      isAuth.value = false
-      user.value = null
+      isAuth = false
+      user = null
     } catch (err) {}
   }
 
-  return { isAuth, getAuthStatus, getUser, registration, login, checkAuth, logout }
+  return { getAuthStatus, getUser, registration, login, checkAuth, logout }
 })

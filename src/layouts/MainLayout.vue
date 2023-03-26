@@ -10,8 +10,6 @@ let auth = useAuth()
 
 await auth.checkAuth()
 
-let { isAuth } = storeToRefs(auth)
-
 let navigation_drawer_is_open = ref(false)
 let nav_buttons = [
   {
@@ -43,19 +41,19 @@ let nav_buttons = [
     route: '/account',
     title: 'Мой профиль',
     group: false,
-    condition: isAuth
+    condition: auth.getAuthStatus()
   },
   {
     route: '/myResponses',
     title: 'Мои отклики',
     group: false,
-    condition: isAuth
+    condition: auth.getAuthStatus()
   },
   {
     route: '/myAchievements',
     title: 'Мои награды',
     group: false,
-    condition: isAuth
+    condition: auth.getAuthStatus()
   },
   {
     route: '/about',
