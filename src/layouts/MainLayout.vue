@@ -6,9 +6,8 @@ import Header from '../components/Header.vue'
 import { useAuth } from '../stores/auth';
 
 let router = useRouter()
-let auth = useAuth()
 
-await auth.checkAuth()
+await useAuth().checkAuth()
 
 let navigation_drawer_is_open = ref(false)
 let nav_buttons = [
@@ -41,19 +40,19 @@ let nav_buttons = [
     route: '/account',
     title: 'Мой профиль',
     group: false,
-    condition: auth.getAuthStatus()
+    condition: useAuth().getAuthStatus()
   },
   {
     route: '/myResponses',
     title: 'Мои отклики',
     group: false,
-    condition: auth.getAuthStatus()
+    condition: useAuth().getAuthStatus()
   },
   {
     route: '/myAchievements',
     title: 'Мои награды',
     group: false,
-    condition: auth.getAuthStatus()
+    condition: useAuth().getAuthStatus()
   },
   {
     route: '/about',

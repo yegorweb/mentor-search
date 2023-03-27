@@ -36,9 +36,11 @@ const routes = [
         name: 'AccountSettingsPage',
         component: () => import('@/pages/account/AccountSettingsPage.vue'),
         beforeEnter: async (to, from) => {
-          if (!useAuth().isAuth)
+          let auth = useAuth()
+          if (!auth.getAuthStatus()) {
             localStorage.setItem('requestedLink', to.fullPath)
             return '/login'
+          }
         }
       },
       {
@@ -46,9 +48,11 @@ const routes = [
         name: 'MyResponses',
         component: () => import('@/pages/account/MyResponsesPage.vue'),
         beforeEnter: async (to, from) => {
-          if (!useAuth().isAuth)
+          let auth = useAuth()
+          if (!auth.getAuthStatus()) {
             localStorage.setItem('requestedLink', to.fullPath)
             return '/login'
+          }
         }
       },
       {
@@ -56,9 +60,11 @@ const routes = [
         name: 'MyAchievements',
         component: () => import('@/pages/account/MyAchievementsPage.vue'),
         beforeEnter: async (to, from) => {
-          if (!useAuth().isAuth)
+          let auth = useAuth()
+          if (!auth.getAuthStatus()) {
             localStorage.setItem('requestedLink', to.fullPath)
             return '/login'
+          }
         }
       },
       {

@@ -22,9 +22,9 @@ async function submit() {
 
   if (status?.success) {
     if (localStorage.getItem('requestedLink')) {
-      router.push(localStorage.getItem('requestedLink'))
+      window.location.href = localStorage.getItem('requestedLink')
     } else {
-      router.push('')
+      window.location.href = '/'
     }
   }
 }
