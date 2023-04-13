@@ -7,8 +7,6 @@ import { useAuth } from '../stores/auth';
 
 let router = useRouter()
 
-await useAuth().checkAuth()
-
 let navigation_drawer_is_open = ref(false)
 let nav_buttons = [
   {
@@ -37,7 +35,13 @@ let nav_buttons = [
     ]
   },
   {
-    route: '/account',
+    route: '/create',
+    title: 'Создать',
+    group: false,
+    condition: useAuth().getAuthStatus()
+  },
+  {
+    route: `/user/${useAuth().getUser()._id}`,
     title: 'Мой профиль',
     group: false,
     condition: useAuth().getAuthStatus()
@@ -82,7 +86,13 @@ let nav_buttons = [
 
         <router-link style="text-decoration: none;color: #FFFFFF;" to="/" class="header-title text-h6 font-weight-bold text-no-wrap">Ищу наставника</router-link>
 
-        <v-avatar class="cursor-pointer" size="30" color="#FFFFFF" />
+        <v-avatar 
+          class="cursor-pointer" 
+          size="30" 
+          color="#FFFFFF" 
+          :image="useAuth().getUser()?.avatar_url"
+          @click="useAuth().getAuthStatus() ? router.push(`/user/${useAuth().getUser()._id}`) : router.push('/login')"
+        />
       </v-container>
     </v-app-bar>
 
