@@ -5,9 +5,9 @@ export default {
     return $api.get('/town/all')
   },
   async getTownById(_id) {
-    return $api.get('/town/get-by-id', _id)
+    return $api.get('/town/get-by-id', { params: { _id }})
   },
   async create(name) {
-    return $api.post('/town/create', { name, token: localStorage.getItem('token') })
+    return $api.post('/town/create', { name })
   }
 }
