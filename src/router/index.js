@@ -1,6 +1,13 @@
-// Composables
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuth } from '../stores/auth'
+
+async function checkAuth(to, from) {
+  let auth = useAuth()
+  if (!auth.getAuthStatus()) {
+    localStorage.setItem('requestedLink', to.fullPath)
+    return '/login'
+  }
+}
 
 const routes = [
   {
@@ -36,49 +43,25 @@ const routes = [
         path: '/settings',
         name: 'AccountSettingsPage',
         component: () => import('@/pages/account/AccountSettingsPage.vue'),
-        beforeEnter: async (to, from) => {
-          let auth = useAuth()
-          if (!auth.getAuthStatus()) {
-            localStorage.setItem('requestedLink', to.fullPath)
-            return '/login'
-          }
-        }
+        beforeEnter: checkAuth
       },
       {
         path: '/myResponses',
         name: 'MyResponses',
         component: () => import('@/pages/account/MyResponsesPage.vue'),
-        beforeEnter: async (to, from) => {
-          let auth = useAuth()
-          if (!auth.getAuthStatus()) {
-            localStorage.setItem('requestedLink', to.fullPath)
-            return '/login'
-          }
-        }
+        beforeEnter: checkAuth
       },
       {
         path: '/myAchievements',
         name: 'MyAchievements',
         component: () => import('@/pages/account/MyAchievementsPage.vue'),
-        beforeEnter: async (to, from) => {
-          let auth = useAuth()
-          if (!auth.getAuthStatus()) {
-            localStorage.setItem('requestedLink', to.fullPath)
-            return '/login'
-          }
-        }
+        beforeEnter: checkAuth
       },
       {
         path: '/create',
         name: 'Create',
         component: () => import('@/pages/CreatingPage.vue'),
-        beforeEnter: async (to, from) => {
-          let auth = useAuth()
-          if (!auth.getAuthStatus()) {
-            localStorage.setItem('requestedLink', to.fullPath)
-            return '/login'
-          }
-        }
+        beforeEnter: checkAuth
       },
       {
         path: '/about',
