@@ -15,8 +15,8 @@ let buttons = isAuth ? [
     text: 'Найти наставника',
   },  
   {
-    route: '/settings',
-    text: 'Стать наставником',
+    route: '/create',
+    text: 'Создать',
   },  
   {
     route: '/myResponses',
@@ -53,7 +53,7 @@ function getType(): string {
 <template>
   <v-container>
     <v-row class="align-center ma-0 pa-0 mt-5 flex-nowrap">
-      <v-avatar :url="user?.avatar_url" size="60" color="blue" />
+      <v-avatar :image="user?.avatar_url" size="60" color="blue" />
       <div class="d-flex ml-4 flex-column justify-start">
         <div class="font-weight-bold text-h5">{{ auth.getAuthStatus() ? `Привет, ${user?.name}` : 'Вы не представились'}}</div>
         <div class="text-body-3 text-text_gray">{{ getType() }}</div>
