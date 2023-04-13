@@ -8,24 +8,24 @@ import * as yup from 'yup'
 
 document.title = 'Авторизация — Ищу наставника'
 
+let auth = useAuth()
+
 let router = useRouter()
 
 let formState = reactive({
   email: '',
   password: '',
-})
+})  
 
 async function submit() {
-  let auth = useAuth()
-
   let status = await auth.login(formState.email, formState.password)
 
-  if (status?.success) {
-    if (localStorage.getItem('requestedLink')) {
-      window.location.href = localStorage.getItem('requestedLink')
-    } else {
-      window.location.href = '/'
-    }
+  if (!status?.success) return
+
+  if (localStorage.getItem('requestedLink')) {
+    window.location.href = localStorage.getItem('requestedLink')
+  } else {
+    window.location.href = '/'
   }
 }
 
