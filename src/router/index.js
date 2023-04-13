@@ -29,6 +29,7 @@ const routes = [
       {
         path: '/user/:id',
         name: 'Account',
+        props: true,
         component: () => import('@/pages/account/AccountPage.vue')
       },
       {
@@ -59,6 +60,18 @@ const routes = [
         path: '/myAchievements',
         name: 'MyAchievements',
         component: () => import('@/pages/account/MyAchievementsPage.vue'),
+        beforeEnter: async (to, from) => {
+          let auth = useAuth()
+          if (!auth.getAuthStatus()) {
+            localStorage.setItem('requestedLink', to.fullPath)
+            return '/login'
+          }
+        }
+      },
+      {
+        path: '/create',
+        name: 'Create',
+        component: () => import('@/pages/CreatingPage.vue'),
         beforeEnter: async (to, from) => {
           let auth = useAuth()
           if (!auth.getAuthStatus()) {
