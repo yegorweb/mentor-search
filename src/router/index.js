@@ -41,8 +41,8 @@ const routes = [
       },
       {
         path: '/settings',
-        name: 'AccountSettingsPage',
-        component: () => import('@/pages/account/AccountSettingsPage.vue'),
+        name: 'SettingsPage',
+        component: () => import('@/pages/account/SettingsPage.vue'),
         beforeEnter: checkAuth
       },
       {
