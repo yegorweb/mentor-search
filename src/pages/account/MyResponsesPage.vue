@@ -2,14 +2,13 @@
 import { useRouter } from 'vue-router';
 import MentorEntry from '../../components/entries/MentorEntry.vue';
 import MainTitle from '../../components/MainTitle.vue';
-import { mentorship_entries } from '../../fakeDB/mentorship-entries';
+import UserService from '../../services/UserService';
 
 document.title = 'Мои отклики — Ищу наставника'
 
 let router = useRouter()
 
-let mentorship = mentorship_entries.filter(entry => entry.responses.includes('640f4b30cde42820d332b0e9'))
-// С уроками и кружками так же
+let mentorship = (await UserService.get_my_responses()).data
 </script>
 
 <template>
@@ -26,8 +25,8 @@ let mentorship = mentorship_entries.filter(entry => entry.responses.includes('64
       </v-col>
     </v-row>
 
-    <div class="d-flex mt-3 align-center ma-auto flex-column justify-center" v-if="mentorship.length==0">
-      <div class="text-h4 text-center font-weight-semibold">У вас нет наставников 😱</div>
+    <div class="d-flex mt-3 align-center ma-auto flex-column justify-center" v-if="mentorship.length===0">
+      <div class="text-h5 text-center font-weight-semibold">У вас нет наставников 😱</div>
       <v-btn 
         size="small"
         variant="tonal" 
