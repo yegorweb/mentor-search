@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { schools } from '../../fakeDB/schools';
-import { towns } from '../../fakeDB/towns';
-import { users } from '../../fakeDB/users';
+import EntryService from '../../services/EntryService';
+import UserService from '../../services/UserService';
+import { useAuth } from '../../stores/auth';
 import EntryContainer from './EntryContainer.vue';
 
 let props = defineProps({
@@ -14,61 +16,108 @@ let props = defineProps({
     type: Boolean,
     required: false,
     default: false
+  },
+  hide_user: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 })
 
+let user = useAuth().getUser()
+let entry = ref(props.entry)
+
 let router = useRouter()
-let user = users.find(user => user.id === props.entry.author_id)
+
+let in_user_own = entry.value.author._id == user._id
+let user_is_admin = (user.roles.includes('school-admin') && user.administered_schools.includes(entry.value.school._id)) || user.roles.includes('global-admin')
+
+let status = ref(entry.value.responses.includes(user._id) ? 'Убрать отклик' : 'Откликнуться')
+async function response() {
+  if (entry.value.responses.includes(user._id)) {
+    await EntryService.cancel_response(entry.value._id).then(() => {
+      entry.value.responses.filter(item => item !== user._id)
+      status.value = 'Откликнуться'
+      console.log(entry.value.responses)
+    })
+    return 
+  }
+  await EntryService.response(entry.value._id).then(() => {
+    entry.value.responses.push(user._id)
+    status.value = 'Убрать отклик'
+    console.log(entry.value.responses)
+
+  })
+}
 </script>
 
 <template>
   <EntryContainer class="justify-space-between" style="position: relative;">
     <div class="d-flex align-start w-100 justify-start flex-column">
       <v-row 
-        @click="router.push(`account?id=${entry.author_id}`)" 
-        class="flex-row ma-0 pa-0 flex-nowrap align-center justify-start cursor-pointer"
+        v-if="!props.hide_user"
+        @click="router.push(`user/${entry.author._id}`)" 
+        class="flex-row ma-0 mb-2 pa-0 flex-nowrap align-center justify-start cursor-pointer"
       >
         <v-avatar 
-          :image="user?.avatar_url"
+          :image="entry.author.avatar_url"
           color="blue"
         />
         <div class="d-flex ml-4 flex-column justify-start">
-          <div class="font-author font-weight-semibold">{{ user?.name }}</div>
-          <div class="text-gray text-body-2">{{ user?.ranks.join(', ') }}</div>
+          <div class="font-author font-weight-semibold">{{ entry.author.name }}</div>
+          <div class="text-gray text-body-2">{{ entry.author.ranks?.join(', ') }}</div>
         </div>
       </v-row>
-  
-      <div class="text-h6 mt-2 font-weight-black">{{ entry.subject }}</div>
-      <div class="mt-1">{{ entry.description }}</div>
+      
+      <div style="column-gap: 16px;" class="d-flex align-center flex-row flex-wrap">
+        <div class="text-h6 font-weight-black">{{ entry.subject }}</div>
+
+        <template v-if="entry.limit">
+          <div class="text-body font-weight-regular">{{ entry.limit }} чел.</div>
+          <div class="text-body font-weight-regular">осталось: {{ entry.limit - entry.responses.length }}</div>
+        </template>
+      </div>
+
+      <div class="mt-1" v-html="entry.description"></div>
     </div>
 
     <div class="d-flex mt-4 flex-column justify-start">
       <div 
-        v-if="entry.town_id != '640f4ac9145a0da782eb1a95' || entry.school_id != '640f4af989029a9d95db4b19' || props.show_location"
+        v-if="entry.town._id != user.town._id || entry.school._id != user.school._id || props.show_location"
       >
-        <span><v-icon icon="mdi-map-marker" color="teal-lighten-1"></v-icon></span>
-        <span v-if="entry.town_id != '640f4ac9145a0da782eb1a95'">{{ 
-          towns.find(town => town.id === entry.town_id)?.name + ', ' }}
-        </span>
-        {{ schools.find(sch => sch.id === entry.school_id)?.name }}
+        <span><v-icon icon="mdi-map-marker" class="mr-1" color="teal-lighten-1"></v-icon></span>
+        <span v-if="entry.town._id !== user.town._id">{{ entry.town.name + ', ' }}
+        </span>{{ entry.school.name }}
       </div>
   
       <div style="row-gap: 6px;" class="d-flex mt-2 flex-row flex-wrap justify-start align-center">
         <v-btn 
+          v-if="!in_user_own"
+          @click="response"
           size="small"
           variant="tonal" 
           class="text-body-2 pl-5 pr-5 mr-3 font-weight-semibold bg-button"
-        >Откликнуться</v-btn>
+        >{{ status }}</v-btn>
         <v-btn 
           size="small"
-          :to="`account?id=${entry.author_id}`"
+          :to="`/user/${entry.author._id}`"
+          v-if="!props.hide_user"
           variant="tonal" 
           class="text-body-2 pl-5 pr-5 font-weight-semibold bg-button"
         >Посмотреть профиль</v-btn>
+
+        <v-btn 
+          size="small"
+          variant="tonal" 
+          v-if="in_user_own && entry.responses.length !== 0"
+          class="text-body-2 pl-5 pr-5 mr-3 font-weight-semibold bg-button"
+        >Посмотреть отклики ({{ entry.responses.length }})</v-btn>
+
+        <div class="text-body font-weight-regular" v-if="entry.responses.length === 0 && in_user_own">Откликов нет</div>
       </div>
     </div>
 
-    <v-menu location="start">
+    <v-menu location="start" v-if="in_user_own || user_is_admin">
       <template v-slot:activator="{ props }">
         <v-icon
           class="pa-4"
@@ -78,11 +127,11 @@ let user = users.find(user => user.id === props.entry.author_id)
         />
       </template>
 
-      <v-list density="compact" nav :lines="false">
-        <v-list-item prepend-icon="mdi-pen" rounded>
+      <v-list density="compact">
+        <v-list-item prepend-icon="mdi-pen" @click="router.push('/')">
           Редактировать
         </v-list-item>
-        <v-list-item prepend-icon="mdi-delete" rounded>
+        <v-list-item prepend-icon="mdi-delete" @click="router.push('/')">
           Удалить
         </v-list-item>
       </v-list>
