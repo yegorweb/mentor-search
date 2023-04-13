@@ -62,7 +62,7 @@ let towns = (await TownService.getTowns()).data
 let schools = (await SchoolService.get_all()).data
 
 function schools_in_town() {
-  return schools.filter(sch => sch.town_id === formState.town._id)
+  return schools.filter(sch => sch.town === formState.town._id)
 }
 
 console.log(schools)
@@ -83,14 +83,18 @@ async function submit() {
     email: formState.email, 
     password: formState.password, 
     grade: formState.grade, 
-    town_id: formState.town._id,
-    school_id: formState.school._id,
+    town: formState.town._id,
+    school: formState.school._id,
     roles: formState.mentor ? ['student', 'mentor'] : ['student'],
     answers: formState.mentor ? formState.answers : {}
   })
 
   if (status?.success) {
-    router.push(localStorage.getItem('requestedLink') ? localStorage.getItem('requestedLink') : '/')
+    if (localStorage.getItem('requestedLink')) {
+      window.location.href = localStorage.getItem('requestedLink')
+    } else {
+      window.location.href = '/'
+    }
   }
 }
 
