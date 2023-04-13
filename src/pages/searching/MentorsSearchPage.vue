@@ -26,29 +26,30 @@ function shuffle(arr: any[]){
 let towns = (await TownService.getTowns()).data
 let schools = (await SchoolService.get_all()).data
 
-console.log(towns)
-
 let town = ref(auth.getAuthStatus() ? 
-  towns.find(town => town._id === auth.getUser().town_id) : 
+  auth.getUser().town : 
   towns.find(town => town._id === '641c882f9a4751bf88848223')
 )
 
 let school = ref(auth.getAuthStatus() ? 
-  schools.find(sch => sch._id === auth.getUser().school_id) : 
-  { name: 'Все', id: 'all' }
+  auth.getUser().school : 
+  { name: 'Все', _id: 'all' }
 )
 
-let mentorship_entries = ref((await EntryService.get('mentor', town.value._id, school.value._id)).data)
+let mentorship_entries = ref((await EntryService.get('mentor', town.value._id, school.value._id)).data.filter(entry => !entry.responses.includes(auth.getUser()._id) && (entry.author._id !== auth.getUser()._id) && (entry.school._id == school.value._id || (entry.town._id === town.value._id && school.value._id === 'all'))))
 
 async function updateEntries() {
-  mentorship_entries.value = (await EntryService.get('mentor', town.value._id, school.value._id)).data
-  shuffle(mentorship_entries)
+  console.log(town.value._id, school.value._id)
+  mentorship_entries.value = (await EntryService.get('mentor', town.value._id, school.value._id)).data.filter(entry => !entry.responses.includes(auth.getUser()._id) && (entry.author._id !== auth.getUser()._id) && (entry.school._id == school.value._id || (entry.town._id === town.value._id && school.value._id === 'all')))
+  shuffle(mentorship_entries.value)
+  console.log((await EntryService.get('mentor', town.value._id, 'all')).data)
 }
 
 function schools_in_town() {
-  console.log(town.value)
-  return schools.filter(sch => sch.town_id === town.value._id)
+  return schools.filter(sch => sch.town === town.value._id)
 }
+
+await updateEntries()
 </script>
 
 <template>
@@ -72,8 +73,9 @@ function schools_in_town() {
         <v-select
           label="Школа"
           v-model="school"
-          :items="[{name: 'Все', id: 'all'}, ...schools_in_town()]"
+          :items="[{name: 'Все', _id: 'all'}, ...schools_in_town()]"
           item-title="name"
+          return-object
           @update:model-value="updateEntries"
           variant="solo"
           hide-details
@@ -89,18 +91,21 @@ function schools_in_town() {
          Не показывать если чел стал наставляемым
          Расставляем в рандомном порядке - имитируем индивидуальный подбор))))
     -->
-    <v-row class="mt-5">
-      <template
-        v-for="entry in mentorship_entries" 
-        :key="entry.id"
+    <v-row class="w-100 mt-5 flex-row flex-wrap">
+      <v-col 
+        cols="12" sm="6" xs="12"
+        v-for="entry in mentorship_entries"
+        :key="entry._id"
       >
-        <v-col 
-          v-if="entry.school_id == school_id || (entry.town_id === town_id && school_id === 'all')"
-          cols="12" sm="6" xs="12"
-        >
-          <MentorEntry :entry="entry" :show_location="school_id === 'all'" />
-        </v-col>
-      </template>
+        <Suspense>
+          <MentorEntry :entry="entry" :show_location="school._id === 'all'" />
+        </Suspense>
+      </v-col>
     </v-row>
+    <v-col 
+      cols="12" sm="6" xs="12" 
+      class="text-h6 ma-auto font-weight-medium mt-4 text-center"
+      v-if="mentorship_entries.length === 0"
+    >Записей нет, или вы на всё откликнулись</v-col>
   </v-container>
 </template>
