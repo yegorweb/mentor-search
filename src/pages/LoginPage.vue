@@ -25,6 +25,7 @@ const { meta, handleSubmit, handleReset } = useForm({
 
 const email = useField('email')
 const password = useField('password')
+let show_password = ref(false)
 
 let loading = ref(false)
 
@@ -66,8 +67,10 @@ const login = handleSubmit(async values => {
 
           <v-text-field 
             label="Пароль"
-            type="password"
             v-model="password.value.value"
+            :append-inner-icon="show_password ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append-inner="show_password = !show_password"
+            :type="show_password ? 'text' : 'password'"
             :error-messages="password.errorMessage.value"
             variant="underlined"
             class="w-100"
