@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import Header from '../components/Header.vue'
 import { useAuth } from '../stores/auth';
 
 let router = useRouter()
@@ -148,7 +146,7 @@ let nav_buttons = [
     </v-navigation-drawer>
 
     <!-- Content -->
-    <v-main>
+    <v-main style="padding-bottom: 80px;">
       <Suspense>
         <router-view></router-view>
       </Suspense>
