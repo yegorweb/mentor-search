@@ -1,37 +1,45 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { useField, useForm } from 'vee-validate';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router'
 import BackButton from '../components/BackButton.vue'
 import { useAuth } from '../stores/auth'
-import { Form, Field, ErrorMessage } from 'vee-validate'
-import * as yup from 'yup'
 
 document.title = 'Авторизация — Ищу наставника'
 
 let auth = useAuth()
-
 let router = useRouter()
 
-let formState = reactive({
-  email: '',
-  password: '',
-})  
+const { meta, handleSubmit, handleReset } = useForm({
+  validationSchema: {
+    password(value) {
+      if (value?.length >= 6) return true
+      return 'нужно 6 символов'
+    },
+    email(value) {
+      if (/^[a-z.-.0-9]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
+      return 'неправильный формат email'
+    },
+  },
+})
 
-async function submit() {
-  let status = await auth.login(formState.email, formState.password)
+const email = useField('email')
+const password = useField('password')
 
+let loading = ref(false)
+
+const login = handleSubmit(async values => {
+  loading.value = true
+  let status = await auth.login(values)
+
+  loading.value = false
   if (!status?.success) return
-
+  
   if (localStorage.getItem('requestedLink')) {
-    window.location.href = localStorage.getItem('requestedLink')
+    router.push(localStorage.getItem('requestedLink'))
   } else {
-    window.location.href = '/'
+    router.push('/')
   }
-}
-
-const formSchema = yup.object({
-  email: yup.string().required('заполните поле').email('неверный формат'),
-  password: yup.string().required('заполните поле').min(6, 'минимум 6 символов'),
 })
 </script>
 
@@ -41,58 +49,44 @@ const formSchema = yup.object({
 
     <v-col cols="12" xs="12" md="6" lg="5" class="mt-4 ma-auto">
       <v-card 
-        class="d-flex flex-column justify-center align-center text-center 
-               w-100 pl-6 pr-6 pt-4 pb-6"
+        class="d-flex flex-column justify-center align-center text-center w-100 pl-6 pr-6 pt-4 pb-6"
       >
         <div class="text-h6 font-weight-bold">Вход</div>
   
-        <Form
-          class="mt-4 w-100"
-          :validation-schema="formSchema"
-          v-slot="{ meta }"
-          @submit="submit"
-        >
-          <Field name="email" v-slot="{ value, handleChange }">
-            <v-text-field 
-              label="Email"
-              type="email"
-              placeholder="vasya@ya.ru"
-              v-model="formState.email"
-              @update:model-value="handleChange"
-              variant="underlined"
-              class="w-100 mb-1"
-              hide-details
-            />          
-          </Field>
-          <Transition name="fade">
-            <ErrorMessage name="email" class="error-message" />
-          </Transition>
+        <v-form @submit.prevent="login" class="d-flex mt-3 flex-column align-center justify-center w-100">
+          <v-text-field 
+            label="Email"
+            type="email"
+            placeholder="vasya@ya.ru"
+            v-model="email.value.value"
+            :error-messages="email.errorMessage.value"
+            variant="underlined"
+            class="w-100"
+          />          
 
-          <Field name="password" v-slot="{ value, handleChange }">
-            <v-text-field 
-              label="Пароль"
-              type="password"
-              v-model="formState.password"
-              @update:model-value="handleChange"
-              variant="underlined"
-              class="w-100 mb-1 mt-2"
-              hide-details
-            />
-          </Field>
-          <Transition name="fade">
-            <ErrorMessage name="password" class="error-message" />
-          </Transition>
+          <v-text-field 
+            label="Пароль"
+            type="password"
+            v-model="password.value.value"
+            :error-messages="password.errorMessage.value"
+            variant="underlined"
+            class="w-100"
+          />
 
-          <v-btn type="submit" :disabled="!meta.valid" color="accent" class="mt-6">Войти</v-btn>
-        </Form>
+          <v-btn type="submit" :disabled="!meta.valid" color="accent" class="mt-4">Войти</v-btn>
+        </v-form>
   
         <div 
           @click="router.push('/registration')" 
           class="text-body-2 w-100 cursor-pointer font-weight-semibold pa-1 mt-4"
-        >регистрация</div>
+        >
+          регистрация
+        </div>
         <div
           class="text-body-2 w-100 cursor-pointer font-weight-semibold pa-1"
-        >восстановить пароль</div>
+        >
+          восстановить пароль
+        </div>
       </v-card>
     </v-col>
   </v-container>
