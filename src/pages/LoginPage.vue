@@ -31,15 +31,16 @@ let loading = ref(false)
 
 const login = handleSubmit(async values => {
   loading.value = true
-  let status = await auth.login(values)
+  let status = await auth.login(values.email, values.password)
 
   loading.value = false
   if (!status?.success) return
   
   if (localStorage.getItem('requestedLink')) {
-    router.push(localStorage.getItem('requestedLink'))
+    window.location.href = localStorage.getItem('requestedLink')
+    localStorage.removeItem('requestedLink')
   } else {
-    router.push('/')
+    window.location.href = '/'
   }
 })
 </script>
