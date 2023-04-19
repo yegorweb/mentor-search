@@ -39,7 +39,7 @@ let nav_buttons = [
     condition: useAuth().getAuthStatus()
   },
   {
-    route: `/user/${useAuth().getUser()._id}`,
+    route: `/user/${useAuth().getUser()?._id}`,
     title: 'Мой профиль',
     group: false,
     condition: useAuth().getAuthStatus()
