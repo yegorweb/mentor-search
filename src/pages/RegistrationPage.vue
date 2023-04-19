@@ -92,6 +92,7 @@ async function submit() {
   if (status?.success) {
     if (localStorage.getItem('requestedLink')) {
       window.location.href = localStorage.getItem('requestedLink')
+      localStorage.removeItem('requestedLink')
     } else {
       window.location.href = '/'
     }
