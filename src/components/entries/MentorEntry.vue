@@ -26,27 +26,31 @@ let props = defineProps({
 
 let user = useAuth().getUser()
 let entry = ref(props.entry)
+let loading = ref(false)
+let responsed = ref(entry.value.responses.includes(user._id))
 
 let router = useRouter()
 
 let in_user_own = entry.value.author._id == user._id
 let user_is_admin = (user.roles.includes('school-admin') && user.administered_schools.includes(entry.value.school._id)) || user.roles.includes('global-admin')
 
-let status = ref(entry.value.responses.includes(user._id) ? 'Убрать отклик' : 'Откликнуться')
+let status = ref(responsed.value ? 'Убрать отклик' : 'Откликнуться')
 async function response() {
+  loading.value = true
   if (entry.value.responses.includes(user._id)) {
     await EntryService.cancel_response(entry.value._id).then(() => {
-      entry.value.responses.filter(item => item !== user._id)
+      entry.value.responses = entry.value.responses.filter(item => item !== user._id)
       status.value = 'Откликнуться'
-      console.log(entry.value.responses)
+      loading.value = false
+      responsed.value = false
     })
-    return 
+    return
   }
   await EntryService.response(entry.value._id).then(() => {
     entry.value.responses.push(user._id)
     status.value = 'Убрать отклик'
-    console.log(entry.value.responses)
-
+    loading.value = false
+    responsed.value = true
   })
 }
 </script>
@@ -69,7 +73,7 @@ async function response() {
         </div>
       </v-row>
       
-      <div style="column-gap: 16px;" class="d-flex align-center flex-row flex-wrap">
+      <div style="column-gap: 16px;" class="d-flex align-center flex-row flex-wrap mr-4">
         <div class="text-h6 font-weight-black">{{ entry.subject }}</div>
 
         <template v-if="entry.limit">
@@ -81,8 +85,9 @@ async function response() {
       <div class="mt-1" v-html="entry.description"></div>
     </div>
 
-    <div class="d-flex mt-4 flex-column justify-start">
+    <div class="d-flex mt-5 flex-column justify-start">
       <div 
+        class="mb-2"
         v-if="entry.town._id != user.town._id || entry.school._id != user.school._id || props.show_location"
       >
         <span><v-icon icon="mdi-map-marker" class="mr-1" color="teal-lighten-1"></v-icon></span>
@@ -90,13 +95,15 @@ async function response() {
         </span>{{ entry.school.name }}
       </div>
   
-      <div style="row-gap: 6px;" class="d-flex mt-2 flex-row flex-wrap justify-start align-center">
+      <div style="row-gap: 6px;" class="d-flex flex-row flex-wrap justify-start align-center">
         <v-btn 
           v-if="!in_user_own"
           @click="response"
+          :loading="loading"
+          :disabled="!responsed && entry.limit && (entry.limit - entry.responses.length === 0)"
           size="small"
           variant="tonal" 
-          class="text-body-2 pl-5 pr-5 mr-3 font-weight-semibold bg-button"
+          :class="`text-body-2 pl-5 pr-5 mr-3 font-weight-semibold ${responsed ? 'bg-accent' : 'bg-button'}`"
         >{{ status }}</v-btn>
         <v-btn 
           size="small"
