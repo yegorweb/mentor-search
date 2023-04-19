@@ -68,6 +68,7 @@ function getType(): string {
       >
         <v-card 
           @click="router.push(button.route)" 
+          style="line-height: 1.4;"
           color="primary"
           class="d-flex pl-8 pr-8 justify-center text-center font-weight-bold text-h6 align-center"
           height="140"
