@@ -51,13 +51,18 @@ onBeforeRouteUpdate(async () => {
 
   my_page.value = auth.getUser()._id === id
 })
+
+async function logout() {
+  await auth.logout()
+  window.location.href = '/'
+}
 </script>
 
 <template>
   <v-container class="mt-1">
     <div class="d-flex flex-row w-100 flex-nowrap justify-space-between align-center">
       <BackButton />
-      <div @click="auth.logout" v-if="my_page" class="d-flex pt-1 pr-1 pb-1 cursor-pointer flex-row flex-nowrap align-center justify-start">
+      <div @click="logout" v-if="my_page" class="d-flex pt-1 pr-1 pb-1 cursor-pointer flex-row flex-nowrap align-center justify-start">
         <v-icon icon="mdi-logout"></v-icon>
         <div class="text-body-4 ml-1 font-weight-semibold">выйти</div>
       </div>
@@ -119,6 +124,7 @@ onBeforeRouteUpdate(async () => {
           v-if="my_page"
           size="small"
           variant="tonal" 
+          to="/settings"
           class="text-body-2 pl-5 pr-5 font-weight-semibold bg-blue"
         >
           Редактировать профиль
