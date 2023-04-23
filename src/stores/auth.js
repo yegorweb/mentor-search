@@ -60,5 +60,11 @@ export const useAuth = defineStore('auth', () => {
     } catch (err) {}
   }
 
-  return { getAuthStatus, getUser, registration, login, checkAuth, logout }
+  async function updateUser(user) {
+    try {
+      user = (await AuthService.updateUser(user)).data
+    } catch (err) {}
+  }
+
+  return { getAuthStatus, getUser, registration, login, checkAuth, logout, updateUser }
 })

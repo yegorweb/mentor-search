@@ -16,8 +16,8 @@ export default {
 	async logout() {
 		return $api.post('/auth/logout')
 	},
-	async updateUser(user, token) {
-		return $api.post('/auth/update', { user, token })
+	async updateUser(user) {
+		return $api.post('/auth/update', { user })
 	},
 	async refresh() {
 		return $api.get('/auth/refresh')
