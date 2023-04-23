@@ -36,17 +36,19 @@ let buttons = isAuth ? [
 let router = useRouter()
 
 function getType(): string {
+  let ranks = user?.ranks?.length > 0 ? user.ranks.join(', ') : ''
+
   if (user?.roles.includes('school-admin') || user?.roles.includes('global-admin')) {
-    return 'админ'
+    return `админ ${ranks}`
   }
   if (user?.roles.includes('mentor')) {
-    return 'наставник'
+    return `наставник ${ranks}`
   }
   if (!isAuth) {
     return 'войдите или зарегистрируйтесь'
   }
 
-  return 'наставляемый'
+  return `наставляемый ${ranks}`
 }
 </script>
 
