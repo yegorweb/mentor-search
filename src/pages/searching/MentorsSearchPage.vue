@@ -37,19 +37,16 @@ let school = ref(auth.getAuthStatus() ?
 )
 
 let mentorship_entries = ref((await EntryService.get('mentor', town.value._id, school.value._id)).data.filter(entry => !entry.responses.includes(auth.getUser()._id) && (entry.author._id !== auth.getUser()._id) && (entry.school._id == school.value._id || (entry.town._id === town.value._id && school.value._id === 'all'))))
+shuffle(mentorship_entries.value)
 
 async function updateEntries() {
-  console.log(town.value._id, school.value._id)
   mentorship_entries.value = (await EntryService.get('mentor', town.value._id, school.value._id)).data.filter(entry => !entry.responses.includes(auth.getUser()._id) && (entry.author._id !== auth.getUser()._id) && (entry.school._id == school.value._id || (entry.town._id === town.value._id && school.value._id === 'all')))
   shuffle(mentorship_entries.value)
-  console.log((await EntryService.get('mentor', town.value._id, 'all')).data)
 }
 
 function schools_in_town() {
   return schools.filter(sch => sch.town === town.value._id)
 }
-
-await updateEntries()
 </script>
 
 <template>
