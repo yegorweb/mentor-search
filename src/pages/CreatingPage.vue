@@ -26,7 +26,7 @@ let variant = ref()
 let has_limit = ref(false)
 let loading = ref(false)
 
-const { meta, handleSubmit, handleReset } = useForm({
+const { meta, handleSubmit, handleReset, validate } = useForm({
   validationSchema: {
     subject(value) {
       if (!value || value.length < 4) return 'слишком короткий заголовок'
@@ -60,13 +60,8 @@ const submit = handleSubmit(async values => {
     school: user.school._id,
     town: user.town._id,
   }))
-  .then(() => {
-    router.push(`/user/${user._id}`)
-    loading.value = false
-  })
-  .catch(() => {
-    loading.value = false
-  })
+  .then(() => router.push(`/user/${user._id}`))
+  .finally(() => loading.value = false)
 })
 </script>
 
@@ -86,45 +81,51 @@ const submit = handleSubmit(async values => {
         variant="solo"
         class="mt-4"
       />
-      <v-form @submit.prevent="submit" v-if="variant" class="d-flex flex-column align-center justify-center w-100">
-        <v-text-field
-          label="Заголовок"
-          :placeholder="variant == 'Клуб' ? 'Клуб любителей Мафии' : 'Биология'"
-          v-model="subject.value.value"
-          :error-messages="subject.errorMessage.value"
-          variant="solo"
-          class="w-100"
-        />
-        <v-textarea 
-          label="Описание"
-          v-model="description.value.value"
-          :error-messages="description.errorMessage.value"
-          :counter="150"
-          variant="solo"
-          class="w-100"
-        />
-        <v-checkbox 
-          label="Лимит учеников"
-          v-model="has_limit"
-          class="w-100"
-        />
-        <v-text-field 
-          type="number"
-          variant="solo"
-          v-if="has_limit"
-          label="Сколько?"
-          v-model="limit.value.value"
-          :error-messages="limit.errorMessage.value"
-          class="w-100"
-        />
-
-        <v-btn 
-          color="accent" 
-          :disabled="!meta.valid" 
-          type="submit" 
-          :loading="loading"
-        >Отправить</v-btn>
-      </v-form>
+      <Transition name="bounce">
+        <v-form @submit.prevent="submit" v-if="variant" class="d-flex flex-column align-center justify-center w-100">
+          <v-text-field
+            label="Заголовок"
+            :placeholder="variant == 'Клуб' ? 'Клуб любителей Мафии' : 'Биология'"
+            v-model="subject.value.value"
+            :error-messages="subject.errorMessage.value"
+            variant="solo"
+            class="w-100"
+          />
+          <v-textarea 
+            label="Описание"
+            v-model="description.value.value"
+            :error-messages="description.errorMessage.value"
+            :counter="150"
+            variant="solo"
+            class="w-100"
+          />
+          <v-checkbox 
+            label="Лимит учеников"
+            v-model="has_limit"
+            @click="validate()"
+            class="w-100"
+            hide-details
+          />
+          <Transition name="bounce">
+            <v-text-field 
+              type="number"
+              variant="solo"
+              v-show="has_limit"
+              label="Сколько?"
+              v-model="limit.value.value"
+              :error-messages="limit.errorMessage.value"
+              class="w-100 mb-3"
+            />
+          </Transition>
+  
+          <v-btn 
+            color="accent" 
+            :disabled="!meta.valid" 
+            type="submit" 
+            :loading="loading"
+          >Отправить</v-btn>
+        </v-form>
+      </Transition>
     </v-col>
   </v-container>
 </template>
