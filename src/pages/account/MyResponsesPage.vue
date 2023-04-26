@@ -17,7 +17,7 @@ let club_entries = entries.filter(entry => entry.type === 'club')
 
 <template>
   <v-container>
-    <MainTitle>Мои отклики</MainTitle>
+    <MainTitle class="pb-3">Мои отклики</MainTitle>
 
     <v-row v-if="mentorship_entries.length !== 0" class="pt-4 pb-4">
       <v-col 
