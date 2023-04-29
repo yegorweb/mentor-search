@@ -25,22 +25,20 @@ let club_entries = ref(entries.value.filter(entry => entry.type === 'club'))
 let my_page = ref(auth.getUser()._id === id)
 
 function getType(): string {
-  if (user.value .roles?.includes('school-admin') || user.value .roles?.includes('global-admin')) {
+  if (user.value.roles?.includes('school-admin') || user.value.roles?.includes('global-admin')) {
     return 'админ'
   }
-  if (user.value .roles?.includes('mentor')) {
+  if (user.value.roles?.includes('mentor')) {
     return 'наставник'
   }
 
   return 'наставляемый'
 }
 
-document.title = `${user.value .name} — Ищу наставника`
+document.title = `${user.value.name} — Ищу наставника`
 
 onBeforeRouteUpdate(async () => {
-  console.log('updating')
   id = props.id
-  console.log(props.id)
   user.value = auth.getUser()._id === id ? auth.getUser() : (await UserService.get_by_id(id)).data
   town.value = user.value.town
   school.value = user.value.school
@@ -56,10 +54,25 @@ async function logout() {
   await auth.logout()
   window.location.href = '/'
 }
+
+let responsed_entries = ref([])
+let responsed_mentorship_entries = ref([])
+let responsed_lesson_entries = ref([])
+let responsed_club_entries = ref([])
+
+if (!user.value.roles.includes('mentor')) {
+  responsed_entries.value = (await UserService.get_my_responses()).data
+
+  responsed_mentorship_entries.value = responsed_entries.value.filter(entry => entry.type === 'mentor')
+  responsed_lesson_entries.value = responsed_entries.value.filter(entry => entry.type === 'lesson')
+  responsed_club_entries.value = responsed_entries.value.filter(entry => entry.type === 'club')
+}
 </script>
 
 <template>
   <v-container class="mt-1">
+    <!-- =================== Top bar ==================== -->
+
     <div class="d-flex flex-row w-100 flex-nowrap justify-space-between align-center">
       <BackButton />
       <div @click="logout" v-if="my_page" class="d-flex pt-1 pr-1 pb-1 cursor-pointer flex-row flex-nowrap align-center justify-start">
@@ -68,6 +81,7 @@ async function logout() {
       </div>
     </div>
 
+    <!-- =================== User Card ==================== -->
     <div
       style="column-gap: 30px;row-gap: 10px;" 
       class="box w-100 mt-4 d-flex flex-column flex-sm-row flex-nowrap justify-center justify-sm-start align-center align-sm-start"
@@ -98,15 +112,16 @@ async function logout() {
         </div>
 
         <!-- Description -->
-        <div class="mt-2">
-          {{ user?.description }}
+        <div class="mt-2 pb-2 text-center text-sm-start" v-if="user.description && user.description.length>0">
+          {{ user.description }}
         </div>
 
         <!-- Contacts -->
-        <div class="d-flex mt-4 flex-row flex-wrap">
+        <div class="d-flex pt-2 flex-row flex-wrap" v-if="user.contacts && user.contacts.length>0">
           <a 
             v-for="button in user?.contacts"
             :key="button.link"
+            about="_blank"
             :href="button.link"
             style="text-decoration: none;"
           >
@@ -125,14 +140,73 @@ async function logout() {
           size="small"
           variant="tonal" 
           to="/settings"
-          class="text-body-2 pl-5 pr-5 font-weight-semibold bg-blue"
+          class="text-body-2 mt-2 pl-5 pr-5 font-weight-semibold bg-blue"
         >
           Редактировать профиль
         </v-btn>          
       </div>
     </div>
 
-    <template v-if="user.roles.includes('mentor')">
+    
+    <!-- =================== Other ==================== -->
+    
+    <template v-if="my_page && !user.roles.includes('mentor') && responsed_entries.length>0">
+      <div class="text-h5 mb-4 mt-8 font-weight-bold">Мои отклики</div>
+
+      <v-row v-if="responsed_mentorship_entries.length !== 0" class="pt-2 pb-4">
+        <v-col 
+          v-for="entry in responsed_mentorship_entries"
+          :key="entry?._id"
+          cols="12" sm="6" xs="12"
+        >
+          <MentorEntry :entry="entry" />
+        </v-col>
+      </v-row>
+
+      <!-- Lessons -->
+      <v-row
+        class="flex-column pt-4 pb-4 ma-0 pa-0"
+        v-if="responsed_lesson_entries.length !== 0"
+      >
+        <div 
+          class="text-h5 mb-4 font-weight-bold" 
+          v-if="responsed_mentorship_entries.length!==0"
+        >Уроки</div>
+
+        <v-row class="w-100 flex-row flex-wrap">
+          <v-col
+            v-for="entry in responsed_lesson_entries"
+            :key="entry._id"
+            cols="12" sm="6" xs="12"
+          >
+            <MentorEntry :entry="entry" />
+          </v-col>
+        </v-row>
+      </v-row>
+
+      <!-- Clubs -->
+      <v-row
+        class="flex-column pt-4 ma-0 pa-0"
+        v-if="responsed_club_entries.length !== 0"
+      >
+        <div 
+          class="text-h5 mb-4 font-weight-bold" 
+          v-if="responsed_mentorship_entries.length!==0 || responsed_lesson_entries.length!==0"
+        >Клубы</div>
+
+        <v-row class="w-100 flex-row flex-wrap">
+          <v-col
+            v-for="entry in responsed_club_entries"
+            :key="entry._id"
+            cols="12" sm="6" xs="12"
+          >
+            <MentorEntry :entry="entry" />
+          </v-col>
+        </v-row>
+      </v-row>
+    </template>
+
+    <template v-if="user.roles.includes('mentor') || entries.length>0">
       <!-- Mentor -->
       <v-row
         class="flex-column mt-8 ma-0 pa-0 w-100"
@@ -143,7 +217,7 @@ async function logout() {
         <v-row class="w-100 mt-4 flex-row flex-wrap">
           <v-col
             v-for="entry in mentorship_entries"
-            :key="entry.id"
+            :key="entry._id"
             cols="12" sm="6" xs="12"
           >
             <MentorEntry hide_user :entry="entry" :show_location="false" />
@@ -161,7 +235,7 @@ async function logout() {
         <v-row class="w-100 mt-4 flex-row flex-wrap">
           <v-col
             v-for="entry in lesson_entries"
-            :key="entry.id"
+            :key="entry._id"
             cols="12" sm="6" xs="12"
           >
             <MentorEntry hide_user :entry="entry" :show_location="false" />
@@ -179,7 +253,7 @@ async function logout() {
         <v-row class="w-100 mt-4 flex-row flex-wrap">
           <v-col
             v-for="entry in club_entries"
-            :key="entry.id"
+            :key="entry._id"
             cols="12" sm="6" xs="12"
           >
             <MentorEntry hide_user :entry="entry" :show_location="false" />
