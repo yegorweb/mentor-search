@@ -39,6 +39,12 @@ let nav_buttons = [
     condition: useAuth().getAuthStatus()
   },
   {
+    route: '/admin',
+    title: 'Управление',
+    group: false,
+    condition: useAuth().getUser()?.roles.includes('global-admin') || useAuth().getUser()?.roles.includes('school-admin')
+  },
+  {
     route: `/user/${useAuth().getUser()?._id}`,
     title: 'Мой профиль',
     group: false,

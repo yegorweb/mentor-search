@@ -69,6 +69,11 @@ const routes = [
         component: () => import('@/pages/AboutProjectPage.vue')
       },
       {
+        path: '/admin',
+        name: 'Admin',
+        component: () => import('@/pages/AdminPage.vue')
+      },
+      {
         path: '/termsOfUse',
         name: 'TermsOfUse',
         component: () => import('@/pages/TermsOfUse.vue')
