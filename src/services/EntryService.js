@@ -22,7 +22,7 @@ export default {
   async cancel_response(entry_id) {
     return $api.post('/entry/cancel-response', { entry_id })
   },
-  async delete(entry) {
-    return $api.delete('/entry/delete', { entry })
+  async delete(entry_id) {
+    return $api.delete('/entry/delete', { params: { entry_id } })
   },
 }
