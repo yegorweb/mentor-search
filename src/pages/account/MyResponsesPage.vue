@@ -9,6 +9,7 @@ document.title = 'Мои отклики — Ищу наставника'
 let router = useRouter()
 
 let entries = (await UserService.get_my_responses()).data
+console.log(entries)
 
 let mentorship_entries = entries.filter(entry => entry.type === 'mentor')
 let lesson_entries = entries.filter(entry => entry.type === 'lesson')
@@ -22,7 +23,7 @@ let club_entries = entries.filter(entry => entry.type === 'club')
     <v-row v-if="mentorship_entries.length !== 0" class="pt-4 pb-4">
       <v-col 
         v-for="entry in mentorship_entries"
-        :key="entry?.id"
+        :key="entry?._id"
         cols="12" sm="6" xs="12"
       >
         <MentorEntry :entry="entry" />
@@ -42,7 +43,7 @@ let club_entries = entries.filter(entry => entry.type === 'club')
       <v-row class="w-100 flex-row flex-wrap">
         <v-col
           v-for="entry in lesson_entries"
-          :key="entry.id"
+          :key="entry._id"
           cols="12" sm="6" xs="12"
         >
           <MentorEntry :entry="entry" />
@@ -63,7 +64,7 @@ let club_entries = entries.filter(entry => entry.type === 'club')
       <v-row class="w-100 flex-row flex-wrap">
         <v-col
           v-for="entry in club_entries"
-          :key="entry.id"
+          :key="entry._id"
           cols="12" sm="6" xs="12"
         >
           <MentorEntry :entry="entry" />

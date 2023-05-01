@@ -9,6 +9,15 @@ async function checkAuth(to, from) {
   }
 }
 
+async function checkAdmin(to, from) {
+  await checkAuth()
+
+  let auth = useAuth()
+  if(!auth.getUser()?.roles.includes('global-admin') && !auth.getUser()?.roles.includes('school-admin')) {
+    return '/login'
+  }
+}
+
 const routes = [
   {
     path: '/',
@@ -71,7 +80,21 @@ const routes = [
       {
         path: '/admin',
         name: 'Admin',
-        component: () => import('@/pages/AdminPage.vue')
+        component: () => import('@/pages/admin/AdminPage.vue'),
+        beforeEnter: checkAdmin
+      },
+      {
+        path: '/admin/school/:id',
+        name: 'SchoolPage',
+        component: () => import('@/pages/admin/SchoolPage.vue'),
+        beforeEnter: checkAdmin,
+        props: true
+      },
+      {
+        path: '/admin/moderation',
+        name: 'Moderation',
+        component: () => import('@/pages/admin/ModerationPage.vue'),
+        beforeEnter: checkAdmin
       },
       {
         path: '/termsOfUse',
@@ -93,7 +116,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes
 })
 

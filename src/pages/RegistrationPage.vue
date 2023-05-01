@@ -62,10 +62,8 @@ let towns = (await TownService.getTowns()).data
 let schools = (await SchoolService.get_all()).data
 
 function schools_in_town() {
-  return schools.filter(sch => sch.town === formState.town._id)
+  return schools.filter(sch => sch.town._id === formState.town._id)
 }
-
-console.log(schools)
 
 function grades() {
   let result = [{ digit: '—', number: 0 }]

@@ -13,16 +13,21 @@ let router = useRouter()
 
 let auth = useAuth()
 
+let viewer = auth.getUser()
+
 let id = props.id
+
+let my_page = ref(auth.getUser()?._id === id)
+let viewer_is_admin = (viewer?.roles.includes('school-admin') && viewer?.administered_schools.includes(user.value.school._id)) || viewer.roles?.includes('global-admin')
+
 let user = ref(auth.getUser()._id === id ? auth.getUser() : (await UserService.get_by_id(id)).data)
 let town = ref(user.value.town)
 let school = ref(user.value.school)
 let entries = ref((await EntryService.get_by_author(user.value._id)).data)
-let mentorship_entries = ref(entries.value.filter(entry => entry.type === 'mentor'))
-let lesson_entries = ref(entries.value.filter(entry => entry.type === 'lesson'))
-let club_entries = ref(entries.value.filter(entry => entry.type === 'club'))
-
-let my_page = ref(auth.getUser()._id === id)
+let mentorship_entries = ref(entries.value.filter(entry => entry.type === 'mentor' && entry.on_moderation === false && entry.moderation_result === true))
+let lesson_entries = ref(entries.value.filter(entry => entry.type === 'lesson' && entry.on_moderation === false && entry.moderation_result === true))
+let club_entries = ref(entries.value.filter(entry => entry.type === 'club' && entry.on_moderation === false && entry.moderation_result === true))
+let entries_on_moderation = ref(entries.value.filter(entry => entry.on_moderation === true || (my_page.value && entry.on_moderation === false && entry.moderation_result === false)))
 
 function getType(): string {
   if (user.value.roles?.includes('school-admin') || user.value.roles?.includes('global-admin')) {
@@ -150,6 +155,25 @@ if (!user.value.roles.includes('mentor')) {
     
     <!-- =================== Other ==================== -->
     
+    <template v-if="(my_page || viewer_is_admin) && entries_on_moderation && entries_on_moderation.length>0">
+      <v-row
+        class="flex-column mt-8 ma-0 pa-0 w-100"
+        v-if="entries_on_moderation && entries_on_moderation.length > 0"
+      >
+        <div class="text-h5 font-weight-bold">На модерации</div>
+  
+        <v-row class="w-100 mt-4 flex-row flex-wrap">
+          <v-col
+            v-for="entry in entries_on_moderation"
+            :key="entry._id"
+            cols="12" sm="6" xs="12"
+          >
+            <MentorEntry hide_user :entry="entry" :show_location="false" />
+          </v-col>
+        </v-row>
+      </v-row>
+    </template>
+
     <template v-if="my_page && !user.roles.includes('mentor') && responsed_entries.length>0">
       <div class="text-h5 mb-4 mt-8 font-weight-bold">Мои отклики</div>
 

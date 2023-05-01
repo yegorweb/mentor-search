@@ -24,7 +24,7 @@ let towns = (await TownService.getTowns()).data
 let schools = (await SchoolService.get_all()).data
 
 function schools_in_town() {
-  return schools.filter(sch => sch.town === town.value._id)
+  return schools.filter(sch => sch.town._id === town.value._id)
 }
 
 function grades() {
@@ -184,7 +184,7 @@ let roles = ref(user.roles)
                         <v-btn 
                           variant="tonal"
                           @click="contacts.value.value = contacts.value.value.filter((item, index) => index !==i)"
-                          class="text-body-2 ml-2 ma-0 font-weight-semibold bg-button"
+                          class="ml-2 font-weight-semibold bg-button"
                         ><v-icon>mdi-delete</v-icon></v-btn>
                       </v-row>
                     </TransitionGroup>

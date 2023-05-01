@@ -10,6 +10,9 @@ export default {
   async get_by_author(_id) {
     return $api.get('/entry/get-by-author', { params: { _id }})
   },
+  async get_entries_to_moderation() {
+    return $api.get('/entry/get-entries-to-moderation')
+  },
   async create(entry) {
     return $api.post('/entry/create', { entry })
   },
@@ -21,6 +24,9 @@ export default {
   },
   async cancel_response(entry_id) {
     return $api.post('/entry/cancel-response', { entry_id })
+  },
+  async verify(entry_id, moderation_result) {
+    return $api.post('/entry/verify', { entry_id, moderation_result })
   },
   async delete(entry_id) {
     return $api.delete('/entry/delete', { params: { entry_id } })

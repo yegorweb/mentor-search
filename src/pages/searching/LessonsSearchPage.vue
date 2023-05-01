@@ -45,7 +45,7 @@ async function updateEntries() {
 }
 
 function schools_in_town() {
-  return schools.filter(sch => sch.town === town.value._id)
+  return schools.filter(sch => sch.town._id === town.value._id)
 }
 </script>
 
