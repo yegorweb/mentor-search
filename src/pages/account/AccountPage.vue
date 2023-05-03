@@ -7,7 +7,6 @@ import UserService from '../../services/UserService'
 import { useAuth } from '../../stores/auth';
 import { ref } from 'vue';
 import { onBeforeRouteUpdate, useRouter } from 'vue-router';
-import Responses from '../../components/Responses.vue';
 
 let props = defineProps(['id'])
 let router = useRouter()
@@ -73,14 +72,9 @@ if (!user.value.roles.includes('mentor')) {
   responsed_lesson_entries.value = responsed_entries.value.filter(entry => entry.type === 'lesson')
   responsed_club_entries.value = responsed_entries.value.filter(entry => entry.type === 'club')
 }
-
-let responses_visible = ref(false)
-let responses_list = ref([])
 </script>
 
 <template>
-  <Responses v-model="responses_visible" :responses="responses_list" />
-
   <v-container class="mt-1">
     <!-- =================== Top bar ==================== -->
 
@@ -250,7 +244,7 @@ let responses_list = ref([])
             :key="entry._id"
             cols="12" sm="6" xs="12"
           >
-            <MentorEntry v-model:responses="responses_list" v-model:visible="responses_visible" hide_user :entry="entry" :show_location="false" />
+            <MentorEntry hide_user :entry="entry" :show_location="false" />
           </v-col>
         </v-row>
       </v-row>
@@ -268,7 +262,7 @@ let responses_list = ref([])
             :key="entry._id"
             cols="12" sm="6" xs="12"
           >
-            <MentorEntry v-model:responses="responses_list" v-model:visible="responses_visible" hide_user :entry="entry" :show_location="false" />
+            <MentorEntry hide_user :entry="entry" :show_location="false" />
           </v-col>
         </v-row>
       </v-row>
@@ -286,7 +280,7 @@ let responses_list = ref([])
             :key="entry._id"
             cols="12" sm="6" xs="12"
           >
-            <MentorEntry v-model:responses="responses_list" v-model:visible="responses_visible" hide_user :entry="entry" :show_location="false" />
+            <MentorEntry hide_user :entry="entry" :show_location="false" />
           </v-col>
         </v-row>
       </v-row>

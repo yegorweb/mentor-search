@@ -1,19 +1,15 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { schools } from '../../fakeDB/schools';
 import EntryService from '../../services/EntryService';
 import UserService from '../../services/UserService';
 import { useAuth } from '../../stores/auth';
+import { useResponsesShowing } from '../../stores/responsesShowing';
 import EntryContainer from './EntryContainer.vue';
 
 let props = defineProps({
-  responses: {
-    type: Array
-  },
-  visible: {
-    type: Boolean
-  },
   entry: {
     type: Object,
     required: true
@@ -30,7 +26,7 @@ let props = defineProps({
   }
 })
 
-let emit = defineEmits(['update:responses', 'update:visible'])
+let { showing, responses } = storeToRefs(useResponsesShowing())
 
 let user = useAuth().getUser()
 let entry = ref(props.entry)
@@ -157,7 +153,7 @@ async function disallow() {
           variant="tonal" 
           v-if="in_user_own && entry.responses.length !== 0"
           class="text-body-2 pl-5 pr-5 mr-3 font-weight-semibold bg-button"
-          @click="emit('update:responses', entry.responses); emit('update:visible', true)"
+          @click="responses = entry.responses; showing = true"
         >Посмотреть отклики ({{ entry.responses.length }})</v-btn>
 
         <div class="text-body font-weight-regular" v-if="entry.responses.length === 0 && in_user_own && !entry.on_moderation && entry.moderation_result">Откликов нет</div>

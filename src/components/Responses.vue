@@ -1,20 +1,14 @@
 <script setup>
+import { storeToRefs } from 'pinia';
 import UserService from '../services/UserService';
 import EntryContainer from './entries/EntryContainer.vue';
 import Slave from './Slave.vue';
+import { useResponsesShowing } from '../stores/responsesShowing'
 
-let props = defineProps({
-	responses: {
-		type: Array,
-		required: true
-	},
-	visible: {
-    type: Boolean
-  },
-})
-let emit = defineEmits(['update:visible'])
+let { showing, responses } = storeToRefs(useResponsesShowing())
+console.log(showing.value)
 
-let responses = props.responses.map(async user_id => (await UserService.get_by_id(user_id)).data)
+let responses_list = responses.value.map(async user_id => (await UserService.get_by_id(user_id)).data)
 
 function getTopGap() {
 	return window.scrollY + 20
@@ -22,14 +16,14 @@ function getTopGap() {
 </script>
 
 <template>
-  <div class="box" v-if="props.visible">
+  <div class="box" v-show="showing">
 		<v-container :style="`margin-top: ${getTopGap()}px`">
 			<EntryContainer>
-				<v-icon @click="emit('update:visible', false)">mdi-close</v-icon>
+				<v-icon @click="showing = false">mdi-close</v-icon>
 				<v-row class="flex-column">
 					<v-row 
 						class="response flex-row justify-space-between align-center w-100"
-						v-for="user in responses"
+						v-for="user in responses_list"
 						:key="user._id"
 					>
 						<Slave :user="user" />
@@ -47,6 +41,7 @@ function getTopGap() {
 	right: 0;
 	bottom: 0;
 	left: 0;
+	z-index: 9999999;
 	background: rgba($color: #000000, $alpha: 0.2);
 }
 </style>
