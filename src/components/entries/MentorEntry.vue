@@ -195,7 +195,7 @@ async function disallow() {
       </template>
 
       <v-list density="compact">
-        <v-list-item prepend-icon="mdi-pen" v-if="in_user_own" @click="router.push('/')">
+        <v-list-item prepend-icon="mdi-pencil" v-if="in_user_own" @click="router.push('/')">
           Редактировать
         </v-list-item>
         <v-list-item prepend-icon="mdi-delete" @click="delete_entry" :loading="delete_loading">
