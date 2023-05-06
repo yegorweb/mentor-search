@@ -134,7 +134,7 @@ async function disallow() {
         <v-btn 
           v-if="!in_user_own && !entry.on_moderation"
           @click="response"
-          :response_loading="response_loading"
+          :loading="response_loading"
           :disabled="!responsed && entry.limit && (entry.limit - entry.responses.length === 0)"
           size="small"
           variant="tonal" 
@@ -176,7 +176,7 @@ async function disallow() {
           @click="disallow"
           :loading="disallow_loading"
           :disabled="disallow_disabled"
-        >Запретить</v-btn>
+        >Отказать</v-btn>
       </div>
 
       <div v-if="in_user_own && !entry.on_moderation && !entry.moderation_result" class="mt-2 w-100 text-red">
