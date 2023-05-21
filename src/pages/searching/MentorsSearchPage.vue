@@ -88,9 +88,9 @@ function schools_in_town() {
          Не показывать если чел стал наставляемым
          Расставляем в рандомном порядке - имитируем индивидуальный подбор))))
     -->
-    <v-row class="w-100 mt-5 flex-row flex-wrap">
+    <v-row class="w-100 mt-8 flex-row flex-wrap">
       <v-col 
-        cols="12" sm="6" xs="12"
+        cols="12" sm="6"
         v-for="entry in mentorship_entries"
         :key="entry._id"
       >
