@@ -17,6 +17,11 @@ $api.interceptors.request.use((config) => {
 
 $api.interceptors.response.use(
 	function (response) {
+		if (response.data.message)
+			toast.success(response.data.message, {
+				position: 'top-center'
+			})
+
 		return response
 	}, 
 	function (error) {
