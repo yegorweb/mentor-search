@@ -32,26 +32,26 @@ let user = useAuth().getUser()
 let entry = ref(props.entry)
 let response_loading = ref(false)
 let delete_loading = ref(false)
-let responsed = ref(entry.value.responses.includes(user._id))
+let responsed = ref(entry.value.responses.includes(user?._id))
 
 let router = useRouter()
 
-let in_user_own = entry.value.author._id == user._id
-let user_is_admin = (user.roles.includes('school-admin') && user.administered_schools.includes(entry.value.school._id)) || user.roles.includes('global-admin')
+let in_user_own = entry.value.author._id == user?._id
+let user_is_admin = (user?.roles?.includes('school-admin') && user?.administered_schools?.includes(entry.value.school._id)) || user?.roles?.includes('global-admin')
 
 let status = ref(responsed.value ? 'Убрать отклик' : 'Откликнуться')
 async function response() {
   response_loading.value = true
-  if (entry.value.responses.includes(user._id)) {
+  if (entry.value.responses.includes(user?._id)) {
     await EntryService.cancel_response(entry.value._id).then(() => {
-      entry.value.responses = entry.value.responses.filter(item => item !== user._id)
+      entry.value.responses = entry.value.responses.filter(item => item !== user?._id)
       status.value = 'Откликнуться'
       responsed.value = false
     }).finally(() => response_loading.value = false)
     return
   }
   await EntryService.response(entry.value._id).then(() => {
-    entry.value.responses.push(user._id)
+    entry.value.responses.push(user?._id)
     status.value = 'Убрать отклик'
     responsed.value = true
   }).finally(() => response_loading.value = false)
@@ -123,7 +123,7 @@ async function disallow() {
     <div class="d-flex mt-5 flex-column justify-start">
       <div 
         class="mb-2"
-        v-if="entry.town._id != user.town._id || entry.school._id != user.school._id || props.show_location"
+        v-if="entry.town._id != user?.town?._id || entry.school._id != user?.school?._id || props.show_location"
       >
         <span><v-icon icon="mdi-map-marker" class="mr-1" color="teal-lighten-1"></v-icon></span>
         <span v-if="entry.town._id !== user.town._id">{{ entry.town.name + ', ' }}
@@ -195,7 +195,7 @@ async function disallow() {
       </template>
 
       <v-list density="compact">
-        <v-list-item prepend-icon="mdi-pencil" v-if="in_user_own" @click="router.push('/')">
+        <v-list-item prepend-icon="mdi-pencil" v-if="in_user_own" @click="router.push(`/edit/${entry._id}`)">
           Редактировать
         </v-list-item>
         <v-list-item prepend-icon="mdi-delete" @click="delete_entry" :loading="delete_loading">
