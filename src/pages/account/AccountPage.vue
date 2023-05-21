@@ -18,9 +18,9 @@ let viewer = auth.getUser()
 let id = props.id
 
 let my_page = ref(auth.getUser()?._id === id)
-let viewer_is_admin = (viewer?.roles.includes('school-admin') && viewer?.administered_schools.includes(user.value.school._id)) || viewer.roles?.includes('global-admin')
+let viewer_is_admin = (viewer?.roles?.includes('school-admin') && viewer?.administered_schools?.includes(user.value.school._id)) || viewer?.roles?.includes('global-admin')
 
-let user = ref(auth.getUser()._id === id ? auth.getUser() : (await UserService.get_by_id(id)).data)
+let user = ref(auth.getUser()?._id === id ? auth.getUser() : (await UserService.get_by_id(id)).data)
 let town = ref(user.value.town)
 let school = ref(user.value.school)
 let entries = ref((await EntryService.get_by_author(user.value._id)).data)
