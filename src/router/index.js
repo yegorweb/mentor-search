@@ -73,6 +73,12 @@ const routes = [
         beforeEnter: checkAuth
       },
       {
+        path: '/edit/:id',
+        name: 'Editing',
+        props: true,
+        component: () => import('@/pages/EditingPage.vue')
+      },
+      {
         path: '/about',
         name: 'About',
         component: () => import('@/pages/AboutProjectPage.vue')

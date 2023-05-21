@@ -16,8 +16,8 @@ export default {
   async create(entry) {
     return $api.post('/entry/create', { entry })
   },
-  async update(entry) {
-    return $api.post('/entry/update', { entry })
+  async edit(entry_id, data) {
+    return $api.post('/entry/edit', { entry_id, entry: data })
   },
   async response(entry_id) {
     return $api.post('/entry/response', { entry_id })
