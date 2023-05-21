@@ -1,0 +1,1 @@
+import{a5 as e}from"./index-ff565f42.js";const r={async getTowns(){return e.get("/town/all")},async getTownById(t){return e.get("/town/get-by-id",{params:{_id:t}})},async create(t){return e.post("/town/create",{name:t})}};export{r as T};

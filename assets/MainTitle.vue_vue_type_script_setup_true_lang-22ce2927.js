@@ -1,0 +1,1 @@
+import{_ as t}from"./BackButton.vue_vue_type_script_setup_true_lang-5839fa1f.js";import{d as s,o,p as a,f as n,B as r,a6 as c}from"./index-ff565f42.js";const _={class:"mt-1 d-flex flex-column justify-start"},i={class:"text-h4 mt-1 font-weight-bold"},p=s({__name:"MainTitle",setup(l){return(e,d)=>(o(),a("div",_,[n(t),r("div",i,[c(e.$slots,"default")])]))}});export{p as _};
