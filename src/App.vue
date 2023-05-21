@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import Responses from '@/components/Responses.vue'
+import { useAuth } from './stores/auth'
 
+localStorage.getItem('token') ? await useAuth().checkAuth() : null
 </script>
 
 <template>

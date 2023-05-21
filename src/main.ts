@@ -15,7 +15,5 @@ registerPlugins(app)
 
 app.use(Toast).use(pinia)
 
-localStorage.getItem('token') ? await useAuth().checkAuth() : null
-
 app.use(router)
 app.mount("#app")
