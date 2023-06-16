@@ -18,13 +18,12 @@ function getDate(time: number, first_case: string) {
   let options = {
     month: "long",
     day: "numeric",
+    year: current_time.getFullYear() != (new Date(time)).getFullYear() ? "numeric" : undefined
   }
-  if (current_time.getFullYear() != (new Date(time)).getFullYear()) {
-    options.year = "numeric"
-  }
-  if (delta <= 86400000) return (first_case == 'upper' ? 'Сегодня ' : 'cегодня ') + (new Date(time)).toLocaleTimeString('ru', {hour: 'numeric', minute: 'numeric'})
+  if (delta <= 86400000) 
+    return (first_case == 'upper' ? 'Сегодня ' : 'cегодня ') + (new Date(time)).toLocaleTimeString('ru', { hour: 'numeric', minute: 'numeric' })
 
-  return (new Date(time)).toLocaleString('ru', options)
+  return (new Date(time)).toLocaleString('ru', options as any)
 }
 </script>
 

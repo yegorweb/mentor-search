@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { Ref, ref } from "vue";
 
 export const useResponsesShowing = defineStore('responsesShowing', () => {
   let showing = ref(false)
-  let responses = ref([])
+  let responses: Ref<string[]> = ref([])
 
   return { showing, responses }
 })

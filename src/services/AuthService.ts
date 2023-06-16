@@ -1,22 +1,23 @@
 import $api from '../plugins/axios'
+import { User } from '../types/user.interface'
 
 export default {
-	async registration(user) {
+	async registration(user: any) {
 		return $api.post('/auth/registration', user)
 	},
-	async login(email, password) {
+	async login(email: string, password: string) {
 		return $api.post('/auth/login', { email, password })
 	},
-	async resetPassword(password, token) {
+	async resetPassword(password: string, token: string) {
 		return $api.post('/auth/reset-password', { password, token })
 	},
-	async forgotPassword(email) {
+	async forgotPassword(email: string) {
 		return $api.post('/auth/forgot-password', { email: email })
 	},
 	async logout() {
 		return $api.post('/auth/logout')
 	},
-	async updateUser(user) {
+	async updateUser(user: any) {
 		return $api.post('/auth/update', { user })
 	},
 	async refresh() {

@@ -1,49 +1,44 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath } from "url";
-
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 
 const mobile =
   process.env.TAURI_PLATFORM === "android" ||
   process.env.TAURI_PLATFORM === "ios";
 
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [vue({ 
-      template: { transformAssetUrls }
-    }),
-    // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
-    vuetify({
-      autoImport: true,
-    }),
-  ],
+export default defineConfig(({
+  command,
+  mode
+}) => {
+  process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
 
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
-  },
-
-  define: { 'process.env': {} },
-
-  // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-  // prevent vite from obscuring rust errors
-  clearScreen: false,
-  // tauri expects a fixed port, fail if that port is not available
-  server: {
-    port: 1420,
-    strictPort: true,
-  },
-  // to make use of `TAURI_DEBUG` and other env variables
-  // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
-  envPrefix: ["VITE_", "TAURI_"],
-  build: {
-    // Tauri supports es2021
-    target: process.env.TAURI_PLATFORM == "windows" ? "chrome105" : "safari13",
-    // don't minify for debug builds
-    minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
-    // produce sourcemaps for debug builds
-    sourcemap: !!process.env.TAURI_DEBUG,
-  },
+  return {
+    plugins: [
+      vue({ 
+        template: { transformAssetUrls }
+      }),
+      vuetify({
+        autoImport: true,
+      }),
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      }
+    },
+  
+    define: { 'process.env': {} },
+    clearScreen: false,
+    server: {
+      port: 1420,
+      strictPort: true,
+    },
+    envPrefix: ["VITE_", "TAURI_"],
+    build: {
+      target: process.env.TAURI_PLATFORM == "windows" ? "chrome105" : "safari13",
+      minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
+      sourcemap: !!process.env.TAURI_DEBUG,
+    },
+  }
 })

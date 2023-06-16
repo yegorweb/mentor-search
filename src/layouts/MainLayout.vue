@@ -5,6 +5,10 @@ import { useAuth } from '../stores/auth';
 
 let router = useRouter()
 
+let auth = useAuth()
+let isAuth = auth.getAuthStatus()
+let user = auth.getUser()
+
 let navigation_drawer_is_open = ref(false)
 let nav_buttons = [
   {
@@ -36,31 +40,31 @@ let nav_buttons = [
     route: '/create',
     title: 'Создать',
     group: false,
-    condition: useAuth().getAuthStatus()
+    condition: isAuth
   },
   {
     route: '/admin',
     title: 'Управление',
     group: false,
-    condition: useAuth().getUser()?.roles.includes('global-admin') || useAuth().getUser()?.roles.includes('school-admin')
+    condition: user?.roles.includes('global-admin') || user?.roles.includes('school-admin')
   },
   {
-    route: `/user/${useAuth().getUser()?._id}`,
+    route: `/user/${user?._id}`,
     title: 'Мой профиль',
     group: false,
-    condition: useAuth().getAuthStatus()
+    condition: isAuth
   },
   {
     route: '/myResponses',
     title: 'Мои отклики',
     group: false,
-    condition: useAuth().getAuthStatus()
+    condition: isAuth
   },
   {
     route: '/myAchievements',
     title: 'Мои награды',
     group: false,
-    condition: useAuth().getAuthStatus()
+    condition: isAuth
   },
   {
     route: '/about',
@@ -94,8 +98,8 @@ let nav_buttons = [
           class="cursor-pointer" 
           size="30" 
           color="#FFFFFF" 
-          :image="useAuth().getUser()?.avatar_url"
-          @click="useAuth().getAuthStatus() ? router.push(`/user/${useAuth().getUser()._id}`) : router.push('/login')"
+          :image="user?.avatar_url"
+          @click="isAuth ? router.push(`/user/${user?._id}`) : router.push('/login')"
         />
       </v-container>
     </v-app-bar>
@@ -115,7 +119,7 @@ let nav_buttons = [
           <!-- Usually -->
           <v-list-item
             v-if="!button.group && button.condition"
-            @click="router.push(button.route);
+            @click="router.push(button.route as string);
               navigation_drawer_is_open = !navigation_drawer_is_open"
             style="font-weight: 600;"
           >

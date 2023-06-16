@@ -1,15 +1,20 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { ref, Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import BackButton from '../components/BackButton.vue';
 import EntryService from '../services/EntryService';
 import { useAuth } from '../stores/auth';
-import { useField, useForm } from 'vee-validate'
+import { FieldContext, useField, useForm } from 'vee-validate'
+import { User } from '../types/user.interface';
+import { EntryType } from '../types/entry_types';
 
-let user = useAuth().getUser()
+let user: User = useAuth().getUser() as any
 let router = useRouter()
 
-let variants = [{
+let variants: {
+  name: string,
+  type: EntryType
+}[] = [{
   name: 'Запись',
   type: 'mentor'
 }, 
@@ -21,36 +26,39 @@ let variants = [{
   name: 'Клуб',
   type: 'club'
 }]
-let variant = ref()
+let variant: Ref<EntryType | null> = ref(null)
 
 let has_limit = ref(false)
 let loading = ref(false)
 
 const { meta, handleSubmit, handleReset, validate } = useForm({
   validationSchema: {
-    subject(value) {
+    subject(value: string) {
       if (!value || value.length < 4) return 'слишком короткий заголовок'
       if (value.length > 25) return 'слишком длинный заголовок'
+      
       return true
     },
-    description(value) {
+    description(value: string) {
       if (!value || value.length < 20) return 'слишком короткое описание' 
       if (value.length > 150) return 'слишком длинное описание'
+      
       return true
     },
-    limit(value) {
+    limit(value: string) {
       if (!has_limit.value) return true
       if (!value || value.length === 0) return 'заполните поле или уберите лимит'
       if (!/^\d+$/.test(value) || !(Number(value)>0)) return 'неверное значение'
       if (Number(value)>300) return 'многовато'
+
       return true
     },
   },
 })
 
-let subject = useField('subject')
-let description = useField('description')
-let limit = useField('limit')
+let subject: FieldContext<string> = useField('subject')
+let description: FieldContext<string> = useField('description')
+let limit: FieldContext<string> = useField('limit')
 
 const submit = handleSubmit(async values => {
   loading.value = true
@@ -85,7 +93,7 @@ const submit = handleSubmit(async values => {
         <v-form @submit.prevent="submit" v-if="variant" class="d-flex flex-column align-center justify-center w-100">
           <v-text-field
             label="Заголовок"
-            :placeholder="variant == 'Клуб' ? 'Клуб любителей Мафии' : 'Биология'"
+            :placeholder="variant === 'club' ? 'Клуб любителей Мафии' : 'Биология'"
             v-model="subject.value.value"
             :error-messages="subject.errorMessage.value"
             variant="solo"

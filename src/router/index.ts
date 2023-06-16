@@ -1,15 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuth } from '../stores/auth'
 
-async function checkAuth(to, from) {
+async function checkAuth(): Promise<string|void> {
   let auth = useAuth()
   if (!auth.getAuthStatus()) {
-    localStorage.setItem('requestedLink', to.fullPath)
     return '/login'
   }
 }
 
-async function checkAdmin(to, from) {
+async function checkAdmin(): Promise<string|void> {
   await checkAuth()
 
   let auth = useAuth()

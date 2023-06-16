@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useToast } from 'vue-toastification'
+import { POSITION, useToast } from 'vue-toastification'
 const toast = useToast()
 
 export const API_URL = import.meta.env.VITE_API_URL
@@ -19,7 +19,7 @@ $api.interceptors.response.use(
 	function (response) {
 		if (response.data.message)
 			toast.success(response.data.message, {
-				position: 'top-center'
+				position: POSITION.TOP_CENTER
 			})
 
 		return response
@@ -27,7 +27,7 @@ $api.interceptors.response.use(
 	function (error) {
 		if (error.response?.status !== 401) {
 			toast.error(error.response?.data?.message, {
-				position: 'top-center'
+				position: POSITION.TOP_CENTER
 			})
 			console.log("ERROR: ", error)	
 		}

@@ -7,8 +7,9 @@
 // Plugins
 import { loadFonts } from './webfontloader'
 import vuetify from './vuetify'
+import { App } from 'vue'
 
-export function registerPlugins (app) {
+export function registerPlugins(app: App) {
   loadFonts()
   app
     .use(vuetify)

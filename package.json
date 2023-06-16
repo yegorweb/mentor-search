@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --outDir ../mentor-search-build",
     "preview": "vite preview",
     "tauri": "tauri"
   },

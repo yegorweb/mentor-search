@@ -2,8 +2,9 @@
 import MainTitle from '@/components/MainTitle.vue'
 import MentorEntry from '../../components/entries/MentorEntry.vue';
 import EntryService from '../../services/EntryService'
+import { useEntry } from '../../stores/entry';
 
-let entries = (await EntryService.get_entries_to_moderation()).data
+let entries = await useEntry().get_entries_to_moderation()
 </script>
 
 <template>

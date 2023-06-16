@@ -1,30 +1,36 @@
 <script setup lang="ts">
-import { watch, ref } from 'vue';
+import { watch, ref, Ref } from 'vue';
 import BackButton from '../../components/BackButton.vue';
 import EntryContainer from '../../components/entries/EntryContainer.vue';
-import { useField, useForm } from 'vee-validate'
-import TownService from '../../services/TownService';
-import SchoolService from '../../services/SchoolService';
+import { FieldContext, useField, useForm } from 'vee-validate'
 import { useAuth } from '../../stores/auth';
-import UserService from '../../services/UserService';
-import AuthService from '../../services/AuthService';
 import { useRouter } from 'vue-router';
+import { Contact } from '../../types/contact.type';
+import Town from '../../types/town.interface';
+import School from '../../types/school.interface';
+import { Roles } from '../../types/role.type';
+import { User } from '../../types/user.interface';
+import { useTown } from '../../stores/town';
+import { useSchool } from '../../stores/school';
 
 document.title = 'Натройки — Ищу наставника'
 
 let auth = useAuth()
 let router = useRouter()
 
-let user = auth.getUser()
+let user: User = auth.getUser() as any
 
 let tab = ref(1)
 let loading = ref(false)
 
-let towns = (await TownService.getTowns()).data
-let schools = (await SchoolService.get_all()).data
+let townStore = useTown()
+let schoolStore = useSchool()
+
+let towns = await townStore.get_all()
+let schools = await schoolStore.get_all()
 
 function schools_in_town() {
-  return schools.filter(sch => sch.town._id === town.value._id)
+  return schools?.filter(sch => sch.town._id === town.value._id)
 }
 
 function grades() {
@@ -35,22 +41,30 @@ function grades() {
 
 const { meta, handleSubmit, handleReset } = useForm({
   initialValues: {
-    contacts: []
+    name: user.name,
+    description: user.description,
+    contacts: user.contacts ? user.contacts : []
   },
   validationSchema: {
-    name(value) {
+    name(value: string) {
       if (!value || value.length < 4) return 'слишком короткое имя'
       if (value.length > 21) return 'слишком длинное имя'
+      
       return true
     },
-    description(value) {
+    description(value: string) {
       if (value && value.length > 150) return 'слишком длинное описание'
+      
       return true
     },
-    contacts(value) {
+    contacts(value: Contact[]) {
       for (let item of value) {
         if (!item.name || item.name.length===0 || !item.link || item.link.length===0)
           return 'в каждом контакте должны быть название и ссылка'
+        if (item.name.length > 15)
+          return 'слишком длинное название в контакте'
+        if (item.link.length > 200)
+          return 'кажется тут слишком длинная ссылка'
       }
       return true
     }
@@ -61,33 +75,29 @@ const submit = handleSubmit(async (values) => {
   loading.value = true
 
   await auth.updateUser(Object.assign(values, {
-    town: town.value,
-    school: school.value,
+    town: town.value._id,
+    school: school.value._id,
     grade: grade.value,
     roles: roles.value
   }))
-  .then(() => window.location.href = `/user/${user._id}`)
+  .then(() => window.location.href = `/user/${user?._id}`)
   .finally(() => loading.value = false)
 })
 
-let mentor = ref(user.roles.includes('mentor'))
-watch(mentor, (value) => {
+let mentor = ref(user?.roles.includes('mentor'))
+
+watch(mentor, (value: boolean) => {
   value ? roles.value.push('mentor') : roles.value = roles.value.filter(item => item !== 'mentor')
-  console.log(roles.value)
 })
 
-let name = useField('name')
-let description = useField('description')
-let contacts = useField('contacts')
+let name: FieldContext<string> = useField('name')
+let description: FieldContext<string> = useField('description')
+let contacts: FieldContext<Contact[]> = useField('contacts')
 
-name.value.value = user.name
-description.value.value = user.description
-contacts.value.value = user.contacts
-
-let town = ref(user.town)
-let school = ref(user.school)
+let town: Ref<Town> = ref(user.town)
+let school: Ref<School> = ref(user.school)
 let grade = ref(user.grade)
-let roles = ref(user.roles)
+let roles: Ref<Roles> = ref(user.roles)
 </script>
 
 <template>

@@ -12,11 +12,11 @@ let router = useRouter()
 
 const { meta, handleSubmit, handleReset } = useForm({
   validationSchema: {
-    password(value) {
+    password(value: string) {
       if (value?.length >= 6) return true
       return 'нужно 6 символов'
     },
-    email(value) {
+    email(value: string) {
       if (/^[a-z.-.0-9]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
       return 'неправильный формат email'
     },
@@ -36,12 +36,7 @@ const login = handleSubmit(async values => {
   loading.value = false
   if (!status?.success) return
   
-  if (localStorage.getItem('requestedLink')) {
-    window.location.href = localStorage.getItem('requestedLink')
-    localStorage.removeItem('requestedLink')
-  } else {
-    window.location.href = '/'
-  }
+  window.location.href = '/'
 })
 </script>
 

@@ -3,24 +3,27 @@ import { useRouter } from 'vue-router';
 import MentorEntry from '../../components/entries/MentorEntry.vue';
 import MainTitle from '../../components/MainTitle.vue';
 import UserService from '../../services/UserService';
+import { useUser } from '../../stores/user';
 
 document.title = 'Мои отклики — Ищу наставника'
 
 let router = useRouter()
 
-let entries = (await UserService.get_my_responses()).data
+let userStore = useUser()
+
+let entries = await userStore.get_my_responses()
 console.log(entries)
 
-let mentorship_entries = entries.filter(entry => entry.type === 'mentor')
-let lesson_entries = entries.filter(entry => entry.type === 'lesson')
-let club_entries = entries.filter(entry => entry.type === 'club')
+let mentorship_entries = entries?.filter(entry => entry.type === 'mentor')
+let lesson_entries = entries?.filter(entry => entry.type === 'lesson')
+let club_entries = entries?.filter(entry => entry.type === 'club')
 </script>
 
 <template>
   <v-container>
     <MainTitle class="pb-3">Мои отклики</MainTitle>
 
-    <v-row v-if="mentorship_entries.length !== 0" class="pt-4 pb-4">
+    <v-row v-if="mentorship_entries && mentorship_entries.length > 0" class="pt-4 pb-4">
       <v-col 
         v-for="entry in mentorship_entries"
         :key="entry?._id"
@@ -33,11 +36,11 @@ let club_entries = entries.filter(entry => entry.type === 'club')
     <!-- Lessons -->
     <v-row
       class="flex-column pt-4 pb-4 ma-0 pa-0"
-      v-if="lesson_entries.length !== 0"
+      v-if="lesson_entries && lesson_entries.length > 0"
     >
       <div 
         class="text-h5 mb-4 font-weight-bold" 
-        v-if="mentorship_entries.length!==0"
+        v-if="mentorship_entries && mentorship_entries.length > 0"
       >Уроки</div>
 
       <v-row class="w-100 flex-row flex-wrap">
@@ -54,11 +57,11 @@ let club_entries = entries.filter(entry => entry.type === 'club')
     <!-- Clubs -->
     <v-row
       class="flex-column pt-4 ma-0 pa-0"
-      v-if="club_entries.length !== 0"
+      v-if="club_entries && club_entries.length > 0"
     >
       <div 
         class="text-h5 mb-4 font-weight-bold" 
-        v-if="mentorship_entries.length!==0 || lesson_entries.length!==0"
+        v-if="(mentorship_entries && mentorship_entries.length > 0) || (lesson_entries && lesson_entries.length > 0)"
       >Клубы</div>
 
       <v-row class="w-100 flex-row flex-wrap">
@@ -72,7 +75,7 @@ let club_entries = entries.filter(entry => entry.type === 'club')
       </v-row>
     </v-row>
 
-    <div class="d-flex mt-3 align-center ma-auto flex-column justify-center" v-if="entries.length===0">
+    <div class="d-flex mt-3 align-center ma-auto flex-column justify-center" v-if="entries?.length===0">
       <div class="text-h5 text-center font-weight-semibold">У вас нет наставников 😱</div>
       <v-btn 
         size="small"

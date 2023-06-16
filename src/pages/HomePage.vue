@@ -5,8 +5,8 @@ import { useAuth } from '../stores/auth'
 document.title = 'Ищу наставника'
 
 let auth = useAuth()
-let user = auth.getUser()
 
+let user = auth.getUser()
 let isAuth = auth.getAuthStatus()
 
 let buttons = isAuth ? [
@@ -36,19 +36,18 @@ let buttons = isAuth ? [
 let router = useRouter()
 
 function getType(): string {
-  let ranks = user?.ranks?.length > 0 ? user.ranks.join(', ') : ''
-
-  if (user?.roles.includes('school-admin') || user?.roles.includes('global-admin')) {
-    return `админ ${ranks}`
-  }
-  if (user?.roles.includes('mentor')) {
-    return `наставник ${ranks}`
-  }
-  if (!isAuth) {
+  if (!user)
     return 'войдите или зарегистрируйтесь'
-  }
 
-  return `наставляемый ${ranks}`
+  let ranks = user.ranks?.length > 0 ? ', '+user.ranks.join(', ') : ''
+
+  if (user.roles.includes('school-admin') || user.roles.includes('global-admin'))
+    return `админ${ranks}`
+
+  if (user.roles.includes('mentor'))
+    return `наставник${ranks}`
+
+  return `наставляемый${ranks}`
 }
 </script>
 
@@ -57,7 +56,7 @@ function getType(): string {
     <v-row class="align-center ma-0 pa-0 mt-5 flex-nowrap">
       <v-avatar :image="user?.avatar_url" size="60" color="blue" />
       <div class="d-flex ml-4 flex-column justify-start">
-        <div class="font-weight-bold text-h5">{{ auth.getAuthStatus() ? `Привет, ${user?.name}` : 'Вы не представились'}}</div>
+        <div class="font-weight-bold text-h5">{{ user ? `Привет, ${user.name}` : 'Вы не представились'}}</div>
         <div class="text-body-3 text-text_gray">{{ getType() }}</div>
       </div>
     </v-row>
@@ -81,7 +80,3 @@ function getType(): string {
     </v-row>
   </v-container>
 </template>
-
-<style lang="scss" scoped>
-
-</style>

@@ -2,15 +2,19 @@
 import BackButton from '@/components/BackButton.vue'
 import MainTitle from '../../components/MainTitle.vue';
 import MentorEntry from '../../components/entries/MentorEntry.vue'
-import { ref } from 'vue';
+import { ref, Ref } from 'vue';
 import { useAuth } from '../../stores/auth';
-import TownService from '../../services/TownService';
-import SchoolService from '../../services/SchoolService';
-import EntryService from '../../services/EntryService';
+import { useSchool } from '../../stores/school';
+import { useTown } from '../../stores/town';
+import { useEntry } from '../../stores/entry';
+import Town from '../../types/town.interface';
+import School from '../../types/school.interface';
+import Entry from '../../types/entry.interface';
 
 document.title = 'Поиск клубов — Ищу наставника'
 
 let auth = useAuth()
+let user = auth.getUser()
 
 function shuffle(arr: any[]){
 	var j, temp;
@@ -23,24 +27,28 @@ function shuffle(arr: any[]){
 	return arr;
 }
 
-let towns = (await TownService.getTowns()).data
-let schools = (await SchoolService.get_all()).data
+let townStore = useTown()
+let schoolStore = useSchool()
+let entryStore = useEntry()
 
-let town = ref(auth.getAuthStatus() ? 
-  auth.getUser().town : 
-  towns.find(town => town._id === '641c882f9a4751bf88848223')
+let towns: Town[] = await townStore.get_all() as any
+let schools: School[] = await schoolStore.get_all() as any
+
+let town: Ref<Town> = ref(user ? 
+  user.town : 
+  towns.find(town => town.name === 'Глазов') as any
 )
 
-let school = ref(auth.getAuthStatus() ? 
-  auth.getUser().school : 
+let school = ref(user ? 
+  user.school : 
   { name: 'Все', _id: 'all' }
 )
 
-let mentorship_entries = ref((await EntryService.get('club', town.value._id, school.value._id)).data.filter(entry => !entry.responses.includes(auth.getUser()._id) && (entry.author._id !== auth.getUser()._id) && (entry.school._id == school.value._id || (entry.town._id === town.value._id && school.value._id === 'all'))))
+let mentorship_entries: Ref<Entry[]> = ref(await entryStore.get('club', town.value._id, school.value._id) as any)
 shuffle(mentorship_entries.value)
 
 async function updateEntries() {
-  mentorship_entries.value = (await EntryService.get('club', town.value._id, school.value._id)).data.filter(entry => !entry.responses.includes(auth.getUser()._id) && (entry.author._id !== auth.getUser()._id) && (entry.school._id == school.value._id || (entry.town._id === town.value._id && school.value._id === 'all')))
+  mentorship_entries.value = await entryStore.get('club', town.value._id, school.value._id) as any
   shuffle(mentorship_entries.value)
 }
 
@@ -66,11 +74,12 @@ function schools_in_town() {
           hide-details
         ></v-select>
       </v-col>
+
       <v-col cols="12" md="4" sm="8" xs="12" class="ma-0 pa-0">
         <v-select
           label="Школа"
           v-model="school"
-          :items="[{name: 'Все', _id: 'all'}, ...schools_in_town()]"
+          :items="[{ name: 'Все', _id: 'all' }, ...schools_in_town()]"
           item-title="name"
           return-object
           @update:model-value="updateEntries"
@@ -80,14 +89,6 @@ function schools_in_town() {
       </v-col>
     </v-row>
     
-    <!-- Собирать с town_id т е забирать не всё
-         Не показывать если забанили
-         Пересылать на авторизацию если не вошли
-         Всегда применять фильтр по городу и школе челика
-         Не показывать у самого челика
-         Не показывать если чел стал наставляемым
-         Расставляем в рандомном порядке - имитируем индивидуальный подбор))))
-    -->
     <v-row class="w-100 mt-5 flex-row flex-wrap">
       <v-col 
         cols="12" sm="6" xs="12"
@@ -99,10 +100,13 @@ function schools_in_town() {
         </Suspense>
       </v-col>
     </v-row>
+
     <v-col 
       cols="12" sm="6" xs="12" 
       class="text-h6 ma-auto font-weight-medium mt-4 text-center"
       v-if="mentorship_entries.length === 0"
-    >Клубов нет, или вы на всё откликнулись</v-col>
+    >
+      Клубов нет, или вы на всё откликнулись
+    </v-col>
   </v-container>
 </template>

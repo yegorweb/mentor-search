@@ -2,32 +2,36 @@
 import BackButton from '../../components/BackButton.vue';
 import EntryContainer from '../../components/entries/EntryContainer.vue';
 import MentorEntry from '../../components/entries/MentorEntry.vue';
-import EntryService from '../../services/EntryService';
-import UserService from '../../services/UserService'
 import { useAuth } from '../../stores/auth';
-import { ref } from 'vue';
+import { ref, Ref } from 'vue';
 import { onBeforeRouteUpdate, useRouter } from 'vue-router';
+import { useUser } from '../../stores/user';
+import { useEntry } from '../../stores/entry';
+import { User } from '../../types/user.interface';
+import Entry from '../../types/entry.interface';
 
 let props = defineProps(['id'])
+let id = props.id
+
 let router = useRouter()
 
 let auth = useAuth()
-
 let viewer = auth.getUser()
 
-let id = props.id
+let userStore = useUser()
+let user: Ref<User> = ref(viewer?._id === id ? viewer : await userStore.get_by_id(id)) as any
+let my_page = ref(viewer?._id === id)
+let viewer_is_admin = (viewer?.roles.includes('school-admin') && viewer?.administered_schools?.includes(user.value?.school)) || viewer?.roles?.includes('global-admin')
 
-let my_page = ref(auth.getUser()?._id === id)
-let viewer_is_admin = (viewer?.roles?.includes('school-admin') && viewer?.administered_schools?.includes(user.value.school._id)) || viewer?.roles?.includes('global-admin')
+let entryStore = useEntry()
 
-let user = ref(auth.getUser()?._id === id ? auth.getUser() : (await UserService.get_by_id(id)).data)
 let town = ref(user.value.town)
 let school = ref(user.value.school)
-let entries = ref((await EntryService.get_by_author(user.value._id)).data)
-let mentorship_entries = ref(entries.value.filter(entry => entry.type === 'mentor' && entry.on_moderation === false && entry.moderation_result === true))
-let lesson_entries = ref(entries.value.filter(entry => entry.type === 'lesson' && entry.on_moderation === false && entry.moderation_result === true))
-let club_entries = ref(entries.value.filter(entry => entry.type === 'club' && entry.on_moderation === false && entry.moderation_result === true))
-let entries_on_moderation = ref(entries.value.filter(entry => entry.on_moderation === true || (my_page.value && entry.on_moderation === false && entry.moderation_result === false)))
+let entries = ref(await entryStore.get_by_author(user.value._id))
+let mentorship_entries = ref(entries.value?.filter(entry => entry.type === 'mentor' && entry.on_moderation === false && entry.moderation_result === true))
+let lesson_entries = ref(entries.value?.filter(entry => entry.type === 'lesson' && entry.on_moderation === false && entry.moderation_result === true))
+let club_entries = ref(entries.value?.filter(entry => entry.type === 'club' && entry.on_moderation === false && entry.moderation_result === true))
+let entries_on_moderation = ref(entries.value?.filter(entry => entry.on_moderation === true || (my_page.value && entry.on_moderation === false && entry.moderation_result === false)))
 
 function getType(): string {
   if (user.value.roles?.includes('school-admin') || user.value.roles?.includes('global-admin')) {
@@ -44,33 +48,28 @@ document.title = `${user.value.name} — Ищу наставника`
 
 onBeforeRouteUpdate(async () => {
   id = props.id
-  user.value = auth.getUser()._id === id ? auth.getUser() : (await UserService.get_by_id(id)).data
+  user.value = viewer?._id === id ? viewer : await userStore.get_by_id(id) as any
   town.value = user.value.town
   school.value = user.value.school
-  entries.value = (await EntryService.get_by_author(user.value._id)).data
-  mentorship_entries.value = entries.value.filter(entry => entry.type === 'mentor')
-  lesson_entries.value = entries.value.filter(entry => entry.type === 'lesson')
-  club_entries.value = entries.value.filter(entry => entry.type === 'club')
+  entries.value = await entryStore.get_by_author(user.value._id)
+  mentorship_entries.value = entries.value?.filter(entry => entry.type === 'mentor')
+  lesson_entries.value = entries.value?.filter(entry => entry.type === 'lesson')
+  club_entries.value = entries.value?.filter(entry => entry.type === 'club')
 
-  my_page.value = auth.getUser()._id === id
+  my_page.value = viewer?._id === id
 })
 
-async function logout() {
-  await auth.logout()
-  window.location.href = '/'
-}
-
-let responsed_entries = ref([])
-let responsed_mentorship_entries = ref([])
-let responsed_lesson_entries = ref([])
-let responsed_club_entries = ref([])
+let responsed_entries: Ref<Entry[]|undefined> = ref([])
+let responsed_mentorship_entries: Ref<Entry[]|undefined> = ref([])
+let responsed_lesson_entries: Ref<Entry[]|undefined> = ref([])
+let responsed_club_entries: Ref<Entry[]|undefined> = ref([])
 
 if (!user.value.roles.includes('mentor')) {
-  responsed_entries.value = (await UserService.get_my_responses()).data
+  responsed_entries.value = await userStore.get_my_responses()
 
-  responsed_mentorship_entries.value = responsed_entries.value.filter(entry => entry.type === 'mentor')
-  responsed_lesson_entries.value = responsed_entries.value.filter(entry => entry.type === 'lesson')
-  responsed_club_entries.value = responsed_entries.value.filter(entry => entry.type === 'club')
+  responsed_mentorship_entries.value = responsed_entries.value?.filter(entry => entry.type === 'mentor')
+  responsed_lesson_entries.value = responsed_entries.value?.filter(entry => entry.type === 'lesson')
+  responsed_club_entries.value = responsed_entries.value?.filter(entry => entry.type === 'club')
 }
 </script>
 
@@ -80,7 +79,7 @@ if (!user.value.roles.includes('mentor')) {
 
     <div class="d-flex flex-row w-100 flex-nowrap justify-space-between align-center">
       <BackButton />
-      <div @click="logout" v-if="my_page" class="d-flex pt-1 pr-1 pb-1 cursor-pointer flex-row flex-nowrap align-center justify-start">
+      <div @click="auth.logout" v-if="my_page" class="d-flex pt-1 pr-1 pb-1 cursor-pointer flex-row flex-nowrap align-center justify-start">
         <v-icon icon="mdi-logout"></v-icon>
         <div class="text-body-4 ml-1 font-weight-semibold">выйти</div>
       </div>
@@ -124,9 +123,9 @@ if (!user.value.roles.includes('mentor')) {
         <!-- Contacts -->
         <div class="d-flex pt-2 flex-row flex-wrap" v-if="user.contacts && user.contacts.length>0">
           <a 
-            v-for="button in user?.contacts"
+            v-for="button in user.contacts"
             :key="button.link"
-            about="_blank"
+            target="_blank"
             :href="button.link"
             style="text-decoration: none;"
           >
@@ -174,10 +173,10 @@ if (!user.value.roles.includes('mentor')) {
       </v-row>
     </template>
 
-    <template v-if="my_page && !user.roles.includes('mentor') && responsed_entries.length>0">
+    <template v-if="my_page && !user.roles.includes('mentor') && responsed_entries && responsed_entries.length>0">
       <div class="text-h5 mb-4 mt-8 font-weight-bold">Мои отклики</div>
 
-      <v-row v-if="responsed_mentorship_entries.length !== 0" class="pt-2 pb-4">
+      <v-row v-if="responsed_mentorship_entries?.length !== 0" class="pt-2 pb-4">
         <v-col 
           v-for="entry in responsed_mentorship_entries"
           :key="entry?._id"
@@ -190,11 +189,11 @@ if (!user.value.roles.includes('mentor')) {
       <!-- Lessons -->
       <v-row
         class="flex-column pt-4 pb-4 ma-0 pa-0"
-        v-if="responsed_lesson_entries.length !== 0"
+        v-if="responsed_lesson_entries?.length !== 0"
       >
         <div 
           class="text-h5 mb-4 font-weight-bold" 
-          v-if="responsed_mentorship_entries.length!==0"
+          v-if="responsed_mentorship_entries?.length!==0"
         >Уроки</div>
 
         <v-row class="w-100 flex-row flex-wrap">
@@ -211,11 +210,11 @@ if (!user.value.roles.includes('mentor')) {
       <!-- Clubs -->
       <v-row
         class="flex-column pt-4 ma-0 pa-0"
-        v-if="responsed_club_entries.length !== 0"
+        v-if="responsed_club_entries?.length !== 0"
       >
         <div 
           class="text-h5 mb-4 font-weight-bold" 
-          v-if="responsed_mentorship_entries.length!==0 || responsed_lesson_entries.length!==0"
+          v-if="responsed_mentorship_entries?.length!==0 || responsed_lesson_entries?.length!==0"
         >Клубы</div>
 
         <v-row class="w-100 flex-row flex-wrap">
@@ -230,11 +229,11 @@ if (!user.value.roles.includes('mentor')) {
       </v-row>
     </template>
 
-    <template v-if="user.roles.includes('mentor') || entries.length>0">
+    <template v-if="user.roles.includes('mentor') || (entries && entries.length>0)">
       <!-- Mentor -->
       <v-row
         class="flex-column mt-8 ma-0 pa-0 w-100"
-        v-if="mentorship_entries.length !== 0"
+        v-if="mentorship_entries?.length !== 0"
       >
         <div class="text-h5 font-weight-bold">Наставник по</div>
   
@@ -252,7 +251,7 @@ if (!user.value.roles.includes('mentor')) {
       <!-- Lessons -->
       <v-row
         class="flex-column mt-8 ma-0 pa-0"
-        v-if="lesson_entries.length !== 0"
+        v-if="lesson_entries?.length !== 0"
       >
         <div class="text-h5 font-weight-bold">Уроки</div>
   
@@ -270,7 +269,7 @@ if (!user.value.roles.includes('mentor')) {
       <!-- Clubs -->
       <v-row
         class="flex-column mt-8 ma-0 pa-0"
-        v-if="club_entries.length !== 0"
+        v-if="club_entries?.length !== 0"
       >
         <div class="text-h5 font-weight-bold">Клубы</div>
   

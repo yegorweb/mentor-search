@@ -1,18 +1,26 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { ref, Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import BackButton from '../components/BackButton.vue';
-import EntryService from '../services/EntryService';
 import { useAuth } from '../stores/auth';
 import { useField, useForm } from 'vee-validate'
+import { EntryType } from '../types/entry_types';
+import { useEntry } from '../stores/entry';
+import Entry from '../types/entry.interface';
+import { User } from '../types/user.interface';
 
-let user = useAuth().getUser()
+let user: User = useAuth().getUser() as any
 let router = useRouter()
 
-let props = defineProps(['id'])
-let entry = (await EntryService.get_by_id(props.id)).data
+let entryStore = useEntry()
 
-let variants = [{
+let props = defineProps(['id'])
+let entry: Entry = await entryStore.get_by_id(props.id) as any
+
+let variants: {
+  name: string,
+  type: EntryType
+}[] = [{
   name: 'Запись',
   type: 'mentor'
 }, 
@@ -24,24 +32,24 @@ let variants = [{
   name: 'Клуб',
   type: 'club'
 }]
-let variant = ref(entry.type)
+let variant: Ref<EntryType> = ref(entry.type)
 
-let has_limit = ref(entry.limit ? true : false)
+let has_limit = ref(entry.limit ? true : false) // я не тупой, это фича
 let loading = ref(false)
 
 const { meta, handleSubmit, handleReset, validate } = useForm({
   validationSchema: {
-    subject(value) {
+    subject(value: string) {
       if (!value || value.length < 4) return 'слишком короткий заголовок'
       if (value.length > 25) return 'слишком длинный заголовок'
       return true
     },
-    description(value) {
+    description(value: string) {
       if (!value || value.length < 20) return 'слишком короткое описание' 
       if (value.length > 150) return 'слишком длинное описание'
       return true
     },
-    limit(value) {
+    limit(value: string) {
       if (!has_limit.value) return true
       if (!value || value.length === 0) return 'заполните поле или уберите лимит'
       if (!/^\d+$/.test(value) || !(Number(value)>0)) return 'неверное значение'
@@ -62,12 +70,12 @@ limit.value.value = entry.limit
 const submit = handleSubmit(async values => {
   loading.value = true
 
-  let value = Object.assign(values, {})
-  has_limit.value ? null : delete value.limit;
+  let value = Object.assign(values, {
+    type: variant.value,
+    limit: has_limit.value ? limit.value.value : undefined
+  })
 
-  console.log(value)
-
-  await EntryService.edit(props.id, value)
+  await entryStore.edit(props.id, value)
   .then(() => router.push(`/user/${user._id}`))
   .finally(() => loading.value = false)
 })
@@ -93,7 +101,7 @@ const submit = handleSubmit(async values => {
         <v-form @submit.prevent="submit" class="d-flex flex-column align-center justify-center w-100">
           <v-text-field
             label="Заголовок"
-            :placeholder="variant == 'Клуб' ? 'Клуб любителей Мафии' : 'Биология'"
+            :placeholder="variant === 'club' ? 'Клуб любителей Мафии' : 'Биология'"
             v-model="subject.value.value"
             :error-messages="subject.errorMessage.value"
             variant="solo"

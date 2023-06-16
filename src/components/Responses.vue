@@ -4,11 +4,13 @@ import UserService from '../services/UserService';
 import EntryContainer from './entries/EntryContainer.vue';
 import Slave from './Slave.vue';
 import { useResponsesShowing } from '../stores/responsesShowing'
+import { useUser } from '../stores/user';
 
 let { showing, responses } = storeToRefs(useResponsesShowing())
-console.log(showing.value)
 
-let responses_list = responses.value.map(async user_id => (await UserService.get_by_id(user_id)).data)
+let userStore = useUser()
+let responses_list = responses.value.map(async user_id => await userStore.get_by_id(user_id))
+console.log(responses_list)
 
 function getTopGap() {
 	return window.scrollY + 20
@@ -17,7 +19,10 @@ function getTopGap() {
 
 <template>
   <div class="box" v-show="showing">
-		<v-container :style="`margin-top: ${getTopGap()}px`">
+		<v-col 
+			:style="`margin-top: ${getTopGap()}px`"
+			cols="12" lg="8" xl="6"
+		>
 			<EntryContainer>
 				<v-icon @click="showing = false">mdi-close</v-icon>
 				<v-row class="flex-column">
@@ -30,7 +35,7 @@ function getTopGap() {
 					</v-row>
 				</v-row>
 			</EntryContainer>
-		</v-container>
+		</v-col>
 	</div>
 </template>
 
@@ -43,5 +48,6 @@ function getTopGap() {
 	left: 0;
 	z-index: 9999999;
 	background: rgba($color: #000000, $alpha: 0.2);
+	display: flex;
 }
 </style>

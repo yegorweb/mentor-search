@@ -15,5 +15,7 @@ registerPlugins(app)
 
 app.use(Toast).use(pinia)
 
+await useAuth().checkAuth()
+
 app.use(router)
 app.mount("#app")

@@ -3,19 +3,19 @@ import MainTitle from '@/components/MainTitle.vue'
 import SchoolService from '../../services/SchoolService'
 import UserService from '../../services/UserService'
 import Slave from '@/components/Slave.vue'
+import { useSchool } from '../../stores/school'
+import { useUser } from '../../stores/user'
 
 let props = defineProps(['id'])
-
 let id = props.id
 
-let school = (await SchoolService.get_by_id(id)).data
-
-let users = (await UserService.get_all_by_school(id)).data
+let school = await useSchool().get_by_id(id)
+let users = await useUser().get_all_by_school(id)
 </script>
 
 <template>
   <v-container>
-    <MainTitle>{{ school.town.name }}, {{ school.name }}</MainTitle>
+    <MainTitle>{{ school.town.name +', '+ school.name }}</MainTitle>
 
     <v-row class="mt-8">
       <v-col
