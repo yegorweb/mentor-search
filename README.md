@@ -12,7 +12,7 @@
 <!--[![Go to site](https://img.shields.io/badge/go%20to%20site-Click%20me-yellow?style=for-the-badge&logo=appveyor)](https://yegorweb.github.io/lyrics-creator/)-->
 &nbsp;
 
-## **Состояние проекта**:&nbsp; :x: Не сделан &nbsp;&nbsp;![30%](https://progress-bar.dev/30)
+## **Состояние проекта**:&nbsp; :x: Почти сделан &nbsp;&nbsp;![95%](https://progress-bar.dev/95)
 &nbsp;
 
 Проект для моей любимой Гимназии №8. Любой умный человек сможет рассказать о своем стремлении к наставничеству, а любой другой человек сможет откликнуться. В проекте используются [Tauri](https://tauri.app), Vite, Vue, `мозг` (самое важное)

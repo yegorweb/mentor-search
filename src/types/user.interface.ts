@@ -14,12 +14,11 @@ export interface User {
   avatar_url?: string
   ranks: string[]
   achievements: Achievement[]
-  answers?: Answer[]
+  answers: Answer[]
   contacts: Contact[]
   grade: number
   town: Town
   school: School
-  administered_schools?: School[]
   date: number
   roles: Roles
 }

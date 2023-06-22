@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import AchievementsService from '../services/AchievementsService';
+import RolesService from '../services/RolesService';
 import { useAuth } from '../stores/auth';
+import { User } from '../types/user.interface';
 
 let router = useRouter()
 
 let auth = useAuth()
+await auth.checkAuth()
+
 let isAuth = auth.getAuthStatus()
 let user = auth.getUser()
 
@@ -46,7 +51,7 @@ let nav_buttons = [
     route: '/admin',
     title: 'Управление',
     group: false,
-    condition: user?.roles.includes('global-admin') || user?.roles.includes('school-admin')
+    condition: user && RolesService.isSomeAdmin(user.roles)
   },
   {
     route: `/user/${user?._id}`,
@@ -62,7 +67,7 @@ let nav_buttons = [
   },
   {
     route: '/myAchievements',
-    title: 'Мои награды',
+    title: `Мои награды (${user ? AchievementsService.getActiveAchievements(user.achievements).length : 0})`,
     group: false,
     condition: isAuth
   },
@@ -84,15 +89,28 @@ let nav_buttons = [
 <template>
   <v-app>
     <!-- Header -->
-    <v-app-bar :elevation="0" density="compact" color="primary">
-      <v-container class="d-flex align-center header-container justify-space-between">
+    <v-app-bar 
+      :elevation="0" 
+      density="compact" 
+      color="primary"
+      style="padding-left: calc(100vw - 100%);"
+    >
+      <v-container 
+        class="d-flex align-center header-container justify-space-between"
+      >
         <v-icon 
           class="pt-5 pr-5 pb-5 pl-4"
           icon="mdi-menu"
           @click="navigation_drawer_is_open = !navigation_drawer_is_open"
         />
 
-        <router-link style="text-decoration: none;color: #FFFFFF;" to="/" class="header-title text-h6 font-weight-bold text-no-wrap">Ищу наставника</router-link>
+        <router-link 
+          style="text-decoration: none;color: #FFFFFF;" 
+          to="/" 
+          class="header-title text-h6 font-weight-bold text-no-wrap"
+        >
+          Ищу наставника
+        </router-link>
 
         <v-avatar 
           class="cursor-pointer" 

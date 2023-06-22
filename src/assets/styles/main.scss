@@ -1,3 +1,20 @@
+@use "sass:math";
+@use "sass:list";
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import './fonts.css'; 
+
+@mixin adaptive-value-h($property, $value, $min, $max) {
+  @if ($max == 0) {
+    @media screen and (min-width: $min) {
+      #{$property}: $value;
+    }
+  } @else {
+    @media screen and (min-width: $min) and (max-width: $max) {
+      #{$property}: $value;
+    }
+  }
+}
+
 body, html {
   margin: 0;
   padding: 0;
@@ -36,4 +53,16 @@ $font-family: 'Montserrat';
   color: red;
   font-weight: 8px;
   text-align: start;
+}
+
+.lh-1 { 
+  line-height: 1;
+}
+
+.entries-container {
+  width: 100%;
+  display: grid;
+  @include adaptive-value-h(grid-template-columns, 1fr, 0px, 599px);
+  @include adaptive-value-h(grid-template-columns, 1fr 1fr, 600px, 0);
+  gap: 24px;
 }

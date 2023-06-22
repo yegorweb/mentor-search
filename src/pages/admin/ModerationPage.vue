@@ -5,25 +5,27 @@ import EntryService from '../../services/EntryService'
 import { useEntry } from '../../stores/entry';
 
 let entries = await useEntry().get_entries_to_moderation()
+console.log(entries)
 </script>
 
 <template>
   <v-container>
     <MainTitle>Модерация</MainTitle>
 
-    <v-row class="mt-4">
-      <v-col 
+    <div class="mt-6 entries-container">
+      <MentorEntry 
         v-for="entry in entries"
         :key="entry._id"
-        cols="12" sm="6" xs="12"
-      >
-        <MentorEntry show_location :entry="entry" />
-      </v-col>
+        show_location 
+        :entry="entry" 
+      />
+    </div>
 
-      <v-col 
-        class="text-h6 font-weight-medium"
-        v-if="entries.length === 0"
-      >Все записи проверены</v-col>
-    </v-row>
+    <div 
+      class="text-h6 font-weight-medium"
+      v-if="entries.length === 0"
+    >
+      Все записи проверены
+    </div>
   </v-container>
 </template>

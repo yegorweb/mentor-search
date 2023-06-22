@@ -3,12 +3,13 @@ import BackButton from '../../components/BackButton.vue';
 import EntryContainer from '../../components/entries/EntryContainer.vue';
 import MentorEntry from '../../components/entries/MentorEntry.vue';
 import { useAuth } from '../../stores/auth';
-import { ref, Ref } from 'vue';
+import { ref, watch } from 'vue';
 import { onBeforeRouteUpdate, useRouter } from 'vue-router';
 import { useUser } from '../../stores/user';
 import { useEntry } from '../../stores/entry';
 import { User } from '../../types/user.interface';
 import Entry from '../../types/entry.interface';
+import RolesService from '../../services/RolesService';
 
 let props = defineProps(['id'])
 let id = props.id
@@ -19,9 +20,14 @@ let auth = useAuth()
 let viewer = auth.getUser()
 
 let userStore = useUser()
-let user: Ref<User> = ref(viewer?._id === id ? viewer : await userStore.get_by_id(id)) as any
+let user = ref<User>(viewer?._id === id ? viewer : await userStore.get_by_id(id) as any)
 let my_page = ref(viewer?._id === id)
-let viewer_is_admin = (viewer?.roles.includes('school-admin') && viewer?.administered_schools?.includes(user.value?.school)) || viewer?.roles?.includes('global-admin')
+let viewer_is_admin = viewer && (
+  RolesService.isAdminOfSchool(viewer.roles, user.value.school._id) || 
+  RolesService.isAdminOfTown(viewer.roles, user.value.town._id) || 
+  RolesService.isGlobalAdmin(viewer.roles)
+)
+let viewer_is_some_admin = viewer && RolesService.isSomeAdmin(viewer.roles)
 
 let entryStore = useEntry()
 
@@ -34,10 +40,10 @@ let club_entries = ref(entries.value?.filter(entry => entry.type === 'club' && e
 let entries_on_moderation = ref(entries.value?.filter(entry => entry.on_moderation === true || (my_page.value && entry.on_moderation === false && entry.moderation_result === false)))
 
 function getType(): string {
-  if (user.value.roles?.includes('school-admin') || user.value.roles?.includes('global-admin')) {
+  if (RolesService.isSomeAdmin(user.value.roles)) {
     return 'админ'
   }
-  if (user.value.roles?.includes('mentor')) {
+  if (user.value.roles.includes('mentor')) {
     return 'наставник'
   }
 
@@ -59,18 +65,27 @@ onBeforeRouteUpdate(async () => {
   my_page.value = viewer?._id === id
 })
 
-let responsed_entries: Ref<Entry[]|undefined> = ref([])
-let responsed_mentorship_entries: Ref<Entry[]|undefined> = ref([])
-let responsed_lesson_entries: Ref<Entry[]|undefined> = ref([])
-let responsed_club_entries: Ref<Entry[]|undefined> = ref([])
+let responsed_entries = ref<Entry[]|undefined>([])
+let responsed_mentorship_entries = ref<Entry[]|undefined>([])
+let responsed_lesson_entries = ref<Entry[]|undefined>([])
+let responsed_club_entries = ref<Entry[]|undefined>([])
 
-if (!user.value.roles.includes('mentor')) {
+if (RolesService.isMentor(user.value.roles)) {
   responsed_entries.value = await userStore.get_my_responses()
 
   responsed_mentorship_entries.value = responsed_entries.value?.filter(entry => entry.type === 'mentor')
   responsed_lesson_entries.value = responsed_entries.value?.filter(entry => entry.type === 'lesson')
   responsed_club_entries.value = responsed_entries.value?.filter(entry => entry.type === 'club')
 }
+
+
+function removeRank(item: string) {
+  user.value.ranks.splice(user.value.ranks.indexOf(item), 1)
+}
+
+watch(user.value, async (value) => {
+  await userStore.changeUser(value)
+})
 </script>
 
 <template>
@@ -103,7 +118,7 @@ if (!user.value.roles.includes('mentor')) {
           class="d-flex mt-1 align-center justify-center justify-sm-start flex-wrap flex-row font-weight-bold text-text_gray"
         >
           <div>{{ getType() }}</div>
-          <div v-if="user.ranks && user.ranks.length != 0">
+          <div class="text-center" v-if="user.ranks && user.ranks.length != 0">
             <span><v-icon icon="mdi-star"></v-icon></span>
             {{ user.ranks.join(', ') }}
           </div>
@@ -153,38 +168,78 @@ if (!user.value.roles.includes('mentor')) {
 
     
     <!-- =================== Other ==================== -->
-    
+
+    <template v-if="(viewer_is_admin || viewer_is_some_admin) && !my_page">
+      <div class="text-h5 font-weight-bold mt-8">Управление</div>
+
+      <v-col cols="12" lg="6">
+        <v-combobox
+          v-model="user.ranks"
+          chips
+          clearable
+          label="Звания"
+          multiple
+          prepend-icon="mdi-chevron-triple-up"
+          density="comfortable"
+          variant="solo"
+          class="mt-2"
+          hide-details
+        >
+          <template v-slot:selection="{ attrs, item, select, selected }">
+            <v-chip
+              v-bind="attrs"
+              :model-value="selected"
+              closable
+              @click="select"
+              @click:close="removeRank(item)"
+            >
+              <strong>{{ item }}</strong>&nbsp;
+            </v-chip>
+          </template>
+        </v-combobox>
+      </v-col>
+
+      <v-btn
+        prepend-icon="mdi-star"
+      >
+        Дать награду
+      </v-btn>
+
+    </template>
+
     <template v-if="(my_page || viewer_is_admin) && entries_on_moderation && entries_on_moderation.length>0">
       <v-row
-        class="flex-column mt-8 ma-0 pa-0 w-100"
-        v-if="entries_on_moderation && entries_on_moderation.length > 0"
+        class="flex-column mt-8 w-100"
       >
         <div class="text-h5 font-weight-bold">На модерации</div>
   
-        <v-row class="w-100 mt-4 flex-row flex-wrap">
-          <v-col
+        <div class="mt-6 entries-container">
+          <MentorEntry 
             v-for="entry in entries_on_moderation"
             :key="entry._id"
-            cols="12" sm="6" xs="12"
-          >
-            <MentorEntry hide_user :entry="entry" :show_location="false" />
-          </v-col>
-        </v-row>
+            hide_user 
+            :entry="entry" 
+            :show_location="false" 
+          />
+        </div>
       </v-row>
     </template>
 
     <template v-if="my_page && !user.roles.includes('mentor') && responsed_entries && responsed_entries.length>0">
       <div class="text-h5 mb-4 mt-8 font-weight-bold">Мои отклики</div>
 
-      <v-row v-if="responsed_mentorship_entries?.length !== 0" class="pt-2 pb-4">
-        <v-col 
+      <div 
+        v-if="responsed_mentorship_entries?.length !== 0" 
+        class="pt-2 pb-4 entries-container"
+      >
+        <MentorEntry 
           v-for="entry in responsed_mentorship_entries"
           :key="entry?._id"
-          cols="12" sm="6" xs="12"
-        >
-          <MentorEntry hide_user :entry="entry" :show_location="false" />
-        </v-col>
-      </v-row>
+          hide_user 
+          :entry="entry" 
+          :show_location="false" 
+        />
+      </div>
 
       <!-- Lessons -->
       <v-row
@@ -194,17 +249,19 @@ if (!user.value.roles.includes('mentor')) {
         <div 
           class="text-h5 mb-4 font-weight-bold" 
           v-if="responsed_mentorship_entries?.length!==0"
-        >Уроки</div>
+        >
+          Уроки
+        </div>
 
-        <v-row class="w-100 flex-row flex-wrap">
-          <v-col
+        <div class="entries-container">
+          <MentorEntry 
             v-for="entry in responsed_lesson_entries"
             :key="entry._id"
-            cols="12" sm="6" xs="12"
-          >
-            <MentorEntry hide_user :entry="entry" :show_location="false" />
-          </v-col>
-        </v-row>
+            hide_user 
+            :entry="entry" 
+            :show_location="false" 
+          />
+        </div>
       </v-row>
 
       <!-- Clubs -->
@@ -217,35 +274,35 @@ if (!user.value.roles.includes('mentor')) {
           v-if="responsed_mentorship_entries?.length!==0 || responsed_lesson_entries?.length!==0"
         >Клубы</div>
 
-        <v-row class="w-100 flex-row flex-wrap">
-          <v-col
+        <div class="entries-container">
+          <MentorEntry 
             v-for="entry in responsed_club_entries"
             :key="entry._id"
-            cols="12" sm="6" xs="12"
-          >
-            <MentorEntry hide_user :entry="entry" :show_location="false" />
-          </v-col>
-        </v-row>
+            hide_user 
+            :entry="entry" 
+            :show_location="false" 
+          />
+        </div>
       </v-row>
     </template>
 
     <template v-if="user.roles.includes('mentor') || (entries && entries.length>0)">
       <!-- Mentor -->
       <v-row
-        class="flex-column mt-8 ma-0 pa-0 w-100"
+        class="flex-column mt-8 w-100 ma-0 pa-0"
         v-if="mentorship_entries?.length !== 0"
       >
         <div class="text-h5 font-weight-bold">Наставник по</div>
   
-        <v-row class="w-100 mt-4 flex-row flex-wrap">
-          <v-col
+        <div class="entries-container mt-6">
+          <MentorEntry 
             v-for="entry in mentorship_entries"
             :key="entry._id"
-            cols="12" sm="6" xs="12"
-          >
-            <MentorEntry hide_user :entry="entry" :show_location="false" />
-          </v-col>
-        </v-row>
+            hide_user 
+            :entry="entry" 
+            :show_location="false" 
+          />
+        </div>
       </v-row>
   
       <!-- Lessons -->
@@ -255,15 +312,15 @@ if (!user.value.roles.includes('mentor')) {
       >
         <div class="text-h5 font-weight-bold">Уроки</div>
   
-        <v-row class="w-100 mt-4 flex-row flex-wrap">
-          <v-col
+        <div class="mt-4 entries-container">
+          <MentorEntry 
             v-for="entry in lesson_entries"
             :key="entry._id"
-            cols="12" sm="6" xs="12"
-          >
-            <MentorEntry hide_user :entry="entry" :show_location="false" />
-          </v-col>
-        </v-row>
+            hide_user 
+            :entry="entry" 
+            :show_location="false" 
+          />
+        </div>
       </v-row>
   
       <!-- Clubs -->
@@ -273,15 +330,15 @@ if (!user.value.roles.includes('mentor')) {
       >
         <div class="text-h5 font-weight-bold">Клубы</div>
   
-        <v-row class="w-100 mt-4 flex-row flex-wrap">
-          <v-col
+        <div class="mt-4 entries-container">
+          <MentorEntry 
             v-for="entry in club_entries"
             :key="entry._id"
-            cols="12" sm="6" xs="12"
-          >
-            <MentorEntry hide_user :entry="entry" :show_location="false" />
-          </v-col>
-        </v-row>
+            hide_user 
+            :entry="entry" 
+            :show_location="false" 
+          />
+        </div>
       </v-row>
     </template>
   </v-container>

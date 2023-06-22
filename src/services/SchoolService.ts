@@ -10,6 +10,9 @@ export default {
   async get_all_in_town(_id: string) {
     return $api.get('/school/get-all-in-town', { params: { _id }})
   },
+  async get_administered_schools() {
+    return $api.get('/school/get-administered-schools')
+  },
   async create(name: string) {
     return $api.post('school/create', { name })
   },

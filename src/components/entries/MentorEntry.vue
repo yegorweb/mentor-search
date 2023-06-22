@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { ref, Ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { schools } from '../../fakeDB/schools';
-import EntryService from '../../services/EntryService';
-import UserService from '../../services/UserService';
+import RolesService from '../../services/RolesService';
 import { useAuth } from '../../stores/auth';
-import { useResponsesShowing } from '../../stores/responsesShowing';
+import { useEntry } from '../../stores/entry';
+import { useUser } from '../../stores/user';
+import Entry from '../../types/entry.interface';
+import { User } from '../../types/user.interface';
+import Slave from '../Slave.vue';
 import EntryContainer from './EntryContainer.vue';
 
 let props = defineProps({
@@ -26,32 +27,48 @@ let props = defineProps({
   }
 })
 
-let { showing, responses } = storeToRefs(useResponsesShowing())
-
-let user = useAuth().getUser()
-let entry = ref(props.entry)
-let response_loading = ref(false)
-let delete_loading = ref(false)
-let responsed = ref(entry.value.responses.includes(user?._id))
-
 let router = useRouter()
 
-let in_user_own = entry.value.author._id == user?._id
-let user_is_admin = (user?.roles?.includes('school-admin') && user?.administered_schools?.includes(entry.value.school._id)) || user?.roles?.includes('global-admin')
+let userStore = useUser()
 
-let status = ref(responsed.value ? 'Убрать отклик' : 'Откликнуться')
+let showing = ref(false)
+let responses = ref<string[]>([])
+let responses_list = responses.value.map(async (user_id) => (await userStore.get_by_id(user_id)))
+
+let auth = useAuth()
+let user = auth.getUser()
+let isAuth = auth.getAuthStatus()
+
+let entryStore = useEntry()
+let entry = ref<Entry>(props.entry as any)
+let response_loading = ref(false)
+let delete_loading = ref(false)
+let responsed = ref<boolean>(user && entry.value.responses.includes(user._id))
+
+let in_user_own = user && entry.value.author._id === user._id
+let user_is_admin = user && (
+  RolesService.isAdminOfSchool(user.roles, entry.value.school._id) || 
+  RolesService.isAdminOfTown(user.roles, entry.value.town._id) || 
+  RolesService.isGlobalAdmin(user.roles)
+)
+
+let status = ref<string>(responsed.value ? 'Убрать отклик' : 'Откликнуться')
 async function response() {
+  if (!user)
+    return
+
   response_loading.value = true
-  if (entry.value.responses.includes(user?._id)) {
-    await EntryService.cancel_response(entry.value._id).then(() => {
+
+  if (entry.value.responses.includes(user._id)) {
+    await entryStore.cancel_response(entry.value._id).then(() => {
       entry.value.responses = entry.value.responses.filter(item => item !== user?._id)
       status.value = 'Откликнуться'
       responsed.value = false
     }).finally(() => response_loading.value = false)
     return
   }
-  await EntryService.response(entry.value._id).then(() => {
-    entry.value.responses.push(user?._id)
+  await entryStore.response(entry.value._id).then(() => {
+    entry.value.responses.push((user as User)._id)
     status.value = 'Убрать отклик'
     responsed.value = true
   }).finally(() => response_loading.value = false)
@@ -60,7 +77,7 @@ async function response() {
 async function delete_entry() {
   delete_loading.value = true
 
-  await EntryService.delete(entry.value._id).finally(() => delete_loading.value = false)
+  await entryStore.delete_entry(entry.value._id).finally(() => delete_loading.value = false)
 }
 
 let approve_loading = ref(false)
@@ -71,7 +88,7 @@ let disallow_disabled = ref(false)
 async function approve() {
   approve_loading.value = true
 
-  await EntryService.verify(entry.value._id, true)
+  await entryStore.verify(entry.value._id, true)
   .then(() => {
     approve_disabled.value = true
     disallow_disabled.value = false
@@ -81,7 +98,7 @@ async function approve() {
 async function disallow() {
   disallow_loading.value = true
 
-  await EntryService.verify(entry.value._id, false)
+  await entryStore.verify(entry.value._id, false)
   .then(() => {
     disallow_disabled.value = true
     approve_disabled.value = false
@@ -103,8 +120,18 @@ async function disallow() {
           color="blue"
         />
         <div class="d-flex ml-4 flex-column justify-start">
-          <div class="font-author font-weight-semibold">{{ entry.author.name }}</div>
-          <div class="text-gray text-body-2">{{ entry.author.ranks?.join(', ') }}</div>
+          <div
+            style="line-height: 1.2;"
+            class="font-author font-weight-semibold"
+          >
+            {{ entry.author.name }}
+          </div>
+          <div 
+            class="text-gray lh-1 text-body-2" 
+            v-if="entry.author.ranks.length>0"
+          >
+            {{ entry.author.ranks?.join(', ') }}
+          </div>
         </div>
       </v-row>
       
@@ -126,7 +153,7 @@ async function disallow() {
         v-if="entry.town._id != user?.town?._id || entry.school._id != user?.school?._id || props.show_location"
       >
         <span><v-icon icon="mdi-map-marker" class="mr-1" color="teal-lighten-1"></v-icon></span>
-        <span v-if="entry.town._id !== user.town._id">{{ entry.town.name + ', ' }}
+        <span v-if="entry.town._id !== user?.town._id">{{ entry.town.name + ', ' }}
         </span>{{ entry.school.name }}
       </div>
   
@@ -135,11 +162,13 @@ async function disallow() {
           v-if="!in_user_own && !entry.on_moderation"
           @click="response"
           :loading="response_loading"
-          :disabled="!responsed && entry.limit && (entry.limit - entry.responses.length === 0)"
+          :disabled="!isAuth || (entry.limit ? entry.limit - entry.responses.length === 0 : false)"
           size="small"
           variant="tonal" 
           :class="`text-body-2 pl-5 pr-5 mr-3 font-weight-semibold ${responsed ? 'bg-accent' : 'bg-button'}`"
-        >{{ status }}</v-btn>
+        >
+          {{ status }}
+        </v-btn>
         <v-btn 
           size="small"
           :to="`/user/${entry.author._id}`"
@@ -151,10 +180,39 @@ async function disallow() {
         <v-btn 
           size="small"
           variant="tonal" 
-          v-if="in_user_own && entry.responses.length !== 0"
+          v-if="in_user_own && entry.responses.length > 0"
           class="text-body-2 pl-5 pr-5 mr-3 font-weight-semibold bg-button"
-          @click="responses = entry.responses; showing = true"
-        >Посмотреть отклики ({{ entry.responses.length }})</v-btn>
+          @click="responses = entry.responses"
+        >
+          Посмотреть отклики ({{ entry.responses.length }})
+
+          <v-dialog 
+            v-model="showing"
+            activator="parent"
+            scrollable
+          >
+            <v-container>
+		          <v-card 
+                style="min-height: 80vh;" 
+                class="rounded-lg w-100"
+              >
+			          <v-icon @click="showing = false">
+                  mdi-close
+                </v-icon>
+			  
+                <v-row class="flex-column">
+			  	        <v-col
+				  	        cols="12"
+		  			        v-for="user in responses_list"
+		  			        :key="user._id"
+			   	        >
+		  			        <Slave :user="user" />
+			  	        </v-col>
+			          </v-row>
+		          </v-card>
+            </v-container>
+	        </v-dialog>
+        </v-btn>
 
         <div class="text-body font-weight-regular" v-if="entry.responses.length === 0 && in_user_own && !entry.on_moderation && entry.moderation_result">Откликов нет</div>
       </div>

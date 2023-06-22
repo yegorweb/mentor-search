@@ -10,9 +10,7 @@ document.title = 'Мои отклики — Ищу наставника'
 let router = useRouter()
 
 let userStore = useUser()
-
 let entries = await userStore.get_my_responses()
-console.log(entries)
 
 let mentorship_entries = entries?.filter(entry => entry.type === 'mentor')
 let lesson_entries = entries?.filter(entry => entry.type === 'lesson')

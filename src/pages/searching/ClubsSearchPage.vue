@@ -89,17 +89,16 @@ function schools_in_town() {
       </v-col>
     </v-row>
     
-    <v-row class="w-100 mt-5 flex-row flex-wrap">
-      <v-col 
-        cols="12" sm="6" xs="12"
-        v-for="entry in mentorship_entries"
-        :key="entry._id"
-      >
-        <Suspense>
-          <MentorEntry :entry="entry" :show_location="school._id === 'all'" />
-        </Suspense>
-      </v-col>
-    </v-row>
+    <div class="mt-8 entries-container">
+      <Suspense>
+        <MentorEntry 
+          v-for="entry in mentorship_entries"
+          :key="entry._id"
+          :entry="entry" 
+          :show_location="school._id === 'all'" 
+        />
+      </Suspense>
+    </div>
 
     <v-col 
       cols="12" sm="6" xs="12" 

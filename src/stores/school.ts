@@ -21,11 +21,17 @@ export const useSchool = defineStore('school', () => {
     } catch {}
   }
 
+  async function get_administered_schools(): Promise<School[] | undefined> {
+    try {
+      return (await SchoolService.get_administered_schools()).data
+    } catch {}
+  }
+
   async function create(name: string) {
     try {
       return (await SchoolService.create(name)).data
     } catch {}
   }
 
-  return { get_by_id, get_all, get_all_in_town, create }
+  return { get_by_id, get_all, get_all_in_town, get_administered_schools, create }
 })

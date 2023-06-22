@@ -9,5 +9,8 @@ export default {
   },
   async get_all_by_school(_id: string) {
     return $api.get('/user/get-all-by-school', { params: { _id } })
-  }
+  },
+  async changeUser(user: object) {
+    return $api.post('/user/change-user', { user })
+  },
 }

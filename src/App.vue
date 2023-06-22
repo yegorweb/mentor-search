@@ -12,6 +12,5 @@ import Responses from '@/components/Responses.vue'
 </template>
 
 <style lang="scss">
-@import '@/assets/styles/main.scss';
-@import '@/assets/styles/animations.scss';
+
 </style>

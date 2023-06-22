@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { reactive, Ref, ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import BackButton from '../components/BackButton.vue'
 import { useAuth } from '../stores/auth'
 import { useField, useForm, FieldContext } from 'vee-validate'
 import Town from '../types/town.interface'
 import School from '../types/school.interface'
-import { Answer } from '../types/answer.type'
-import { Role } from '../types/role.type'
 import { useSchool } from '../stores/school'
 import { useTown } from '../stores/town'
 
@@ -21,21 +19,6 @@ let townStore = useTown()
 
 let towns: Town[] = await townStore.get_all() as any
 let schools: School[] = await schoolStore.get_all() as any
-
-let questions = [
-  {
-    question: 'Я учусь:',
-    answers: ['Отлично, все пятёрки', 'Хорошо', 'Нормально', 'Плохо']
-  },  
-  {
-    question: 'Трудности?',
-    answers: ['Нет', 'Да']
-  },  
-  {
-    question: 'Почему я?',
-    answer: ''
-  }  
-]  
 
 function schools_in_town(): School[] {
   return schools.filter(sch => sch.town._id === town.value.value?._id)
@@ -87,12 +70,6 @@ const { meta, handleSubmit, handleReset, validate } = useForm({
       if (!value) return 'нужно ваше соглашение'
       return true
     },
-    mentor(value: boolean) {
-      return true
-    },
-    answers(value: Answer[]) {
-      return true
-    }
   },
 })
 
@@ -104,7 +81,6 @@ let school: FieldContext<School> = useField('school')
 let grade: FieldContext<number> = useField('grade')
 let agree: FieldContext<boolean> = useField('agree')
 let mentor = ref(false)
-let answers: FieldContext<Answer[]> = useField('answers')
 
 let loading = ref(false)
 
@@ -112,8 +88,7 @@ const submit = handleSubmit(async values => {
   loading.value = true
   
   await auth.registration(Object.assign(values, {
-    roles: ['student', mentor.value ? 'mentor': null],
-    answers: mentor.value ? answers.value.value : undefined
+    roles: ['student', mentor.value ? 'mentor' : null],
   }))
   .then(() => router.push(`/user/${auth.getUser()?._id}`))
   .finally(() => loading.value = false)
@@ -124,9 +99,21 @@ const submit = handleSubmit(async values => {
   <v-container>
     <BackButton />
 
-    <v-col cols="12" xs="12" sm="10" md="7" lg="5" class="mt-4 ma-auto">
-      <v-card class="d-flex flex-column justify-center align-center text-center w-100 pl-6 pr-6 pt-4 pb-6">
-        <div class="text-h6 font-weight-bold">Регистрация</div>
+    <v-col 
+      cols="12" xs="12" sm="10" md="7" lg="5" 
+      class="mt-4 ma-auto"
+    >
+      <v-card 
+        class="d-flex flex-column 
+        justify-center align-center 
+        text-center w-100 pl-6 pr-6 
+        pt-4 pb-6"
+      >
+        <div 
+          class="text-h6 font-weight-bold"
+        >
+          Регистрация
+        </div>
   
         <v-form
           class="mt-4 w-100"
@@ -166,6 +153,7 @@ const submit = handleSubmit(async values => {
             v-model="town.value.value"
             :error-messages="town.errors.value"
             :items="towns"
+            return-object
             item-title="name"
             variant="underlined"
             class="w-100 mb-1 mt-8"
@@ -178,6 +166,7 @@ const submit = handleSubmit(async values => {
             :error-messages="school.errors.value"
             :items="schools_in_town()"
             item-title="name"
+            return-object
             variant="underlined"
             class="w-100 mb-1 mt-8"
           ></v-select>
@@ -210,59 +199,34 @@ const submit = handleSubmit(async values => {
             ></v-radio>
           </v-radio-group>
           
-          <div v-if="mentor" style="gap: 6px;" class="w-100 mt-6 d-flex flex-column flex-nowrap align-start">
-            <div class="d-flex flex-column flex-nowrap align-start mb-2">
-              <div class="text-body-1 font-weight-semibold">Ответьте на несколько вопросов</div>
-              <div class="text-caption text-gray">Это не повлияет на использование</div>
-            </div>
+          <v-checkbox 
+            v-model="agree.value.value"
+            :error-messages="agree.errors.value"
+            class="w-100 mt-4 ma-0 pa-0 align-start"
+          >  
+            <template v-slot:label>
+              <div class="text-start">
+                Принимаю <router-link to="/termsOfUse">пользовательское соглашение</router-link>
+              </div>  
+            </template>  
+          </v-checkbox>  
 
-            <template
-              v-for="(item, index) in questions"
-              :key="index"
-            >
-              <v-radio-group
-                v-if="item.answers"
-                v-model="answers.value.value[index].answer"
-                :label="item.question"
-                column
-              >
-                <v-radio
-                  v-for="answer_item in item.answers"
-                  :key="answer_item"
-                  :label="answer_item"
-                  :value="answer_item"
-                />
-              </v-radio-group>
-
-              <v-text-field 
-                v-if="item.answer"
-                :label="item.question"
-                v-model="answers.value.value[index].answer"
-                variant="solo"
-                class="w-100"
-              />    
-            </template>
-          </div>
-
-            <v-checkbox 
-              v-model="agree"
-              :error-messages="agree.errors.value"
-              class="w-100 mt-4 ma-0 pa-0 align-start"
-            >  
-              <template v-slot:label>
-                <div class="text-start">
-                  Принимаю <router-link to="/termsOfUse">пользовательское соглашение</router-link>
-                </div>  
-              </template>  
-            </v-checkbox>  
-
-          <v-btn type="submit" :disabled="!meta.valid" color="accent" class="mt-6">Отправить</v-btn>
+          <v-btn 
+            type="submit" 
+            :disabled="!meta.valid" 
+            color="accent"
+            class="mt-6"
+          >
+            Отправить
+          </v-btn>
         </v-form>
   
         <div 
           @click="router.push('/login')" 
           class="text-subtitle-1 w-100 cursor-pointer font-weight-semibold pa-1 mt-2"
-        >вход</div>
+        >
+          вход
+        </div>
       </v-card>
     </v-col>
   </v-container>

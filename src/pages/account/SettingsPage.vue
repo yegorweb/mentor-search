@@ -94,10 +94,10 @@ let name: FieldContext<string> = useField('name')
 let description: FieldContext<string> = useField('description')
 let contacts: FieldContext<Contact[]> = useField('contacts')
 
-let town: Ref<Town> = ref(user.town)
-let school: Ref<School> = ref(user.school)
-let grade = ref(user.grade)
-let roles: Ref<Roles> = ref(user.roles)
+let town = ref<Town>(user.town)
+let school = ref<School>(user.school)
+let grade = ref<number>(user.grade)
+let roles = ref(user.roles)
 </script>
 
 <template>

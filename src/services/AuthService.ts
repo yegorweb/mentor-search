@@ -1,5 +1,4 @@
 import $api from '../plugins/axios'
-import { User } from '../types/user.interface'
 
 export default {
 	async registration(user: any) {

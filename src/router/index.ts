@@ -1,23 +1,29 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { onMounted } from 'vue'
+import { createRouter, createWebHistory, RouteLocation, RouteRecordRaw } from 'vue-router'
+import RolesService from '../services/RolesService'
 import { useAuth } from '../stores/auth'
 
-async function checkAuth(): Promise<string|void> {
-  let auth = useAuth()
-  if (!auth.getAuthStatus()) {
-    return '/login'
-  }
+function checkAuth(): string|void {
+  onMounted(() => {
+    let auth = useAuth()
+    if (!auth.getAuthStatus()) {
+      return '/login'
+    }
+  })
 }
 
-async function checkAdmin(): Promise<string|void> {
-  await checkAuth()
-
-  let auth = useAuth()
-  if(!auth.getUser()?.roles.includes('global-admin') && !auth.getUser()?.roles.includes('school-admin')) {
-    return '/login'
-  }
+function checkAdmin(to: RouteLocation, from: RouteLocation): string|void {
+  onMounted(() => {
+    let auth = useAuth()
+    let user = auth.getUser()
+  
+    if(!user || (user && !RolesService.isSomeAdmin(user.roles))) {
+      return from.path
+    }
+  })
 }
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('@/layouts/MainLayout.vue'),

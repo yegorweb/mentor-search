@@ -10,7 +10,7 @@
 
 <style lang="scss" scoped>
 .box {
-  background: #FFFFFF;
+  background: #FFFFFF !important;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
 }
