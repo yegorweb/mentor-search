@@ -90,7 +90,6 @@ const submit = handleSubmit(async values => {
   await auth.registration(Object.assign(values, {
     roles: ['student', mentor.value ? 'mentor' : null],
   }))
-  .then(() => router.push(`/user/${auth.getUser()?._id}`))
   .finally(() => loading.value = false)
 })
 </script>
