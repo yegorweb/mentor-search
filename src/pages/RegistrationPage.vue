@@ -50,7 +50,7 @@ const { meta, handleSubmit, handleReset, validate } = useForm({
     },
     password(value: string) {
       if (!value || value.length === 0) return 'введите пароль'
-      if (value.length < 8) return 'минимум 6 символов'
+      if (value.length < 8) return 'минимум 8 символов'
       if (value.length > 30) return 'слишком длинный пароль'
 
       return true
