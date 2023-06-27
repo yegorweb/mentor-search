@@ -13,6 +13,8 @@ import { User } from '../../types/user.interface';
 import { useTown } from '../../stores/town';
 import { useSchool } from '../../stores/school';
 
+localStorage.setItem('newUser', 'false')
+
 document.title = 'Натройки — Ищу наставника'
 
 let auth = useAuth()
