@@ -71,9 +71,9 @@ const submit = handleSubmit(async values => {
   loading.value = true
 
   let value = Object.assign(values, {
-    type: variant.value,
-    limit: has_limit.value ? limit.value.value : undefined
+    type: variant.value
   })
+  has_limit.value ? value.limit = limit.value.value : null
 
   await entryStore.edit(props.id, value)
   .then(() => router.push(`/user/${user._id}`))
