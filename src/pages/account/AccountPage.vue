@@ -54,17 +54,17 @@ function getType(): string {
 
 document.title = `${user.value.name} — Ищу наставника`
 
-onBeforeRouteUpdate(async () => {
-  id = props.id
-  user.value = viewer?._id === id ? viewer : await userStore.get_by_id(id) as any
-  town.value = user.value.town
-  school.value = user.value.school
-  entries.value = await entryStore.get_by_author(user.value._id)
-  mentorship_entries.value = entries.value?.filter(entry => entry.type === 'mentor')
-  lesson_entries.value = entries.value?.filter(entry => entry.type === 'lesson')
-  club_entries.value = entries.value?.filter(entry => entry.type === 'club')
+onBeforeRouteUpdate((to) => {
+  window.location.href = to.path
+  //user.value = viewer?._id === id ? viewer : await userStore.get_by_id(id) as any
+  //town.value = user.value.town
+  //school.value = user.value.school
+  //entries.value = await entryStore.get_by_author(user.value._id)
+  //mentorship_entries.value = entries.value?.filter(entry => entry.type === 'mentor')
+  //lesson_entries.value = entries.value?.filter(entry => entry.type === 'lesson')
+  //club_entries.value = entries.value?.filter(entry => entry.type === 'club')
 
-  my_page.value = viewer?._id === id
+  //my_page.value = viewer?._id === id
 })
 
 let responsed_entries = ref<Entry[]|undefined>([])
