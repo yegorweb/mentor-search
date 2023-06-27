@@ -11,6 +11,8 @@ import { User } from '../../types/user.interface';
 import Entry from '../../types/entry.interface';
 import RolesService from '../../services/RolesService';
 
+let new_user = eval(localStorage.getItem('newUser') || 'false')
+
 let props = defineProps(['id'])
 let id = props.id
 
@@ -162,6 +164,16 @@ watch(user.value, async (value) => {
           class="text-body-2 mt-2 pl-5 pr-5 font-weight-semibold bg-blue"
         >
           Редактировать профиль
+
+          <v-tooltip
+            v-if="new_user"
+            location="bottom start"
+            activator="parent"
+            color="gray"
+            model-value 
+          >
+            Привет, новый пользователь! Ты можешь добавить больше информации о себе
+          </v-tooltip>
         </v-btn>          
       </div>
     </div>
