@@ -1,6 +1,5 @@
 import { defineStore } from "pinia"
 import AuthService from "../services/AuthService"
-import { ref } from "vue"
 import { User } from "../types/user.interface"
 
 export const useAuth = defineStore('auth', () => {
@@ -15,28 +14,28 @@ export const useAuth = defineStore('auth', () => {
     return user
   }
 
-  async function registration(user: any) {
+  async function registration(data: any) {
     try {
-      const response = await AuthService.registration(user)
+      const response = await AuthService.registration(data)
       localStorage.setItem('token', response.data.accessToken)
 
       isAuth = true
       user = response.data.user
       
-      return { success: true }
+      localStorage.setItem('newUser', 'true')
+      window.location.href = user ? `/user/${user._id}` : '/'
     } catch (err) {}
   }
 
   async function login(email: string, password: string) {
     try {
       const response = await AuthService.login(email, password)
-      console.log(response.data)
       localStorage.setItem('token', response.data.accessToken)
 
       isAuth = true
       user = response.data.user
 
-      return { success: true }
+      window.location.href = user ?`/user/${user._id}` : '/'
     } catch (err) {}
   }
 
@@ -60,6 +59,7 @@ export const useAuth = defineStore('auth', () => {
       localStorage.removeItem('token')
       const response = await AuthService.logout()
 
+      localStorage.setItem('newUser', 'false')
       window.location.href = '/'
     } catch (err) {}
   }
