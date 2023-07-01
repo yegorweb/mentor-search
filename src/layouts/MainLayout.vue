@@ -137,9 +137,10 @@ let nav_buttons = [
           <!-- Usually -->
           <v-list-item
             v-if="!button.group && button.condition"
-            @click="router.push(button.route as string);
-              navigation_drawer_is_open = !navigation_drawer_is_open"
-            style="font-weight: 600;"
+            @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+            exact
+            :to="button.route"
+            class="font-weight-semibold"
           >
             {{ button.title }}
           </v-list-item>
@@ -154,6 +155,7 @@ let nav_buttons = [
                 v-bind="props"
                 :key="button.title"
                 style="font-weight: 600;"
+                class="font-weight-semibold"
               >
                 {{ button.title }}
               </v-list-item>
@@ -162,9 +164,11 @@ let nav_buttons = [
             <v-list-item
               v-for="btn in button.routes"
               :key="btn.title"
-              @click="router.push(btn.route);
-                navigation_drawer_is_open = !navigation_drawer_is_open"
+              @click="navigation_drawer_is_open = !navigation_drawer_is_open"
               style="font-weight: 600;"
+              class="font-weight-semibold"
+              exact
+              :to="btn.route"
             >
               {{ btn.title }}
             </v-list-item>
