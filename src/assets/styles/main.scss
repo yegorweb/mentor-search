@@ -27,13 +27,31 @@ html {
 }
 
 $font-family: 'Montserrat';
+$body-font-family: 'Montserrat';
 
 .v-application {
   [class*='text-'] {
     // color: #36405a;
-    font-family: $font-family, sans-serif !important;
+    font-family: $font-family !important;
   }
-  font-family: $font-family, sans-serif !important;
+  font-family: $font-family !important;
+}
+
+[class*='text-'] {
+  // color: #36405a;
+  font-family: $font-family !important;
+}
+
+.text-body-2 {
+  font-family: $font-family !important;
+}
+
+* {
+  font-family: $font-family !important;
+}
+
+.montserrat {
+  font-family: $font-family !important;
 }
 
 .cursor-pointer {

@@ -5,12 +5,13 @@ import UserService from '../../services/UserService'
 import Slave from '@/components/Slave.vue'
 import { useSchool } from '../../stores/school'
 import { useUser } from '../../stores/user'
+import { useAuth } from '../../stores/auth'
 
 let props = defineProps(['id'])
 let id = props.id
 
 let school = await useSchool().get_by_id(id)
-let users = await useUser().get_all_by_school(id)
+let users = (await useUser().get_all_by_school(id)).filter(item => item._id !== useAuth().getUser()._id)
 </script>
 
 <template>
