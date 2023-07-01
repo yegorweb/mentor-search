@@ -16,11 +16,11 @@ let user: User = props.user as any
 
 <template>
   <v-row 
-    @click="router.push(`/user/${props.user._id}`)" 
-    class="flex-row ma-0 mb-2 pa-0 flex-nowrap align-center justify-start cursor-pointer"
+    @click="router.push(`/user/${user._id}`)" 
+    class="flex-row ma-0 pa-0 flex-nowrap align-center justify-start cursor-pointer"
   >
     <v-avatar 
-      :image="props.user.avatar_url"
+      :image="user.avatar_url"
       color="blue"
     />
     <div class="d-flex ml-4 flex-column justify-start">
@@ -28,13 +28,13 @@ let user: User = props.user as any
         style="line-height: 1.2;"
         class="font-author font-weight-semibold"
       >
-        {{ props.user.name }}
+        {{ user.name }}
       </div>
       <div 
         class="text-gray lh-1 text-body-2" 
-        v-if="props.user.ranks.length>0"
+        v-if="user.ranks.length>0"
       >
-        {{ props.user.ranks.join(', ') }}
+        {{ user.ranks.join(', ') }}
       </div>
     </div>
   </v-row>
