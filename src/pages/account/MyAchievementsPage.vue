@@ -31,7 +31,7 @@ let achievements = AchievementsService.getActiveAchievements(user.achievements)
 
     <div
       v-if="AchievementsService.getActiveAchievements(achievements).length===0" 
-      class="text-h5 text-center font-weight-semibold"
+      class="text-h5 text-center text-sm-start font-weight-semibold"
     >
       У вас нет действующих наград, трудитесь больше
     </div>
