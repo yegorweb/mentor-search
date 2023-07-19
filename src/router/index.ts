@@ -91,7 +91,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/admin',
         name: 'Admin',
-        component: () => import('@/pages/admin/AdminPage.vue'),
+        component: () => import('@/pages/admin/Index.vue'),
         beforeEnter: checkAdmin
       },
       {
