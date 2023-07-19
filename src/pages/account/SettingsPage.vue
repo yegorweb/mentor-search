@@ -8,7 +8,6 @@ import { useRouter } from 'vue-router';
 import { Contact } from '../../types/contact.type';
 import Town from '../../types/town.interface';
 import School from '../../types/school.interface';
-import { Roles } from '../../types/role.type';
 import { User } from '../../types/user.interface';
 import { useTown } from '../../stores/town';
 import { useSchool } from '../../stores/school';
@@ -173,10 +172,23 @@ let roles = ref(user.roles)
             <v-row>
               <v-col cols="12">
                 <v-row class="flex-column align-start ma-0 pa-0">
-                  <div class="text-body-1 mb-2 font-weight-bold">Контакты</div>
-                  <v-row v-if="contacts.value.value.length>0" class="flex-column mb-2 ma-0 pa-0 w-100" style="gap: 6px;">
+                  <div 
+                    class="text-body-1 mb-2 font-weight-bold"
+                  >
+                    Контакты
+                  </div>
+                  
+                  <v-row 
+                    v-if="contacts.value.value.length>0" 
+                    class="flex-column mb-2 ma-0 pa-0 w-100" 
+                    style="gap: 6px;"
+                  >
                     <TransitionGroup name="list">
-                      <v-row class="flex-row justify-space-between align-stretch ma-0 pa-0" v-for="(contact, i) in contacts.value.value" :key="i">
+                      <v-row 
+                        class="flex-row justify-space-between ma-0 pa-0" 
+                        v-for="(contact, i) in contacts.value.value" 
+                        :key="i"
+                      >
                         <v-text-field
                           placeholder="ВКонтакте"
                           v-model="contact.name"
@@ -186,7 +198,7 @@ let roles = ref(user.roles)
                           hide-details
                         />
                         <v-text-field
-                          placeholder="vk.com/vasiliy"
+                          placeholder="https://vk.com/vasiliy"
                           v-model="contact.link"
                           variant="outlined"
                           density="compact"
@@ -197,23 +209,30 @@ let roles = ref(user.roles)
                           variant="tonal"
                           @click="contacts.value.value = contacts.value.value.filter((item, index) => index !==i)"
                           class="ml-2 font-weight-semibold bg-button"
-                        ><v-icon>mdi-delete</v-icon></v-btn>
+                        >
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
                       </v-row>
                     </TransitionGroup>
                   </v-row>
   
-                  <div class="text-body-2 text-red">{{ contacts.errorMessage.value }}</div>
+                  <div class="text-body-2 text-red">
+                    {{ contacts.errorMessage.value }}
+                  </div>
 
                   <v-btn 
                     prepend-icon="mdi-plus"
                     variant="tonal"
                     :disabled="contacts.value.value.length>3"
-                    @click="contacts.value.value.push({ name: '', link: 'http://' })"
+                    @click="contacts.value.value.push({ name: '', link: 'https://' })"
                     class="text-body-2 pl-5 pr-5 font-weight-semibold bg-button"
-                  >Добавить</v-btn>
+                  >
+                    Добавить
+                  </v-btn>
                 </v-row>
               </v-col>
             </v-row>
+            
             <v-row class="mt-8">
               <v-col cols="12" sm="6">
                 <v-select
