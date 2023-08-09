@@ -158,39 +158,42 @@ const submit = handleSubmit(async values => {
             class="w-100 mb-1 mt-2"
           />
 
-          <v-select
+          <v-autocomplete
             label="Город"
             v-model="town.value.value"
             :error-messages="town.errors.value"
             :items="towns"
+            auto-select-first
             return-object
             item-title="name"
             variant="underlined"
             class="w-100 mb-1 mt-8"
-          ></v-select>
+          ></v-autocomplete>
 
-          <v-select
+          <v-autocomplete
             label="Школа"
             v-model="school.value.value"
             :disabled="!town.value.value"
             :error-messages="school.errors.value"
             :items="schools_in_town()"
+            auto-select-first
             item-title="name"
             return-object
             variant="underlined"
             class="w-100 mb-1 mt-8"
-          ></v-select>
+          ></v-autocomplete>
 
-          <v-select
+          <v-autocomplete
             label="Класс"
             v-model="grade.value.value"
             :error-messages="grade.errors.value"
             :items="grades()"
+            auto-select-first
             item-title="digit"
             item-value="number"
             variant="underlined"
             class="w-100 mb-1 mt-6"
-          ></v-select>
+          ></v-autocomplete>
 
           <v-radio-group
             v-model="mentor"
