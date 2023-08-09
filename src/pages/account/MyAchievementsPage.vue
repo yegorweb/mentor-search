@@ -15,14 +15,14 @@ let achievements = AchievementsService.getActiveAchievements(user.achievements)
   <v-container>
     <MainTitle>Мои награды</MainTitle>
 
-    <v-row class="ma-0 pa-0 mt-4" style="gap: 12px;">
+    <v-row class="mt-4" style="margin: -6px;">
       <template
-        v-for="achiev in achievements"
-        :key="achiev.achievement"      
+        v-for="(achiev, index) in achievements"
+        :key="index"
       >
         <v-col 
           cols="12" md="4" sm="8" xs="12" 
-          class="ml-0 pa-0"
+          style="padding: 6px;"
         >
           <Achievement :achievement="achiev" />
         </v-col>
@@ -30,7 +30,7 @@ let achievements = AchievementsService.getActiveAchievements(user.achievements)
     </v-row>
 
     <div
-      v-if="AchievementsService.getActiveAchievements(achievements).length===0" 
+      v-if="achievements.length === 0" 
       class="text-h5 text-center text-sm-start font-weight-semibold"
     >
       У вас нет действующих наград, трудитесь больше
