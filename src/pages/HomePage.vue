@@ -5,12 +5,12 @@ import { useAuth } from '../stores/auth'
  
 document.title = 'Ищу наставника'
 
-let auth = useAuth()
+let router = useRouter()
 
 let user = auth.getUser()
-let isAuth = auth.getAuthStatus()
+let auth = useAuth()
 
-let buttons = isAuth ? [
+let buttons = user ? [
   {
     route: '/searchMentors',
     text: 'Найти наставника',
@@ -34,13 +34,11 @@ let buttons = isAuth ? [
   },  
 ]
 
-let router = useRouter()
-
 function getType(): string {
   if (!user)
     return 'войдите или зарегистрируйтесь'
 
-  let ranks = user.ranks.length > 0 ? ', '+user.ranks.join(', ') : ''
+  let ranks = user.ranks && user.ranks.length > 0 ? ', '+user.ranks.join(', ') : ''
 
   if (RolesService.isSomeAdmin(user.roles))
     return `админ${ranks}`
@@ -54,7 +52,7 @@ function getType(): string {
 
 <template>
   <v-container>
-    <v-row class="align-center ma-0 pa-0 mt-6 flex-nowrap">
+    <v-row class="align-start align-md-center ma-0 pa-0 mt-6 flex-nowrap">
       <v-avatar :image="user?.avatar_url" size="60" color="blue" />
       <div class="d-flex ml-4 flex-column justify-start">
         <div class="font-weight-bold text-h5">{{ user ? `Привет, ${user.name}` : 'Вы не представились'}}</div>
