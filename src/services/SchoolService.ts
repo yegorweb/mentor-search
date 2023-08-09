@@ -13,7 +13,7 @@ export default {
   async get_administered_schools() {
     return $api.get('/school/get-administered-schools')
   },
-  async create(name: string) {
-    return $api.post('school/create', { name })
+  async create(name: string, town_id: string) {
+    return $api.post('school/create', { name, town_id })
   },
 }
