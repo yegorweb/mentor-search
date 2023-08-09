@@ -31,10 +31,10 @@ let loading = ref(false)
 
 const login = handleSubmit(async values => {
   loading.value = true
-  let status = await auth.login(values.email, values.password)
-
+  await auth.login(values.email, values.password)
   loading.value = false
-  if (!status?.success) return
+  
+  window.location.href = '/'
 })
 </script>
 
