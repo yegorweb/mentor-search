@@ -5,7 +5,6 @@ import EntryService from '../../services/EntryService'
 import { useEntry } from '../../stores/entry';
 
 let entries = await useEntry().get_entries_to_moderation()
-console.log(entries)
 </script>
 
 <template>
