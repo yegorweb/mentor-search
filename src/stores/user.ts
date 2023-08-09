@@ -10,21 +10,25 @@ export const useUser = defineStore('user', () => {
     } catch {}
   }
 
-  async function get_my_responses(): Promise<Entry[] | undefined> {
+  async function get_my_responses(): Promise<Entry[]> {
     try {
       return (await UserService.get_my_responses()).data
-    } catch {}
+    } catch {
+      return []
+    }
   }
 
-  async function get_all_by_school(_id: string): Promise<User[] | undefined> {
+  async function get_all_by_school(_id: string): Promise<User[]> {
     try {
       return (await UserService.get_all_by_school(_id)).data
-    } catch {}
+    } catch {
+      return []
+    }
   }
 
-  async function changeUser(user: object) {
+  async function changeUser(user: object): Promise<void> {
     try {
-      return await UserService.changeUser(user)
+      await UserService.changeUser(user)
     } catch {}
   }
 
