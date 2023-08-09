@@ -49,7 +49,25 @@ export default {
     return roles.includes('global-admin')
   },
 
+  isTownAdmin(roles: string[]): boolean {
+    return roles.some(item => item.split('-')[0] === 'town')
+  },
+
+  isSchoolAdmin(roles: string[]): boolean {
+    return roles.some(item => item.split('-')[0] === 'school')
+  },
+
   isMentor(roles: string[]): boolean {
     return roles.includes('mentor')
+  },
+
+  getType(roles: string[]): string {
+    if (this.isSomeAdmin(roles))
+      return 'админ'
+      
+    if (this.isMentor(roles))
+      return 'наставник'
+      
+    return 'наставляемый'
   },
 }
