@@ -99,7 +99,9 @@ const submit = handleSubmit(async values => {
   await auth.registration(Object.assign(values, {
     roles: ['student', mentor.value ? 'mentor' : null],
   }))
-  .finally(() => loading.value = false)
+
+  loading.value = false 
+  window.location.href = auth.user ? `/user/${auth.user._id}` : '/'
 })
 </script>
 
