@@ -9,5 +9,8 @@ export default {
   },
   async create(name: string) {
     return $api.post('/town/create', { name })
+  },
+  async getAdministeredTowns() {
+    return $api.get('/town/get-administered-towns')
   }
 }
