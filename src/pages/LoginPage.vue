@@ -55,7 +55,8 @@ const login = handleSubmit(async values => {
             placeholder="vasya@ya.ru"
             v-model="email.value.value"
             :error-messages="email.errorMessage.value"
-            variant="underlined"
+            variant="outlined"
+            density="compact"
             class="w-100"
           />          
 
@@ -66,7 +67,8 @@ const login = handleSubmit(async values => {
             @click:append-inner="show_password = !show_password"
             :type="show_password ? 'text' : 'password'"
             :error-messages="password.errorMessage.value"
-            variant="underlined"
+            variant="outlined"
+            density="compact"
             class="w-100"
           />
 
