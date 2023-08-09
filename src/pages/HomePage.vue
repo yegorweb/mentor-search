@@ -7,8 +7,8 @@ document.title = 'Ищу наставника'
 
 let router = useRouter()
 
-let user = auth.getUser()
 let auth = useAuth()
+let user = auth.user
 
 let buttons = user ? [
   {
@@ -90,7 +90,7 @@ function getType(): string {
       <v-col 
         cols="6" sm="5" md="4" lg="2"
       >
-        <v-img src="@/assets/images/rosmol.png" />
+        <v-img class="ma-8" src="@/assets/images/udmurt.png" />
       </v-col>
     </v-row>
   </v-container>
