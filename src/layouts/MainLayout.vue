@@ -11,79 +11,9 @@ let router = useRouter()
 let auth = useAuth()
 await auth.checkAuth()
 
-let isAuth = auth.getAuthStatus()
 let user = auth.getUser()
 
 let navigation_drawer_is_open = ref(false)
-let nav_buttons = [
-  {
-    route: '/',
-    title: 'Главная',
-    group: false,
-    condition: true
-  },
-  {
-    title: 'Поиск',
-    group: true,
-    condition: true,
-    routes: [
-      {
-        route: '/searchMentors',
-        title: 'Наставники',
-      },
-      {
-        route: '/serchLessons',
-        title: 'Уроки',
-      },
-      {
-        route: '/searchClubs',
-        title: 'Клубы'
-      }
-    ]
-  },
-  {
-    route: '/create',
-    title: 'Создать',
-    group: false,
-    condition: isAuth
-  },
-  {
-    route: '/admin',
-    title: 'Управление',
-    group: false,
-    condition: user && RolesService.isSomeAdmin(user.roles)
-  },
-  {
-    route: `/user/${user?._id}`,
-    title: 'Мой профиль',
-    group: false,
-    condition: isAuth
-  },
-  {
-    route: '/myResponses',
-    title: 'Мои отклики',
-    group: false,
-    condition: isAuth
-  },
-  {
-    route: '/myAchievements',
-    title: `Мои награды (${user ? AchievementsService.getActiveAchievements(user.achievements).length : 0})`,
-    group: false,
-    condition: isAuth
-  },
-  {
-    route: '/about',
-    title: 'О проекте',
-    group: false,
-    condition: true
-  },
-  {
-    route: '/termsOfUse',
-    title: 'Пользовательское соглашение',
-    group: false,
-    condition: true
-  },
-]
 </script>
 
 <template>
@@ -98,82 +28,166 @@ let nav_buttons = [
       <v-container 
         class="d-flex align-center header-container justify-space-between"
       >
-        <v-icon 
-          class="pt-5 pr-5 pb-5 pl-4"
-          icon="mdi-menu"
+        <div 
           @click="navigation_drawer_is_open = !navigation_drawer_is_open"
-        />
+          class="cursor-pointer"
+          style="margin: -6px; padding: 6px;"
+        >
+          <v-icon>
+            mdi-menu
+          </v-icon>
+        </div>
 
-        <router-link 
-          style="text-decoration: none;color: #FFFFFF;" 
-          to="/" 
-          class="header-title text-h6 font-weight-bold text-no-wrap"
+        <div 
+          class="header-title cursor-pointer text-white text-h6 font-weight-bold text-no-wrap"
+          style="user-select: none;"
+          @click="router.push('/')" 
         >
           Ищу наставника
-        </router-link>
+        </div>
 
         <v-avatar 
+          @click="router.push(user ? `/user/${user._id}` : '/login')"
+          :image="user?.avatar_url"
           class="cursor-pointer" 
           size="30" 
           color="#FFFFFF" 
-          :image="user?.avatar_url"
-          @click="isAuth ? router.push(`/user/${user?._id}`) : router.push('/login')"
         />
       </v-container>
     </v-app-bar>
 
     <!-- Navigation (menu) -->
     <v-navigation-drawer
+      v-model="navigation_drawer_is_open"
       location="left"
       color="primary"
       temporary
-      v-model="navigation_drawer_is_open"
     >
       <v-list class="d-flex flex-column justify-space-between">
-        <template
-          v-for="button in nav_buttons"
-          :key="button.title"
-        >
-          <!-- Usually -->
-          <v-list-item
-            v-if="!button.group && button.condition"
-            @click="navigation_drawer_is_open = !navigation_drawer_is_open"
-            exact
-            :to="button.route"
-            class="font-weight-semibold"
-          >
-            {{ button.title }}
-          </v-list-item>
 
-          <!-- If group -->
-          <v-list-group
-            v-if="button.group"
-            :value="button.title"
-          >
-            <template v-slot:activator="{ props }">
-              <v-list-item
-                v-bind="props"
-                :key="button.title"
-                style="font-weight: 600;"
-                class="font-weight-semibold"
-              >
-                {{ button.title }}
-              </v-list-item>
-            </template>
-            
+        <v-list-item
+          @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+          exact
+          to="/"
+          class="font-weight-semibold"
+        >
+          Главная
+        </v-list-item>
+
+        <v-list-group>
+          <template v-slot:activator="{ props }">
             <v-list-item
-              v-for="btn in button.routes"
-              :key="btn.title"
-              @click="navigation_drawer_is_open = !navigation_drawer_is_open"
-              style="font-weight: 600;"
+              v-bind="props"
               class="font-weight-semibold"
-              exact
-              :to="btn.route"
             >
-              {{ btn.title }}
+              Поиск
             </v-list-item>
-          </v-list-group>
-        </template>
+          </template>
+          
+          <v-list-item
+            @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+            class="font-weight-semibold"
+            exact
+            to="/searchMentors"
+          >
+            Наставники
+          </v-list-item>
+          
+          <v-list-item
+            @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+            class="font-weight-semibold"
+            exact
+            to="/searchLessons"
+          >
+            Уроки
+          </v-list-item>
+          
+          <v-list-item
+            @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+            class="font-weight-semibold"
+            exact
+            to="/searchClubs"
+          >
+            Клубы
+          </v-list-item>
+        </v-list-group>
+
+        <v-list-item
+          v-if="!user"
+          @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+          exact
+          to="/login"
+          class="font-weight-semibold"
+        >
+          Авторизация
+        </v-list-item>
+        
+        <v-list-item
+          v-if="user"
+          @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+          exact
+          to="/create"
+          class="font-weight-semibold"
+        >
+          Создать
+        </v-list-item>
+
+        <v-list-item
+          v-if="user && RolesService.isSomeAdmin(user.roles)"
+          @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+          to="/admin"
+          class="font-weight-semibold"
+        >
+          Управление
+        </v-list-item>
+
+        <v-list-item
+          v-if="user"
+          @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+          exact
+          :to="`/user/${(user as User)._id}`"
+          class="font-weight-semibold"
+        >
+          Моя страница
+        </v-list-item>
+        
+        <v-list-item
+          v-if="user"
+          @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+          exact
+          to="/myResponses"
+          class="font-weight-semibold"
+        >
+          Мои отклики
+        </v-list-item>
+
+        <v-list-item
+          v-if="user"
+          @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+          exact
+          to="/myAchievements"
+          class="font-weight-semibold"
+        >
+          Мои награды ({{user ? AchievementsService.getActiveAchievements(user.achievements).length : 0 }})
+        </v-list-item>
+
+        <v-list-item
+          @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+          exact
+          to="/about"
+          class="font-weight-semibold"
+        >
+          О проекте
+        </v-list-item>
+
+        <v-list-item
+          @click="navigation_drawer_is_open = !navigation_drawer_is_open"
+          exact
+          to="/termsOfUse"
+          class="font-weight-semibold"
+        >
+          Пользовательское соглашение
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
