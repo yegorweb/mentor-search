@@ -27,8 +27,8 @@ let loading = ref(false)
 let townStore = useTown()
 let schoolStore = useSchool()
 
-let towns = await townStore.get_all()
 let schools = await schoolStore.get_all()
+let towns = townStore.towns
 
 function schools_in_town() {
   return schools?.filter(sch => sch.town._id === town.value._id)

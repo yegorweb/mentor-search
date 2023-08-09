@@ -20,7 +20,7 @@ let townStore = useTown()
 let schoolStore = useSchool()
 let entryStore = useEntry()
 
-let towns: Town[] = await townStore.get_all() as any
+let towns = townStore.towns
 
 
 let town = ref<Town>(user ? 
