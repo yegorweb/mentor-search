@@ -9,17 +9,27 @@ export const useTown = defineStore('town', () => {
     } catch {}
   }
 
-  async function get_all(): Promise<Town[] | undefined> {
+  async function get_all(): Promise<Town[]> {
     try {
       return (await TownService.get_all()).data
-    } catch {}
+    } catch {
+      return []
+    }
   }
 
-  async function create(name: string) {
+  async function create(name: string): Promise<void> {
     try {
-      return (await TownService.create(name)).data
+      await TownService.create(name)
     } catch {}
   }
 
-  return { get_by_id, get_all, create }
+  async function getAdministeredTowns(): Promise<Town[]> {
+    try {
+      return (await TownService.getAdministeredTowns()).data
+    } catch {
+      return []
+    }
+  }
+
+  return { towns, fetchTowns, get_by_id, get_all, create, getAdministeredTowns }
 })
