@@ -2,22 +2,18 @@ import { defineStore } from "pinia"
 import EntryService from "../services/EntryService"
 import Entry from "../types/entry.interface"
 import { EntryType } from "../types/entry_types"
-import School from "../types/school.interface"
-import Town from "../types/town.interface"
-import { useAuth } from "./auth"
 
 export const useEntry = defineStore('entry', () => {
-  let auth = useAuth()
-  let user = auth.getUser()
-
   async function get(
     type: EntryType, 
     town_id: string, 
     school_id: string
-  ): Promise<Entry[] | undefined> {
+  ): Promise<Entry[]> {
     try {
       return (await EntryService.get(type, town_id, school_id)).data
-    } catch {}
+    } catch {
+      return []
+    }
   }
 
   async function get_by_id(_id: string): Promise<Entry | undefined> {
@@ -26,51 +22,55 @@ export const useEntry = defineStore('entry', () => {
     } catch {}
   }
   
-  async function get_by_author(_id: string): Promise<Entry[] | undefined> {
+  async function get_by_author(_id: string): Promise<Entry[]> {
     try {
       return (await EntryService.get_by_author(_id)).data
-    } catch {}
+    } catch {
+      return []
+    }
   }
   
-  async function get_entries_to_moderation(): Promise<Entry[] | undefined> {
+  async function get_entries_to_moderation(): Promise<Entry[]> {
     try {
       return (await EntryService.get_entries_to_moderation()).data
+    } catch {
+      return []
+    }
+  }
+  
+  async function create(entry: object): Promise<void> {
+    try {
+      await EntryService.create(entry)
     } catch {}
   }
   
-  async function create(entry: object) {
+  async function edit(entry_id: string, data: object): Promise<void> {
     try {
-      return await EntryService.create(entry)
-    } catch {}
-  }
-  
-  async function edit(entry_id: string, data: object) {
-    try {
-      return await EntryService.edit(entry_id, data)
+      await EntryService.edit(entry_id, data)
     } catch {}
   }
 
-  async function response(entry_id: string) {
+  async function response(entry_id: string): Promise<void> {
     try {
-      return await EntryService.response(entry_id)
+      await EntryService.response(entry_id)
     } catch {}
   }
 
-  async function cancel_response(entry_id: string) {
+  async function cancel_response(entry_id: string): Promise<void> {
     try {
-      return await EntryService.cancel_response(entry_id)
+      await EntryService.cancel_response(entry_id)
     } catch {}
   }
 
-  async function verify(entry_id: string, moderation_result: boolean) {
+  async function verify(entry_id: string, moderation_result: boolean): Promise<void> {
     try {
-      return await EntryService.verify(entry_id, moderation_result)
+      await EntryService.verify(entry_id, moderation_result)
     } catch {}
   }
 
-  async function delete_entry(entry_id: string) {
+  async function delete_entry(entry_id: string): Promise<void> {
     try {
-      return await EntryService.delete(entry_id)
+      await EntryService.delete(entry_id)
     } catch {}
   }
 
