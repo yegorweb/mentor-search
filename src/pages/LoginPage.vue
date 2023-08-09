@@ -42,7 +42,7 @@ const login = handleSubmit(async values => {
   <v-container class="align-start">
     <BackButton></BackButton>
 
-    <v-col cols="12" xs="12" md="6" lg="5" class="mt-4 ma-auto">
+    <v-col cols="12" xs="12" md="6" lg="4" class="mt-4 ma-auto">
       <v-card 
         class="d-flex flex-column justify-center align-center text-center rounded-lg w-100 pl-6 pr-6 pt-4 pb-6"
       >
