@@ -7,7 +7,7 @@ import { User } from '../../types/user.interface';
 
 document.title = 'Мои награды — Ищу наставника'
 
-let user = useAuth().getUser() as User
+let user = useAuth().user as User
 let achievements = AchievementsService.getActiveAchievements(user.achievements)
 </script>
 

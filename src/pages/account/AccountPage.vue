@@ -17,9 +17,9 @@ let props = defineProps(['id'])
 let id = props.id
 
 let router = useRouter()
+let viewer = auth.user
 
 let auth = useAuth()
-let viewer = auth.getUser()
 
 let userStore = useUser()
 let user = ref<User>(viewer?._id === id ? viewer : await userStore.get_by_id(id) as any)

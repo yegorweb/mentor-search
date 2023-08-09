@@ -15,11 +15,12 @@ import _ from 'lodash'
 document.title = 'Поиск наставников — Ищу наставника'
 
 let auth = useAuth()
-let user = auth.getUser()
 let schoolStore = useSchool()
 let entryStore = useEntry()
 
 let { towns } = useTown()
+
+let user = auth.user
 
 let town = ref<Town>(user ? 
   user.town : 

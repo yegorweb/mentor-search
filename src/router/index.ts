@@ -6,7 +6,7 @@ import { useAuth } from '../stores/auth'
 function checkAuth(): string|void {
   onMounted(() => {
     let auth = useAuth()
-    if (!auth.getAuthStatus()) {
+    if (!auth.user) {
       return '/login'
     }
   })
@@ -15,7 +15,7 @@ function checkAuth(): string|void {
 function checkAdmin(to: RouteLocation, from: RouteLocation): string|void {
   onMounted(() => {
     let auth = useAuth()
-    let user = auth.getUser()
+    let user = auth.user
   
     if(!user || (user && !RolesService.isSomeAdmin(user.roles))) {
       return from.path

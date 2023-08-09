@@ -11,7 +11,7 @@ let router = useRouter()
 let auth = useAuth()
 await auth.checkAuth()
 
-let user = auth.getUser()
+let user = auth.user
 
 let navigation_drawer_is_open = ref(false)
 </script>

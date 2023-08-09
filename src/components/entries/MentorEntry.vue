@@ -28,6 +28,7 @@ let props = defineProps({
 })
 
 let router = useRouter()
+let user = auth.user
 
 let userStore = useUser()
 
@@ -36,7 +37,6 @@ let responses = ref<string[]>([])
 let responses_list = responses.value.map(async (user_id) => (await userStore.get_by_id(user_id)))
 
 let auth = useAuth()
-let user = auth.getUser()
 let isAuth = auth.getAuthStatus()
 
 let entryStore = useEntry()

@@ -19,8 +19,6 @@ document.title = 'Натройки — Ищу наставника'
 let auth = useAuth()
 let router = useRouter()
 
-let user: User = auth.getUser() as any
-
 let tab = ref(1)
 let loading = ref(false)
 
@@ -28,6 +26,7 @@ let townStore = useTown()
 let schoolStore = useSchool()
 
 let schools = await schoolStore.get_all()
+let user = auth.user as User
 let towns = townStore.towns
 
 function schools_in_town() {

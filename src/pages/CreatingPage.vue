@@ -8,7 +8,7 @@ import { useField, useForm } from 'vee-validate'
 import { User } from '../types/user.interface';
 import { EntryType } from '../types/entry_types';
 
-let user: User = useAuth().getUser() as any
+let user = useAuth().user as User
 let router = useRouter()
 
 let variants: {

@@ -9,10 +9,11 @@ import { useTown } from '../../stores/town'
 import { ref } from 'vue'
 import { useField, useForm } from 'vee-validate'
 import CloseButton from '@/components/CloseButton.vue'
+import { User } from '../../types/user.interface'
 
 let router = useRouter()
 
-let user = useAuth().getUser()
+let user = useAuth().user as User
 let schools = await useSchool().get_administered_schools()
 
 let creating_town_status = ref(false)
