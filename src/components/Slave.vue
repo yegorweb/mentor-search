@@ -11,7 +11,7 @@ let props = defineProps({
   }
 })
 
-let user: User = props.user as any
+let user = props.user as User
 </script>
 
 <template>
