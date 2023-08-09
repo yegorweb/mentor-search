@@ -9,10 +9,12 @@ export const useSchool = defineStore('school', () => {
     } catch {}
   }
 
-  async function get_all(): Promise<School[] | undefined> {
+  async function get_all(): Promise<School[]> {
     try {
       return (await SchoolService.get_all()).data
-    } catch {}
+    } catch {
+      return []
+    }
   }
 
   async function get_all_in_town(_id: string): Promise<School[] | undefined> {
@@ -21,15 +23,17 @@ export const useSchool = defineStore('school', () => {
     } catch {}
   }
 
-  async function get_administered_schools(): Promise<School[] | undefined> {
+  async function get_administered_schools(): Promise<School[]> {
     try {
       return (await SchoolService.get_administered_schools()).data
-    } catch {}
+    } catch {
+      return []
+    }
   }
 
-  async function create(name: string) {
+  async function create(name: string, town_id: string): Promise<void> {
     try {
-      return (await SchoolService.create(name)).data
+      await SchoolService.create(name, town_id)
     } catch {}
   }
 
