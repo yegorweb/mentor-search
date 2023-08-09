@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, ref, Ref } from 'vue';
+import { watch, ref, reactive } from 'vue';
 import BackButton from '../../components/BackButton.vue';
 import EntryContainer from '../../components/entries/EntryContainer.vue';
 import { FieldContext, useField, useForm } from 'vee-validate'
@@ -11,6 +11,8 @@ import School from '../../types/school.interface';
 import { User } from '../../types/user.interface';
 import { useTown } from '../../stores/town';
 import { useSchool } from '../../stores/school';
+import RolesService from '../../services/RolesService';
+import _ from 'lodash'
 
 localStorage.setItem('newUser', 'false')
 
@@ -18,57 +20,80 @@ document.title = 'Натройки — Ищу наставника'
 
 let auth = useAuth()
 let router = useRouter()
-
-let tab = ref(1)
-let loading = ref(false)
-
 let townStore = useTown()
 let schoolStore = useSchool()
 
-let schools = await schoolStore.get_all()
 let user = auth.user as User
 let towns = townStore.towns
 
-function schools_in_town() {
-  return schools?.filter(sch => sch.town._id === town.value._id)
-}
+let town = ref<Town>(user.town)
+let grade = ref<number>(user.grade)
+let roles = ref(user.roles)
 
-function grades() {
-  let result = [{ digit: '—', number: 0 }]
-  for (let i = 1; i <= 11; i++) result.push({ digit: i.toString(), number: i })
-  return result
-}
+let mentor = ref(RolesService.isMentor(user.roles))
 
-const { meta, handleSubmit, handleReset } = useForm({
+let tab = ref(0)
+let tabs = ['Редактрировать профиль', 'Изменить пароль', 'Мои подписки']
+let loading = ref(false)
+
+// Form
+
+const { meta, handleSubmit } = useForm({
   initialValues: {
     name: user.name,
-    description: user.description,
-    contacts: user.contacts ? user.contacts : []
+    description: user.description ?? '',
+    contacts: user.contacts ?? [],
+    school: user.school
   },
   validationSchema: {
     name(value: string) {
-      if (!value || value.length < 4) return 'слишком короткое имя'
+      if (value.length < 4) return 'слишком короткое имя'
       if (value.length > 21) return 'слишком длинное имя'
       
       return true
     },
     description(value: string) {
-      if (value && value.length > 150) return 'слишком длинное описание'
+      if (value.length > 150) return 'слишком длинное описание'
       
       return true
     },
     contacts(value: Contact[]) {
       for (let item of value) {
-        if (!item.name || item.name.length===0 || !item.link || item.link.length===0)
+        if (item.name.length === 0 || item.link.length === 0)
           return 'в каждом контакте должны быть название и ссылка'
         if (item.name.length > 15)
           return 'слишком длинное название в контакте'
-        if (item.link.length > 200)
+        if (item.link.length > 500)
           return 'кажется тут слишком длинная ссылка'
       }
       return true
+    },
+    school(value: School | null) {
+      if (!value) return 'укажите'
+
+      return true
     }
-  },
+  }
+})
+
+let name = useField<string>('name')
+let description = useField<string>('description')
+let contacts = useField<Contact[]>('contacts')
+let school = useField<School | null>('school')
+
+let schools_in_town = ref(await schoolStore.get_all_in_town(town.value._id))
+
+// Methods
+
+watch(town, async (new_value, old_value) => {
+  if (_.isEqual(new_value, old_value)) return
+
+  school.value.value = null
+  schools_in_town.value = await schoolStore.get_all_in_town(town.value._id)
+})
+
+watch(mentor, (value) => {
+  value ? roles.value.push('mentor') : roles.value = roles.value.filter(item => item !== 'mentor')
 })
 
 const submit = handleSubmit(async (values) => {
@@ -76,28 +101,20 @@ const submit = handleSubmit(async (values) => {
 
   await auth.updateUser(Object.assign(values, {
     town: town.value._id,
-    school: school.value._id,
+    school: school.value.value?._id,
     grade: grade.value,
     roles: roles.value
   }))
-  .then(() => window.location.href = `/user/${user?._id}`)
-  .finally(() => loading.value = false)
+  router.push(`/user/${user._id}`)
+  
+  loading.value = false
 })
 
-let mentor = ref(user?.roles.includes('mentor'))
-
-watch(mentor, (value: boolean) => {
-  value ? roles.value.push('mentor') : roles.value = roles.value.filter(item => item !== 'mentor')
-})
-
-let name: FieldContext<string> = useField('name')
-let description: FieldContext<string> = useField('description')
-let contacts: FieldContext<Contact[]> = useField('contacts')
-
-let town = ref<Town>(user.town)
-let school = ref<School>(user.school)
-let grade = ref<number>(user.grade)
-let roles = ref(user.roles)
+function grades() {
+  let result = [{ digit: '—', number: 0 }]
+  for (let i = 1; i <= 11; i++) result.push({ digit: i.toString(), number: i })
+  return result
+}
 </script>
 
 <template>
@@ -106,26 +123,20 @@ let roles = ref(user.roles)
 
     <v-row class="mt-1 align-start">
       <v-col cols="12" md="5" lg="4" xl="3">
-        <EntryContainer v-show="tab === 1">
-          <div class="d-flex flex-column">
-            <div 
-              @click="tab = 1" 
-              :class="`cursor-pointer pt-1 pb-1 font-weight-semibold ${tab !== 1 ? 'text-teal-darken-1':''}`"
-            >Редактрировать профиль</div>
-            <div 
-              @click="tab = 2" 
-              :class="`cursor-pointer pt-1 pb-1 font-weight-semibold ${tab !== 2 ? 'text-teal-darken-1':''}`"
-            >Изменить пароль</div>
-            <div 
-              @click="tab = 3" 
-              :class="`cursor-pointer pt-1 pb-1 font-weight-semibold ${tab !== 3 ? 'text-teal-darken-1':''}`"
-            >Мои подписки</div>
+        <EntryContainer class="d-flex flex-column">
+          <div 
+            v-for="(tab_name, index) in tabs"
+            :key="index"
+            @click="tab = index" 
+            :class="`cursor-pointer pt-1 pb-1 font-weight-semibold ${tab !== index ? 'text-teal-darken-1' : ''}`"
+          >
+            {{ tab_name }}
           </div>
         </EntryContainer>
       </v-col>
 
       <v-col>
-        <EntryContainer v-if="tab === 1">
+        <EntryContainer v-if="tab === 0">
           <v-form @submit.prevent="submit">
             <v-row class="mt-1">
               <v-col cols="12" sm="6">
@@ -138,6 +149,7 @@ let roles = ref(user.roles)
                   density="comfortable"
                 />
               </v-col>
+
               <v-col cols="12" sm="6">
                 <v-radio-group
                   label="Кто вы?"
@@ -148,14 +160,16 @@ let roles = ref(user.roles)
                   <v-radio
                     label="Наставляемый"
                     :value="false"
-                  ></v-radio>
+                  />
+                  
                   <v-radio
                     label="Наставник"
                     :value="true"
-                  ></v-radio>
+                  />
                 </v-radio-group>
               </v-col>
             </v-row>
+
             <v-row>
               <v-col cols="12" sm="6">
                 <v-textarea 
@@ -168,97 +182,98 @@ let roles = ref(user.roles)
                 />
               </v-col>
             </v-row>
-            <v-row>
-              <v-col cols="12">
-                <v-row class="flex-column align-start ma-0 pa-0">
-                  <div 
-                    class="text-body-1 mb-2 font-weight-bold"
-                  >
-                    Контакты
-                  </div>
-                  
-                  <v-row 
-                    v-if="contacts.value.value.length>0" 
-                    class="flex-column mb-2 ma-0 pa-0 w-100" 
-                    style="gap: 6px;"
-                  >
-                    <TransitionGroup name="list">
-                      <v-row 
-                        class="flex-row justify-space-between ma-0 pa-0" 
-                        v-for="(contact, i) in contacts.value.value" 
-                        :key="i"
-                      >
-                        <v-text-field
-                          placeholder="ВКонтакте"
-                          v-model="contact.name"
-                          variant="outlined"
-                          density="compact"
-                          class="w-30"
-                          hide-details
-                        />
-                        <v-text-field
-                          placeholder="https://vk.com/vasiliy"
-                          v-model="contact.link"
-                          variant="outlined"
-                          density="compact"
-                          class="ml-2"
-                          hide-details
-                        />
-                        <v-btn 
-                          variant="tonal"
-                          @click="contacts.value.value = contacts.value.value.filter((item, index) => index !==i)"
-                          class="ml-2 font-weight-semibold bg-button"
-                        >
-                          <v-icon>mdi-delete</v-icon>
-                        </v-btn>
-                      </v-row>
-                    </TransitionGroup>
-                  </v-row>
-  
-                  <div class="text-body-2 text-red">
-                    {{ contacts.errorMessage.value }}
-                  </div>
 
-                  <v-btn 
-                    prepend-icon="mdi-plus"
-                    variant="tonal"
-                    :disabled="contacts.value.value.length>3"
-                    @click="contacts.value.value.push({ name: '', link: 'https://' })"
-                    class="text-body-2 pl-5 pr-5 font-weight-semibold bg-button"
+            <div class="d-flex flex-column align-start">
+              <div class="text-body-1 mb-2 font-weight-bold">
+                Контакты
+              </div>
+              
+              <div
+                v-if="contacts.value.value.length > 0" 
+                class="d-flex flex-column mb-2 w-100" 
+                style="gap: 6px;"
+              >
+                <TransitionGroup name="list">
+                  <div 
+                    class="d-flex flex-row justify-space-between" 
+                    v-for="(contact, i) in contacts.value.value" 
+                    :key="i"
                   >
-                    Добавить
-                  </v-btn>
-                </v-row>
-              </v-col>
-            </v-row>
+                    <v-text-field
+                      placeholder="ВКонтакте"
+                      v-model="contact.name"
+                      variant="outlined"
+                      density="compact"
+                      class="w-30"
+                      hide-details
+                    />
+
+                    <v-text-field
+                      placeholder="https://vk.com/vasiliy"
+                      v-model="contact.link"
+                      variant="outlined"
+                      density="compact"
+                      class="ml-2"
+                      hide-details
+                    />
+
+                    <v-btn 
+                      @click="contacts.value.value = contacts.value.value.filter((item, index) => index !==i)"
+                      variant="tonal"
+                      class="ml-2 font-weight-semibold bg-button"
+                    >
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </div>
+                </TransitionGroup>
+              </div>
+
+              <div class="text-body-2 text-red">
+                {{ contacts.errorMessage.value }}
+              </div>
+
+              <v-btn 
+                @click="contacts.value.value.push({ name: '', link: 'https://' })"
+                prepend-icon="mdi-plus"
+                variant="tonal"
+                :disabled="contacts.value.value.length>3"
+                class="text-body-2 pl-5 pr-5 font-weight-semibold bg-button"
+              >
+                Добавить
+              </v-btn>
+            </div>
             
             <v-row class="mt-8">
               <v-col cols="12" sm="6">
-                <v-select
+                <v-autocomplete
                   label="Город"
                   v-model="town"
                   :items="towns"
                   item-title="name"
+                  auto-select-first
+                  no-data-text="Не найдено"
                   return-object
                   density="comfortable"
                   variant="outlined"
                   class="w-100"
                   hide-details
-                ></v-select>
+                />
               </v-col>
   
               <v-col cols="12" sm="6">
-                <v-select
+                <v-autocomplete
                   label="Школа"
-                  v-model="school"
-                  :items="schools_in_town()"
+                  v-model="school.value.value"
+                  :error-messages="school.errorMessage.value"
+                  :items="schools_in_town"
                   item-title="name"
+                  auto-select-first
                   return-object
                   density="comfortable"
                   variant="outlined"
                   class="w-100"
                   hide-details
-                ></v-select>
+                />
               </v-col>
 
               <v-col cols="12" sm="6">
@@ -272,7 +287,7 @@ let roles = ref(user.roles)
                   variant="outlined"
                   class="w-100"
                   hide-details
-                ></v-select>
+                />
               </v-col>
             </v-row>
 
