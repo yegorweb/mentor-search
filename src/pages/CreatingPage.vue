@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, Ref } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import BackButton from '../components/BackButton.vue';
 import EntryService from '../services/EntryService';
 import { useAuth } from '../stores/auth';
-import { FieldContext, useField, useForm } from 'vee-validate'
+import { useField, useForm } from 'vee-validate'
 import { User } from '../types/user.interface';
 import { EntryType } from '../types/entry_types';
 
@@ -14,33 +14,40 @@ let router = useRouter()
 let variants: {
   name: string,
   type: EntryType
-}[] = [{
-  name: 'Запись',
-  type: 'mentor'
-}, 
-{
-  name: 'Урок',
-  type: 'lesson'
-}, 
-{
-  name: 'Клуб',
-  type: 'club'
-}]
-let variant: Ref<EntryType | null> = ref(null)
+}[] = [
+  {
+    name: 'Запись',
+    type: 'mentor'
+  }, 
+  {
+    name: 'Урок',
+    type: 'lesson'
+  }, 
+  {
+    name: 'Клуб',
+    type: 'club'
+  }
+]
+let variant = ref<EntryType|null>(null)
 
 let has_limit = ref(false)
 let loading = ref(false)
 
-const { meta, handleSubmit, handleReset, validate } = useForm({
+const { meta, handleSubmit, validate } = useForm({
+  initialValues: {
+    subject: '',
+    description: '',
+    limit: null
+  },
   validationSchema: {
     subject(value: string) {
-      if (!value || value.length < 4) return 'слишком короткий заголовок'
-      if (value.length > 25) return 'слишком длинный заголовок'
+      if (value.trim().length < 4) return 'слишком короткий заголовок'
+      if (value.length > 32) return 'слишком длинный заголовок'
       
       return true
     },
     description(value: string) {
-      if (!value || value.length < 20) return 'слишком короткое описание' 
+      if (value.trim().length < 20) return 'слишком короткое описание' 
       if (value.length > 150) return 'слишком длинное описание'
       
       return true
@@ -56,9 +63,9 @@ const { meta, handleSubmit, handleReset, validate } = useForm({
   },
 })
 
-let subject: FieldContext<string> = useField('subject')
-let description: FieldContext<string> = useField('description')
-let limit: FieldContext<string> = useField('limit')
+let subject = useField<string>('subject')
+let description = useField<string>('description')
+let limit = useField<string>('limit')
 
 const submit = handleSubmit(async values => {
   loading.value = true
@@ -68,8 +75,9 @@ const submit = handleSubmit(async values => {
     school: user.school._id,
     town: user.town._id,
   }))
-  .then(() => router.push(`/user/${user._id}`))
-  .finally(() => loading.value = false)
+  
+  router.push(`/user/${user._id}`)
+  loading.value = false
 })
 </script>
 
@@ -77,8 +85,13 @@ const submit = handleSubmit(async values => {
   <v-container>
     <BackButton />
 
-    <v-col cols="12" sm="8" lg="5" class="ma-auto">
-      <div class="text-h5 text-center font-weight-bold">Создать</div>
+    <v-col 
+      cols="12" sm="8" lg="5" 
+      class="ma-auto"
+    >
+      <div class="text-h5 text-center font-weight-bold">
+        Создать
+      </div>
   
       <v-select 
         label="Что?"
@@ -89,8 +102,13 @@ const submit = handleSubmit(async values => {
         variant="solo"
         class="mt-4"
       />
+
       <Transition name="bounce">
-        <v-form @submit.prevent="submit" v-if="variant" class="d-flex flex-column align-center justify-center w-100">
+        <v-form 
+          v-if="variant" 
+          @submit.prevent="submit" 
+          class="d-flex flex-column align-center justify-center w-100"
+        >
           <v-text-field
             label="Заголовок"
             :placeholder="variant === 'club' ? 'Клуб любителей Мафии' : 'Биология'"
@@ -99,6 +117,7 @@ const submit = handleSubmit(async values => {
             variant="solo"
             class="w-100"
           />
+          
           <v-textarea 
             label="Описание"
             v-model="description.value.value"
@@ -107,6 +126,7 @@ const submit = handleSubmit(async values => {
             variant="solo"
             class="w-100"
           />
+          
           <v-checkbox 
             label="Лимит учеников"
             v-model="has_limit"
@@ -114,6 +134,7 @@ const submit = handleSubmit(async values => {
             class="w-100"
             hide-details
           />
+          
           <Transition name="bounce">
             <v-text-field 
               type="number"
@@ -131,7 +152,9 @@ const submit = handleSubmit(async values => {
             :disabled="!meta.valid" 
             type="submit" 
             :loading="loading"
-          >Отправить</v-btn>
+          >
+            Отправить
+          </v-btn>
         </v-form>
       </Transition>
     </v-col>
