@@ -119,17 +119,19 @@ const createTown = handleSubmit(async (values) => {
       </template>
     </v-row>
 
-    <div class="text-h5 mb-4 font-weight-bold mt-8">Ваши школы</div>
-    <v-row class="mt-1 ma-0 pa-0">
+    <div class="text-h5 mb-4 font-weight-bold mt-8">
+      Ваши школы
+    </div>
+    
+    <v-row class="mt-1">
       <v-col
         v-for="school in schools"
         :key="school._id"
         cols="12" md="4" sm="6"
-        class="ma-0 pa-0"
       >
         <v-card 
           @click="router.push(`/admin/school/${school._id}`)"
-          class="text-center align-center pt-4 pb-4"
+          class="text-center align-center pa-4"
         >
           {{ school.town.name }}, {{ school.name }}
         </v-card>
