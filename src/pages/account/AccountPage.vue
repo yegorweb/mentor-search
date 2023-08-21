@@ -34,7 +34,7 @@ let viewer_is_admin = viewer && (
 )
 let viewer_is_some_admin = viewer && RolesService.isSomeAdmin(viewer.roles)
 
-let entries = await entryStore.get_by_author(user._id)
+let entries = my_page ? await entryStore.get_my_entries() : await entryStore.get_by_author(user._id)
 let mentorship_entries = entries.filter(entry => entry.type === 'mentor' && entry.on_moderation === false && entry.moderation_result === true)
 let lesson_entries = entries.filter(entry => entry.type === 'lesson' && entry.on_moderation === false && entry.moderation_result === true)
 let club_entries = entries.filter(entry => entry.type === 'club' && entry.on_moderation === false && entry.moderation_result === true)

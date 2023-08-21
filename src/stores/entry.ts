@@ -30,6 +30,14 @@ export const useEntry = defineStore('entry', () => {
     }
   }
   
+  async function get_my_entries(): Promise<Entry[]> {
+    try {
+      return (await EntryService.get_my_entries()).data
+    } catch {
+      return []
+    }
+  }
+  
   async function get_entries_to_moderation(): Promise<Entry[]> {
     try {
       return (await EntryService.get_entries_to_moderation()).data
@@ -78,6 +86,7 @@ export const useEntry = defineStore('entry', () => {
     get, 
     get_by_id, 
     get_by_author, 
+    get_my_entries,
     get_entries_to_moderation,
     create,
     edit,

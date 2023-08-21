@@ -12,6 +12,9 @@ export default {
   async get_by_author(_id: string) {
     return $api.get('/entry/get-by-author', { params: { _id }})
   },
+  async get_my_entries() {
+    return $api.get('/entry/get-my-entries')
+  },
   async get_entries_to_moderation() {
     return $api.get('/entry/get-entries-to-moderation')
   },
