@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import BackButton from '../components/BackButton.vue'
 import { useAuth } from '../stores/auth'
@@ -8,6 +8,7 @@ import Town from '../types/town.interface'
 import School from '../types/school.interface'
 import { useSchool } from '../stores/school'
 import { useTown } from '../stores/town'
+import _ from 'lodash'
 
 document.title = 'Регистрация — Ищу наставника'
 
@@ -15,14 +16,7 @@ let router = useRouter()
 let auth = useAuth()
 
 let schoolStore = useSchool()
-let townStore = useTown()
-
-let towns: Town[] = await townStore.get_all() as any
-let schools: School[] = await schoolStore.get_all() as any
-
-function schools_in_town(): School[] {
-  return schools.filter(sch => sch.town._id === town.value.value?._id)
-}
+let { towns } = useTown()
 
 function grades() {
   let result = [{ digit: '—', number: 0 }]
@@ -64,11 +58,11 @@ const { meta, handleSubmit, handleReset, validate } = useForm({
 
       return true
     },
-    town(value: Town) {
+    town(value: Town | null) {
       if (!value) return 'укажите свой город'
       return true
     },
-    school(value: School) {
+    school(value: School | null) {
       if (!value) return 'укажите свою школу'
       return true
     },
@@ -85,11 +79,20 @@ const { meta, handleSubmit, handleReset, validate } = useForm({
 let name: FieldContext<string> = useField('name')
 let email: FieldContext<string> = useField('email')
 let password: FieldContext<string> = useField('password')
-let town: FieldContext<Town> = useField('town')
-let school: FieldContext<School> = useField('school')
+let town: FieldContext<Town | null> = useField('town')
+let school: FieldContext<School | null> = useField('school')
 let grade: FieldContext<number> = useField('grade')
 let agree: FieldContext<boolean> = useField('agree')
 let mentor = ref(false)
+
+let schools_in_town = ref(town.value.value ? await schoolStore.get_all_in_town(town.value.value._id) : [])
+
+watch(town.value, async (new_value, old_value) => {
+  if (_.isEqual(new_value, old_value)) return
+
+  school.value.value = null
+  schools_in_town.value = town.value.value ? await schoolStore.get_all_in_town(town.value.value._id) : []
+})
 
 let loading = ref(false)
 
@@ -175,7 +178,7 @@ const submit = handleSubmit(async values => {
             v-model="school.value.value"
             :disabled="!town.value.value"
             :error-messages="school.errors.value"
-            :items="schools_in_town()"
+            :items="schools_in_town"
             auto-select-first
             item-title="name"
             return-object
