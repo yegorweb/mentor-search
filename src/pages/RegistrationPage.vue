@@ -129,7 +129,7 @@ const submit = handleSubmit(async values => {
         </div>
   
         <v-form
-          class="mt-4 w-100"
+          class="mt-6 w-100"
           @submit="submit"
         >
           <v-text-field 
@@ -138,8 +138,9 @@ const submit = handleSubmit(async values => {
             placeholder="Иван Иванов"
             v-model="name.value.value"
             :error-messages="name.errors.value"
-            variant="underlined"
-            class="w-100 mb-1"
+            variant="outlined"
+            density="compact"
+            class="w-100"
           />    
 
           <v-text-field 
@@ -148,8 +149,9 @@ const submit = handleSubmit(async values => {
             placeholder="vasya@ya.ru"
             v-model="email.value.value"
             :error-messages="email.errors.value"
-            variant="underlined"
-            class="w-100 mb-1 mt-2"
+            variant="outlined"
+            density="compact"
+            class="w-100 mt-1"
           />          
 
           <v-text-field 
@@ -157,8 +159,9 @@ const submit = handleSubmit(async values => {
             type="password"
             v-model="password.value.value"
             :error-messages="password.errors.value"
-            variant="underlined"
-            class="w-100 mb-1 mt-2"
+            variant="outlined"
+            density="compact"
+            class="w-100 mt-1"
           />
 
           <v-autocomplete
@@ -169,9 +172,10 @@ const submit = handleSubmit(async values => {
             auto-select-first
             return-object
             item-title="name"
-            variant="underlined"
-            class="w-100 mb-1 mt-8"
-          ></v-autocomplete>
+            variant="outlined"
+            density="compact"
+            class="w-100 mt-1"
+          />
 
           <v-autocomplete
             label="Школа"
@@ -182,11 +186,12 @@ const submit = handleSubmit(async values => {
             auto-select-first
             item-title="name"
             return-object
-            variant="underlined"
-            class="w-100 mb-1 mt-8"
-          ></v-autocomplete>
+            variant="outlined"
+            density="compact"
+            class="w-100 mt-1"
+          />
 
-          <v-autocomplete
+          <v-select
             label="Класс"
             v-model="grade.value.value"
             :error-messages="grade.errors.value"
@@ -194,25 +199,27 @@ const submit = handleSubmit(async values => {
             auto-select-first
             item-title="digit"
             item-value="number"
-            variant="underlined"
-            class="w-100 mb-1 mt-6"
-          ></v-autocomplete>
+            variant="outlined"
+            density="compact"
+            class="w-100 mt-1"
+          />
 
           <v-radio-group
             v-model="mentor"
             label="Кто вы?"
             hide-details
-            class="mt-8"
+            class="mt-2"
             column
           >
             <v-radio
               label="Наставляемый"
               :value="false"
-            ></v-radio>
+            />
+            
             <v-radio
               label="Наставник"
               :value="true"
-            ></v-radio>
+            />
           </v-radio-group>
           
           <v-checkbox 
