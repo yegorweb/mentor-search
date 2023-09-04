@@ -2,7 +2,7 @@
 import BackButton from '../../components/BackButton.vue';
 import MentorEntry from '../../components/entries/MentorEntry.vue';
 import { useAuth } from '../../stores/auth';
-import { reactive, watch } from 'vue';
+import { reactive, watch, ref } from 'vue';
 import { onBeforeRouteUpdate, useRouter } from 'vue-router';
 import { useUser } from '../../stores/user';
 import { useEntry } from '../../stores/entry';
@@ -10,6 +10,7 @@ import { User } from '../../types/user.interface';
 import Entry from '../../types/entry.interface';
 import RolesService from '../../services/RolesService';
 import { useTown } from '../../stores/town';
+import RolesControl from '../../components/RolesControl.vue';
 
 let new_user = eval(localStorage.getItem('newUser') || 'false')
 
@@ -46,6 +47,8 @@ if (my_page && !RolesService.isMentor(user.roles)) {
   responsed_entries = await userStore.get_my_responses()
 }
 
+let roles_control_status = ref(false)
+
 watch(user, async (value) => {
   userStore.changeUser(value)
 })
@@ -65,6 +68,11 @@ function removeRank(item: string) {
 </script>
 
 <template>
+  <RolesControl 
+    v-model="roles_control_status"
+    v-model:roles="user.roles"
+  />
+
   <v-container class="mt-1">
     <!-- =================== Top bar ==================== -->
 
@@ -192,7 +200,7 @@ function removeRank(item: string) {
         Управление
       </div>
 
-      <v-col cols="12" lg="6" class="ma-0 pa-0 mt-4">
+      <v-col cols="12" lg="6" class="pa-0 mt-4">
         <v-combobox
           v-model="user.ranks"
           chips
@@ -219,57 +227,34 @@ function removeRank(item: string) {
         </v-combobox>
       </v-col>
   
-      <div class="mt-3 d-flex flex-row flex-wrap">
-        <v-btn
-          prepend-icon="mdi-star"
-        >
-          Дать награду
-        </v-btn>
-  
-        <v-btn
-          v-if="!RolesService.isSomeAdmin(user.roles)"
-          prepend-icon="mdi-delete"
-          class="bg-red ml-3"
-        >
-          Удалить
-        </v-btn>
-  
-        <v-btn
-          v-if="RolesService.isGlobalAdmin((viewer as User).roles) || RolesService.isTownAdmin((viewer as User).roles)"
-          class="ml-3"
-        >
-          Назначить админом города
-  
-          <v-dialog activator="parent">
-            <v-card class="rounded-lg">
-              <v-autocomplete 
-                :items="useTown().towns"
-                variant="solo"
-                label="Город"
-              />
-  
-              <v-card-actions>
-                <v-spacer />
-  
-                <v-row>
-                  <v-col>
-                    <v-btn>
-                      Назначить
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-btn>
-  
-        <v-btn
-          v-if="RolesService.isSomeAdmin((viewer as User).roles)"
-          class="ml-3"
-        >
-          Назначить админом школы
-        </v-btn>
-      </div>
+      <v-row class="mt-3 d-flex flex-row flex-wrap">
+        <v-col cols="auto">
+          <v-btn
+            prepend-icon="mdi-star"
+          >
+            Дать награду
+          </v-btn>
+        </v-col>
+
+        <v-col cols="auto">
+          <v-btn
+            v-if="!RolesService.isSomeAdmin(user.roles)"
+            prepend-icon="mdi-delete"
+            class="bg-red ml-3"
+          >
+            Удалить
+          </v-btn>
+        </v-col>
+
+        <v-col cols="auto">
+          <v-btn
+            @click="roles_control_status"
+            prepend-icon="mdi-security"
+          >
+            Роли
+          </v-btn>
+        </v-col>
+      </v-row>
     </div>
 
     <!-- On moderation -->
