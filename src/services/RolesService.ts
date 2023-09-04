@@ -9,10 +9,18 @@ export default {
       .map(item => item.split('school-admin-')[1])
   },
 
+  getSchoolIdFromRole(role: string): string {
+    return role.split('school-admin-')[1]
+  },
+
   getTownIdsFromRoles(roles: string[]): string[] {
     return roles
       .filter(item => item.includes('town-admin-'))
       .map(item => item.split('town-admin-')[1])
+  },
+
+  getTownIdFromRole(role: string): string {
+    return role.split('town-admin-')[1]
   },
 
   isAdminOfSchool(roles: string[], school_id: string): boolean {
