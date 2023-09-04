@@ -13,4 +13,7 @@ export default {
   async changeUser(user: object) {
     return $api.post('/user/change-user', { user })
   },
+  async haveIAccessToRole(role: string) {
+    return $api.get('/user/have-i-access-to-role', { params: { role } })
+  },
 }
