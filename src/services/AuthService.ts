@@ -11,7 +11,7 @@ export default {
 		return $api.post('/auth/reset-password', { password, token })
 	},
 	async forgotPassword(email: string) {
-		return $api.post('/auth/forgot-password', { email: email })
+		return $api.post('/auth/forgot-password', { email })
 	},
 	async logout() {
 		return $api.post('/auth/logout')
