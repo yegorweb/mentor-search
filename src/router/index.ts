@@ -108,11 +108,6 @@ const routes: RouteRecordRaw[] = [
         beforeEnter: checkAdmin
       },
       {
-        path: '/termsOfUse',
-        name: 'TermsOfUse',
-        component: () => import('@/pages/TermsOfUse.vue')
-      },
-      {
         path: '/login',
         name: 'Login',
         component: () => import('@/pages/LoginPage.vue')

@@ -179,15 +179,6 @@ let navigation_drawer_is_open = ref(false)
         >
           О проекте
         </v-list-item>
-
-        <v-list-item
-          @click="navigation_drawer_is_open = !navigation_drawer_is_open"
-          exact
-          to="/termsOfUse"
-          class="font-weight-semibold"
-        >
-          Пользовательское соглашение
-        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 

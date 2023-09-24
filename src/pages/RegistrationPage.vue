@@ -34,7 +34,6 @@ const { meta, handleSubmit, handleReset, validate } = useForm({
     town: null,
     school: null,
     grade: 0,
-    agree: true
   },
   validationSchema: {
     name(value: string) {
@@ -69,10 +68,6 @@ const { meta, handleSubmit, handleReset, validate } = useForm({
     grade(value: number) {
       return true
     },
-    agree(value: boolean) {
-      if (!value) return 'нужно ваше соглашение'
-      return true
-    },
   },
 })
 
@@ -82,7 +77,6 @@ let password: FieldContext<string> = useField('password')
 let town: FieldContext<Town | null> = useField('town')
 let school: FieldContext<School | null> = useField('school')
 let grade: FieldContext<number> = useField('grade')
-let agree: FieldContext<boolean> = useField('agree')
 let mentor = ref(false)
 
 let schools_in_town = ref(town.value.value ? await schoolStore.get_all_in_town(town.value.value._id) : [])
@@ -221,18 +215,6 @@ const submit = handleSubmit(async values => {
               :value="true"
             />
           </v-radio-group>
-          
-          <v-checkbox 
-            v-model="agree.value.value"
-            :error-messages="agree.errors.value"
-            class="w-100 mt-4 ma-0 pa-0 align-start"
-          >  
-            <template v-slot:label>
-              <div class="text-start">
-                Принимаю <router-link to="/termsOfUse">пользовательское соглашение</router-link>
-              </div>  
-            </template>  
-          </v-checkbox>  
 
           <v-btn 
             type="submit" 
