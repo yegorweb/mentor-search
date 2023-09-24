@@ -74,8 +74,8 @@ const submit = handleSubmit(async values => {
     type: variant.value,
     school: user.school._id,
   }))
+  .then(() => router.push(`/user/${user._id}`))
   
-  router.push(`/user/${user._id}`)
   loading.value = false
 })
 </script>
