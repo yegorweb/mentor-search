@@ -68,11 +68,6 @@ function removeRank(item: string) {
 </script>
 
 <template>
-  <RolesControl 
-    v-model="roles_control_status"
-    v-model:roles="user.roles"
-  />
-
   <v-container class="mt-1">
     <!-- =================== Top bar ==================== -->
 
@@ -248,10 +243,15 @@ function removeRank(item: string) {
 
         <v-col cols="auto">
           <v-btn
-            @click="roles_control_status"
+            @click="roles_control_status = !roles_control_status"
             prepend-icon="mdi-security"
           >
             Роли
+          
+            <RolesControl 
+              v-model="roles_control_status"
+              v-model:roles="user.roles"
+            />
           </v-btn>
         </v-col>
       </v-row>
