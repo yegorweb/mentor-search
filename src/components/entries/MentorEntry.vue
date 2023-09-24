@@ -39,7 +39,7 @@ let my_entry = user && entry.author._id === user._id
 let user_is_admin = user && (
   RolesService.isGlobalAdmin(user.roles) ||
   RolesService.isAdminOfSchool(user.roles, entry.school._id) || 
-  RolesService.isAdminOfTown(user.roles, entry.town._id) 
+  RolesService.isAdminOfTown(user.roles, entry.school.town._id) 
 )
 
 // Responsing
@@ -189,8 +189,8 @@ async function disallow() {
       >
         <span class="mdi mdi-map-marker text-teal-lighten-1" />
         
-        <span v-if="!user || entry.town._id !== user.town._id">
-          {{ entry.town.name + ', ' }}
+        <span v-if="!user || entry.school.town._id !== user.school.town._id">
+          {{ entry.school.town.name + ', ' }}
         </span>
 
         {{ entry.school.name }}

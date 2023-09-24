@@ -1,6 +1,5 @@
 import { EntryType } from "./entry_types"
 import School from "./school.interface"
-import Town from "./town.interface"
 import { User } from "./user.interface"
 
 export default interface Entry {
@@ -11,7 +10,6 @@ export default interface Entry {
   author: User
   responses: string[]
   banned: string[]
-  town: Town
   school: School
   date: number
   limit?: number

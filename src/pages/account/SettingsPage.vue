@@ -26,7 +26,7 @@ let schoolStore = useSchool()
 let user = auth.user as User
 let towns = townStore.towns
 
-let town = ref<Town>(user.town)
+let town = ref<Town>(user.school.town)
 let grade = ref<number>(user.grade)
 let roles = ref(user.roles)
 
@@ -100,8 +100,7 @@ const submit = handleSubmit(async (values) => {
   loading.value = true
 
   await auth.updateUser(Object.assign(values, {
-    town: town.value._id,
-    school: school.value.value?._id,
+    school: values.school._id,
     grade: grade.value,
     roles: roles.value
   }))

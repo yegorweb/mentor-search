@@ -30,7 +30,7 @@ document.title = `${user.name} — Ищу наставника`
 let my_page = viewer?._id === id
 let viewer_is_admin = viewer && (
   RolesService.isAdminOfSchool(viewer.roles, user.school._id) || 
-  RolesService.isAdminOfTown(viewer.roles, user.town._id) || 
+  RolesService.isAdminOfTown(viewer.roles, user.school.town._id) || 
   RolesService.isGlobalAdmin(viewer.roles)
 )
 let viewer_is_some_admin = viewer && RolesService.isSomeAdmin(viewer.roles)
@@ -132,7 +132,7 @@ function removeRank(item: string) {
 
         <!-- Town, school -->
         <div class="font-weight-bold text-text_gray">
-          {{ user.town.name + ', ' + user.school.name }}
+          {{ user.school.town.name + ', ' + user.school.name }}
         </div>
 
         <!-- Description -->

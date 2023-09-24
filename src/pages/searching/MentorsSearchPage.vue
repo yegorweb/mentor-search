@@ -23,7 +23,7 @@ let { towns } = useTown()
 let user = auth.user
 
 let town = ref<Town>(user ? 
-  user.town : 
+  user.school.town : 
   towns.find(town => town.name === 'Глазов') as any
 )
 

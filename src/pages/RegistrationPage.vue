@@ -26,12 +26,18 @@ function grades() {
   return result
 }
 
-const { meta, handleSubmit, handleReset, validate } = useForm({
+const { meta, handleSubmit, handleReset, validate } = useForm<{
+  name: string,
+  email: string,
+  password: string,
+  town?: Town,
+  school: School | null,
+  grade: number
+}>({
   initialValues: {
     name: '',
     email: '',
     password: '',
-    town: null,
     school: null,
     grade: 0,
   },
@@ -93,6 +99,8 @@ let loading = ref(false)
 const submit = handleSubmit(async values => {
   loading.value = true
   
+  delete values.town
+
   await auth.registration(Object.assign(values, {
     roles: ['student', mentor.value ? 'mentor' : null],
   }))
