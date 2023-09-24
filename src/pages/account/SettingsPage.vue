@@ -104,7 +104,7 @@ const submit = handleSubmit(async (values) => {
     grade: grade.value,
     roles: roles.value
   }))
-  router.push(`/user/${user._id}`)
+  .then(() => window.location.href = `/user/${user._id}`)
   
   loading.value = false
 })
