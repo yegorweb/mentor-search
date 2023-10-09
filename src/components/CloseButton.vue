@@ -3,7 +3,6 @@ defineProps({
   modelValue: {
     type: Boolean,
     required: true,
-    default: null
   }
 })
 
