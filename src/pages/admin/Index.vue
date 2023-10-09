@@ -138,7 +138,6 @@ const createSchool = schoolHandleSubmit(async (values) => {
                       item-title="name"
                       item-value="_id"
                       auto-select-first
-                      return-object
                       label="Город"
                       variant="outlined"
                       density="compact"
