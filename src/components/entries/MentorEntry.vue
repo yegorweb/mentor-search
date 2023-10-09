@@ -225,7 +225,6 @@ async function disallow() {
           variant="tonal" 
           v-if="my_entry && entry.responses.length > 0"
           class="text-body-2 pl-5 pr-5 mr-3 font-weight-semibold bg-button"
-          @click="responses = entry.responses"
         >
           Посмотреть отклики ({{ entry.responses.length }})
 
