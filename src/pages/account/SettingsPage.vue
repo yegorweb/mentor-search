@@ -121,7 +121,7 @@ function grades() {
     <BackButton />
 
     <v-row class="mt-1 align-start">
-      <v-col cols="12" md="5" lg="4" xl="3">
+      <v-col cols="12" md="5" lg="3">
         <EntryContainer class="d-flex flex-column">
           <div 
             v-for="(tab_name, index) in tabs"
