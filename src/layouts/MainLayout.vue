@@ -162,16 +162,6 @@ let navigation_drawer_is_open = ref(false)
         </v-list-item>
 
         <v-list-item
-          v-if="user"
-          @click="navigation_drawer_is_open = !navigation_drawer_is_open"
-          exact
-          to="/myAchievements"
-          class="font-weight-semibold"
-        >
-          Мои награды ({{user ? AchievementsService.getActiveAchievements(user.achievements).length : 0 }})
-        </v-list-item>
-
-        <v-list-item
           @click="navigation_drawer_is_open = !navigation_drawer_is_open"
           exact
           to="/about"
