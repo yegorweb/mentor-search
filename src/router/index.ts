@@ -1,26 +1,24 @@
-import { onMounted } from 'vue'
 import { createRouter, createWebHistory, RouteLocation, RouteRecordRaw } from 'vue-router'
 import RolesService from '../services/RolesService'
 import { useAuth } from '../stores/auth'
 
-function checkAuth(): string|void {
-  onMounted(() => {
-    let auth = useAuth()
-    if (!auth.user) {
-      return '/login'
-    }
-  })
+async function checkAuth(): Promise<string | void> {
+  let auth = useAuth()
+  await auth.checkAuth()
+  
+  if (!auth.user) {
+    return '/login'
+  }
 }
 
-function checkAdmin(to: RouteLocation, from: RouteLocation): string|void {
-  onMounted(() => {
-    let auth = useAuth()
-    let user = auth.user
-  
-    if(!user || (user && !RolesService.isSomeAdmin(user.roles))) {
-      return from.path
-    }
-  })
+async function checkAdmin(to: RouteLocation, from: RouteLocation): Promise<string | void> {
+  let auth = useAuth()
+  await auth.checkAuth()
+  let user = auth.user
+
+  if (!user || (user && !RolesService.isSomeAdmin(user.roles))) {
+    return from.path
+  }
 }
 
 const routes: RouteRecordRaw[] = [
