@@ -33,7 +33,7 @@ let roles = ref(user.roles)
 let mentor = ref(RolesService.isMentor(user.roles))
 
 let tab = ref(0)
-let tabs = ['Редактрировать профиль', 'Изменить пароль', 'Мои подписки']
+let tabs = ['Профиль', 'Изменить пароль']
 let loading = ref(false)
 
 // Form
