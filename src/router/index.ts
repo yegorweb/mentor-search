@@ -64,12 +64,6 @@ const routes: RouteRecordRaw[] = [
         beforeEnter: checkAuth
       },
       {
-        path: '/myAchievements',
-        name: 'MyAchievements',
-        component: () => import('@/pages/account/MyAchievementsPage.vue'),
-        beforeEnter: checkAuth
-      },
-      {
         path: '/create',
         name: 'Create',
         component: () => import('@/pages/CreatingPage.vue'),
