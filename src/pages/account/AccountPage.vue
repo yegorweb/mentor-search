@@ -235,7 +235,7 @@ function removeRank(item: string) {
           <v-btn
             v-if="!RolesService.isSomeAdmin(user.roles)"
             prepend-icon="mdi-delete"
-            class="bg-red ml-3"
+            class="bg-red"
           >
             Удалить
           </v-btn>
