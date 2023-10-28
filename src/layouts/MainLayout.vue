@@ -88,7 +88,7 @@ let navigation_drawer_is_open = ref(false)
             @click="navigation_drawer_is_open = !navigation_drawer_is_open"
             class="font-weight-semibold"
             exact
-            to="/searchMentors"
+            to="/search-mentors"
           >
             Наставники
           </v-list-item>
@@ -97,7 +97,7 @@ let navigation_drawer_is_open = ref(false)
             @click="navigation_drawer_is_open = !navigation_drawer_is_open"
             class="font-weight-semibold"
             exact
-            to="/searchLessons"
+            to="/search-lessons"
           >
             Уроки
           </v-list-item>
@@ -106,7 +106,7 @@ let navigation_drawer_is_open = ref(false)
             @click="navigation_drawer_is_open = !navigation_drawer_is_open"
             class="font-weight-semibold"
             exact
-            to="/searchClubs"
+            to="/search-clubs"
           >
             Клубы
           </v-list-item>
@@ -155,7 +155,7 @@ let navigation_drawer_is_open = ref(false)
           v-if="user"
           @click="navigation_drawer_is_open = !navigation_drawer_is_open"
           exact
-          to="/myResponses"
+          to="/my-responses"
           class="font-weight-semibold"
         >
           Мои отклики

@@ -87,7 +87,7 @@ let club_entries = entries.filter(entry => entry.type === 'club')
         size="small"
         variant="tonal" 
         class="text-body-2 pl-5 pr-5 ma-auto mt-4 font-weight-semibold bg-button"
-        to="/searchMentors"
+        to="/search-mentors"
       >
         Найти наставника
       </v-btn>

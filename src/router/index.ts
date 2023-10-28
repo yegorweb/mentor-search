@@ -31,17 +31,17 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/HomePage.vue')
       },
       {
-        path: '/searchMentors',
+        path: '/search-mentors',
         name: 'MentorsSearching',
         component: () => import('@/pages/searching/MentorsSearchPage.vue')
       },
       {
-        path: '/searchLessons',
+        path: '/search-lessons',
         name: 'LessonsSearching',
         component: () => import('@/pages/searching/LessonsSearchPage.vue')
       },
       {
-        path: '/searchClubs',
+        path: '/search-clubs',
         name: 'ClubsSearching',
         component: () => import('@/pages/searching/ClubsSearchPage.vue')
       },
@@ -58,7 +58,7 @@ const routes: RouteRecordRaw[] = [
         beforeEnter: checkAuth
       },
       {
-        path: '/myResponses',
+        path: '/my-responses',
         name: 'MyResponses',
         component: () => import('@/pages/account/MyResponsesPage.vue'),
         beforeEnter: checkAuth
