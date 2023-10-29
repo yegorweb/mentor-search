@@ -17,7 +17,7 @@ const { meta, handleSubmit, handleReset } = useForm({
       return 'нужно 6 символов'
     },
     email(value: string) {
-      if (/^[a-z.-.0-9]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
+      if (/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(value)) return true
       return 'неправильный формат email'
     },
   },
