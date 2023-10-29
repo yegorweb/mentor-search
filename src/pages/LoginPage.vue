@@ -77,6 +77,7 @@ const login = handleSubmit(async values => {
   
         <div 
           @click="router.push('/registration')" 
+          :loading="loading"
           class="text-body-2 w-100 cursor-pointer font-weight-semibold pa-1 mt-4"
         >
           регистрация
