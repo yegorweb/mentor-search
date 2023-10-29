@@ -231,7 +231,7 @@ const submit = handleSubmit(async values => {
             color="accent"
             class="mt-6"
           >
-            Отправить
+            Зарегистрироваться
           </v-btn>
         </v-form>
   
