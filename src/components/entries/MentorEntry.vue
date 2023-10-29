@@ -152,7 +152,7 @@ async function disallow() {
         style="column-gap: 16px;" 
         class="mr-7"
       >
-        <span class="text-h6 font-weight-black" style="line-height: 1.3;">
+        <span class="text-h6 font-weight-black" style="line-height: 1.3; word-break: break-all;">
           {{ entry.subject }}
         </span>
 
