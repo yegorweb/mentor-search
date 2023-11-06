@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath } from "url";
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import vitePluginRequire from 'vite-plugin-require'
 
 const mobile =
   process.env.TAURI_PLATFORM === "android" ||
@@ -21,6 +22,7 @@ export default defineConfig(({
       vuetify({
         autoImport: true,
       }),
+      (vitePluginRequire as any).default(),
     ],
     resolve: {
       alias: {
