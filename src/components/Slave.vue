@@ -20,7 +20,7 @@ let user = props.user as User
     class="flex-row ma-0 pa-0 flex-nowrap align-center justify-start cursor-pointer"
   >
     <v-avatar 
-      :image="user.avatar_url"
+      :image="user.avatar_url ?? ''"
       color="blue"
     />
     <div class="d-flex ml-4 flex-column justify-start">
