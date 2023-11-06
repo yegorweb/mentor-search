@@ -26,15 +26,20 @@ function grades() {
   return result
 }
 
-const { meta, handleSubmit, handleReset, validate } = useForm({
+const { meta, handleSubmit, handleReset, validate } = useForm<{
+  name: string,
+  email: string,
+  password: string,
+  town?: Town,
+  school: School | null,
+  grade: number
+}>({
   initialValues: {
     name: '',
     email: '',
     password: '',
-    town: null,
     school: null,
     grade: 0,
-    agree: true
   },
   validationSchema: {
     name(value: string) {
@@ -46,7 +51,7 @@ const { meta, handleSubmit, handleReset, validate } = useForm({
     },
     email(value: string) {
       if (value.length === 0) return 'введите почту'
-      if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value))
+      if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(value))
         return 'неправильно ведено'
 
       return true
@@ -69,10 +74,6 @@ const { meta, handleSubmit, handleReset, validate } = useForm({
     grade(value: number) {
       return true
     },
-    agree(value: boolean) {
-      if (!value) return 'нужно ваше соглашение'
-      return true
-    },
   },
 })
 
@@ -82,7 +83,6 @@ let password: FieldContext<string> = useField('password')
 let town: FieldContext<Town | null> = useField('town')
 let school: FieldContext<School | null> = useField('school')
 let grade: FieldContext<number> = useField('grade')
-let agree: FieldContext<boolean> = useField('agree')
 let mentor = ref(false)
 
 let schools_in_town = ref(town.value.value ? await schoolStore.get_all_in_town(town.value.value._id) : [])
@@ -99,12 +99,14 @@ let loading = ref(false)
 const submit = handleSubmit(async values => {
   loading.value = true
   
+  delete values.town
+
   await auth.registration(Object.assign(values, {
     roles: ['student', mentor.value ? 'mentor' : null],
   }))
+  .then(() => window.location.href = auth.user ? `/user/${auth.user._id}` : '/')
 
   loading.value = false 
-  window.location.href = auth.user ? `/user/${auth.user._id}` : '/'
 })
 </script>
 
@@ -221,26 +223,15 @@ const submit = handleSubmit(async values => {
               :value="true"
             />
           </v-radio-group>
-          
-          <v-checkbox 
-            v-model="agree.value.value"
-            :error-messages="agree.errors.value"
-            class="w-100 mt-4 ma-0 pa-0 align-start"
-          >  
-            <template v-slot:label>
-              <div class="text-start">
-                Принимаю <router-link to="/termsOfUse">пользовательское соглашение</router-link>
-              </div>  
-            </template>  
-          </v-checkbox>  
 
           <v-btn 
             type="submit" 
             :disabled="!meta.valid" 
+            :loading="loading"
             color="accent"
             class="mt-6"
           >
-            Отправить
+            Зарегистрироваться
           </v-btn>
         </v-form>
   

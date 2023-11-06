@@ -49,9 +49,9 @@ export const useAuth = defineStore('auth', () => {
     } catch {}
   }
 
-  async function updateUser(user: any) {
+  async function updateUser(new_user: any) {
     try {
-      user.value = (await AuthService.updateUser(user.value)).data
+      await AuthService.updateUser(new_user)
     } catch {}
   }
 

@@ -12,7 +12,7 @@ let user = auth.user
 
 let buttons = user ? [
   {
-    route: '/searchMentors',
+    route: '/search-mentors',
     text: 'Найти наставника',
   },  
   {
@@ -20,7 +20,7 @@ let buttons = user ? [
     text: 'Создать',
   },  
   {
-    route: '/myResponses',
+    route: '/my-responses',
     text: 'Мои отклики',
   },
 ] : [
@@ -29,7 +29,7 @@ let buttons = user ? [
     text: 'Авторизоваться',
   },
   {
-    route: '/searchMentors',
+    route: '/search-mentors',
     text: 'Посмотреть наставников',
   },  
 ]

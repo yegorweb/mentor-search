@@ -73,10 +73,9 @@ const submit = handleSubmit(async values => {
   await EntryService.create(Object.assign(values, {
     type: variant.value,
     school: user.school._id,
-    town: user.town._id,
   }))
+  .then(() => router.push(`/user/${user._id}`))
   
-  router.push(`/user/${user._id}`)
   loading.value = false
 })
 </script>

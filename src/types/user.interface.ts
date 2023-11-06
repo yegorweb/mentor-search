@@ -1,7 +1,6 @@
 import { Achievement } from "./achievement.type"
 import { Contact } from "./contact.type"
 import School from "./school.interface"
-import Town from "./town.interface"
 
 export interface User {
   _id: string
@@ -14,7 +13,6 @@ export interface User {
   achievements: Achievement[]
   contacts: Contact[]
   grade: number
-  town: Town
   school: School
   date: number
   roles: string[]

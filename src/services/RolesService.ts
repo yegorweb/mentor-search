@@ -49,6 +49,15 @@ export default {
     return roles.filter(role => !role.includes(`town-admin-${town_id}`))
   },
 
+  getRolesWithGlobalAdmin(roles: string[]): string[] {
+    roles.push('global-admin')
+    return roles
+  },
+
+  getRolesWithoutGlobalAdmin(roles: string[]): string[] {
+    return roles.filter(role => role !== 'global_admin')
+  },
+
   isSomeAdmin(roles: string[]): boolean {
     return roles.some(role => role.split('-')[1] === 'admin')
   },

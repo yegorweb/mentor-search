@@ -9,11 +9,14 @@ import Entry from '../../types/entry.interface';
 import { User } from '../../types/user.interface';
 import Slave from '../Slave.vue';
 import EntryContainer from './EntryContainer.vue';
+const showdown = require('showdown')
 
 let router = useRouter()
 let auth = useAuth()
 let userStore = useUser()
 let entryStore = useEntry()
+
+let markdown_converter = new showdown.Converter()
 
 let props = defineProps({
   entry: {
@@ -34,12 +37,13 @@ let props = defineProps({
 
 let user = auth.user
 let entry = reactive(props.entry as Entry)
+let description = markdown_converter.makeHtml(entry.description)
 
 let my_entry = user && entry.author._id === user._id
 let user_is_admin = user && (
   RolesService.isGlobalAdmin(user.roles) ||
   RolesService.isAdminOfSchool(user.roles, entry.school._id) || 
-  RolesService.isAdminOfTown(user.roles, entry.town._id) 
+  RolesService.isAdminOfTown(user.roles, entry.school.town._id) 
 )
 
 // Responsing
@@ -152,7 +156,7 @@ async function disallow() {
         style="column-gap: 16px;" 
         class="mr-7"
       >
-        <span class="text-h6 font-weight-black" style="line-height: 1.3;">
+        <span class="text-h6 font-weight-black" style="line-height: 1.3; word-break: break-all;">
           {{ entry.subject }}
         </span>
 
@@ -176,7 +180,7 @@ async function disallow() {
       </div>
 
       <div 
-        v-html="entry.description" 
+        v-html="description" 
         class="mt-2" 
       />
     </div>
@@ -189,8 +193,8 @@ async function disallow() {
       >
         <span class="mdi mdi-map-marker text-teal-lighten-1" />
         
-        <span v-if="!user || entry.town._id !== user.town._id">
-          {{ entry.town.name + ', ' }}
+        <span v-if="!user || entry.school.town._id !== user.school.town._id">
+          {{ entry.school.town.name + ', ' }}
         </span>
 
         {{ entry.school.name }}
@@ -225,7 +229,6 @@ async function disallow() {
           variant="tonal" 
           v-if="my_entry && entry.responses.length > 0"
           class="text-body-2 pl-5 pr-5 mr-3 font-weight-semibold bg-button"
-          @click="responses = entry.responses"
         >
           Посмотреть отклики ({{ entry.responses.length }})
 

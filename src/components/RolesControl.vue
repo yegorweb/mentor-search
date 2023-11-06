@@ -1,40 +1,60 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import RolesService from '../services/RolesService';
 import { useAuth } from '../stores/auth';
 import { useSchool } from '../stores/school';
 import { useTown } from '../stores/town';
 import School from '../types/school.interface';
 import Town from '../types/town.interface';
-import { User } from '../types/user.interface';
 import CloseButton from './CloseButton.vue';
 import Role from './Role.vue';
+import _ from 'lodash'
+import { useField, useForm } from 'vee-validate';
 
+let schoolStore = useSchool()
 let auth = useAuth()
 let I = auth.user
 
-let props = defineProps<{
-  modelValue: boolean,
-  roles: string[]
-}>()
+let props = defineProps({
+  modelValue: {
+    type: Boolean,
+    default: false,
+    required: true
+  },
+  roles: {
+    type: Array<string>,
+    default: [],
+    required: true
+  }
+})
 
 let emit = defineEmits(['update:modelValue', 'update:roles'])
 
-let state = ref<boolean>(props.modelValue)
-let roles = ref<string[]>(props.roles.filter(role => role !== 'mentor' && role !== 'student'))
-
-watch(state, (value) => {
-  emit('update:modelValue', state.value)
-  tab.value = 'main'
+let state = computed<boolean>({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+    if (!value) 
+      tab.value = 'main'
+  }
 })
-watch(roles, () => emit('update:roles', roles.value))
+let roles = computed<string[]>({
+  get(): string[] {
+    return props.roles.filter(role => role !== 'mentor' && role !== 'student')
+  },
+  set(value) {
+    emit('update:roles', value)
+  }
+})
 
 type TabItem = 'main' | 'choise' | 'deletion' | 'school_admin' | 'town_admin' | 'global_admin'
 let tab = ref<TabItem>('main')
 
-// let users_schools = RolesService.getSchoolIdsFromRoles(roles.value)
-// let users_towns = RolesService.getTownIdsFromRoles(roles.value)
-// let user_is_global_admin = RolesService.isGlobalAdmin(roles.value)
+let users_schools = RolesService.getSchoolIdsFromRoles(roles.value)
+let users_towns = RolesService.getTownIdsFromRoles(roles.value)
+let user_is_global_admin = RolesService.isGlobalAdmin(roles.value)
 
 let my_schools: School[] = []
 let my_towns: Town[] = []
@@ -48,6 +68,9 @@ if (I) {
   im_owner = RolesService.isOwner(I.roles)
 }
 
+let schools_to_add = my_schools.filter(school => !users_schools.includes(school._id))
+let towns_to_add = my_towns.filter(town => !users_towns.includes(town._id))
+
 let deletion_role = ref<string>()
 let name_of_deletion_role = ref<string>()
 
@@ -56,72 +79,76 @@ function onDeleteRole(role: string, role_name: string) {
   deletion_role.value = role
   name_of_deletion_role.value = role_name
 }
+function deleteRole() {
+  roles.value = roles.value.filter(role => role !== deletion_role.value)
+}
 
-let town = ref<Town>(my_towns[0])
+let { meta:school_admin_meta, handleSubmit:schoolAdminSubmit, handleReset:schoolAdminReset } = useForm({
+  initialValues: {
+    school_for_admin: schools_to_add.length === 1 ? schools_to_add[0] : null,
+    town: null
+  },
+  validationSchema: {
+    school_for_admin(value: School | null) {
+      return value ? true : 'выберите школу'
+    },
+    town(value: Town | null) {
+      return value ? true : 'выберите город'
+    }
+  }
+})
 
-let school = ref<School | null>(my_schools[0])
+let school_for_admin = useField<School | null>('scholl_for_admin')
+let town = useField<Town | null>('town')
+town.value.value = school_for_admin.value.value ? school_for_admin.value.value.town : my_towns.length === 1 ? my_towns[0] : null
 
-let schools_in_town = ref(await schoolStore.get_all_in_town(town.value._id))
+let towns: Town[] = []
+if (I && RolesService.isGlobalAdmin(I.roles)) {
+  towns = useTown().towns
+} else {
+  towns = [...new Set([...towns_to_add, ...my_schools.map(school => school.town)])]
+}
+let schools_in_town = ref(town.value.value ? schools_to_add.filter(school => school.town._id === (town.value.value as Town)._id) : [])
 
-watch(town, async (new_value, old_value) => {
+watch(town.value, (new_value, old_value) => {
   if (_.isEqual(new_value, old_value)) return
 
-  school.value = null
-  schools_in_town.value = await schoolStore.get_all_in_town(town.value._id)
+  school_for_admin.value.value = null
+  schools_in_town.value = new_value ? schools_to_add.filter(school => school.town._id === new_value._id) : []
 })
-watch(school, (new_value, old_value) => {
-  if (_.isEqual(new_value, old_value)) return
 
-  updateEntries()
+let addSchoolAdminRole = schoolAdminSubmit(values => {
+  roles.value = RolesService.getRolesWithSchool(roles.value, (values.school_for_admin as School)._id)
 })
-</script>
 
-<template>
-  <v-container>
-    <MainTitle>Поиск уроков</MainTitle>
+let { meta:town_admin_meta, handleSubmit:townAdminSubmit, handleReset:townAdminReset } = useForm({
+  initialValues: {
+    town_for_admin: towns_to_add.length === 1 ? towns_to_add[0] : null
+  },
+  validationSchema: {
+    town_for_admin(value: Town | null) {
+      return value ? true : 'выберите город'
+    }
+  }
+})
 
-    <!-- Filter -->
-    <v-row class="mt-4" style="margin: -6px;">
-      <v-col 
-        cols="12" md="4" sm="8" xs="12" 
-        style="padding: 6px;"
-      >
-        <v-autocomplete
-          label="Город"
-          v-model="town"
-          :items="towns"
-          item-title="name"
-          auto-select-first
-          return-object
-          variant="solo"
-          hide-details
-        />
-      </v-col>
+let town_for_admin = useField<Town | null>('town_for_admin')
 
-      <v-col 
-        cols="12" md="4" sm="8" xs="12" 
-        style="padding: 6px;"
-      >
-        <v-autocomplete
-          label="Школа"
-          v-model="school"
-          :items="[{ name: 'Все', _id: 'all' }, ...schools_in_town]"
-          item-title="name"
-          auto-select-first
-          return-object
-          variant="solo"
-          hide-details
-        />
-      </v-col>
-    </v-row>
+let addTownAdminRole = townAdminSubmit(values => {
+  roles.value = RolesService.getRolesWithTown(roles.value, (values.town_for_admin as Town)._id)
+})
 
+function addGlobalAdminRole() {
+  roles.value = RolesService.getRolesWithGlobalAdmin(roles.value)
+}
 </script>
 
 <template>
   <v-dialog 
     v-model="state"
     activator="parent"
-  >    
+    :close-on-content-click="false"
+  >
     <v-container class="d-flex justify-center">
       <v-col 
         cols="12" md="8" lg="6"
@@ -181,10 +208,10 @@ watch(school, (new_value, old_value) => {
       
                 <v-col cols="auto">
                   <v-btn
-                    @click="roles = roles.filter(role => role !== deletion_role)"
-                    color="accent"
+                    @click="deleteRole"
+                    color="red"
                   >
-                    Хочу
+                    Удалить
                   </v-btn>
                 </v-col>
               </v-row>          
@@ -192,54 +219,168 @@ watch(school, (new_value, old_value) => {
     
             <v-window-item value="choise">
               <v-row class="flex-column">
-                <v-col cols="12" v-if="my_schools.length || im_global_admin">
+                <v-col cols="12" v-if="schools_to_add.length || towns.length || im_global_admin">
                   <v-card 
                     @click="tab = 'school_admin'"
                     prepend-icon="mdi-school"
                     append-icon="mdi-chevron-right"
+                    color="white"
                   >
-                    <template v-slot:title>                      
-                      Админ школы
+                    <template v-slot:title>
+                      Администратора школы
                     </template>
                   </v-card>
                 </v-col>
 
-                <v-col cols="12" v-if="my_towns.length || im_global_admin">
+                <v-col cols="12" v-if="towns_to_add.length || im_global_admin">
                   <v-card 
                     @click="tab = 'town_admin'"
                     prepend-icon="mdi-town-hall"
                     append-icon="mdi-chevron-right"
+                    color="white"
                   >
                     <template v-slot:title>
-                      Админ города
+                      Администратора города
                     </template>
                   </v-card>
                 </v-col>
 
-                <v-col cols="12" v-if="im_owner">
+                <v-col cols="12" v-if="im_owner && !user_is_global_admin">
                   <v-card 
                     @click="tab = 'global_admin'"
                     prepend-icon="mdi-earth"
                     append-icon="mdi-chevron-right"
                   >
                     <template v-slot:title>
-                      Глобальный админ                      
+                      Глобального админа
                     </template>
                   </v-card>
                 </v-col>
               </v-row>
             </v-window-item>
     
-            <v-window-item value="school_admin">
-              
+            <v-window-item value="town_admin">
+              <v-form @submit.prevent="addTownAdminRole">
+                <v-autocomplete
+                  label="Город"
+                  v-model="town_for_admin.value.value"
+                  :error-messages="town.errorMessage.value"
+                  :items="towns_to_add"
+                  item-title="name"
+                  auto-select-first
+                  return-object
+                  variant="solo"
+                />
+
+                <v-card-actions>
+                  <v-spacer />
+
+                  <v-row>
+                    <v-col cols="auto">
+                      <v-btn @click="tab = 'choise'; townAdminReset()">
+                        Назад
+                      </v-btn>
+                    </v-col>
+
+                    <v-col cols="auto">
+                      <v-btn 
+                        type="submit"
+                        color="accent"
+                        :disabled="!town_admin_meta.valid"
+                      >
+                        Добавить
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card-actions>
+              </v-form>
             </v-window-item>
     
-            <v-window-item value="town_admin">
-              
+            <v-window-item value="school_admin">
+              <v-form @submit.prevent="addSchoolAdminRole">
+                <v-row class="mt-4">
+                  <v-col 
+                    cols="12" sm="6"
+                  >
+                    <v-autocomplete
+                      label="Город"
+                      v-model="town.value.value"
+                      :error-messages="town.errorMessage.value"
+                      :items="towns"
+                      item-title="name"
+                      auto-select-first
+                      return-object
+                      variant="solo"
+                    />
+                  </v-col>
+  
+                  <v-col 
+                    cols="12" sm="6"
+                  >
+                    <v-autocomplete
+                      label="Школа"
+                      v-model="school_for_admin.value.value"
+                      :error-messages="school_for_admin.errorMessage.value"
+                      :items="schools_in_town"
+                      item-title="name"
+                      auto-select-first
+                      return-object
+                      variant="solo"
+                    />
+                  </v-col>
+                </v-row>
+
+                <v-card-actions>
+                  <v-spacer />
+
+                  <v-row>
+                    <v-col cols="auto">
+                      <v-btn @click="tab = 'choise'; townAdminReset()">
+                        назад
+                      </v-btn>
+                    </v-col>
+
+                    <v-col cols="auto">
+                      <v-btn 
+                        type="submit"
+                        color="accent"
+                        :disabled="!school_admin_meta.valid"
+                      >
+                        Добавить
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card-actions>
+              </v-form>              
             </v-window-item>
     
             <v-window-item value="global_admin">
-    
+              <v-form @submit.prevent="addGlobalAdminRole">
+                <div class="w-100 text-center text-h5">
+                  Точно хотите назначить пользователя глобальным администратором?
+                </div>
+
+                <v-card-actions>
+                  <v-spacer />
+
+                  <v-row>
+                    <v-col>
+                      <v-btn @click="tab = 'choise'">
+                        Назад
+                      </v-btn>
+                    </v-col>
+
+                    <v-col>
+                      <v-btn 
+                        type="submit"
+                        color="accent"
+                      >
+                        Назначить
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card-actions>
+              </v-form>
             </v-window-item>
           </v-window>
         </v-card>

@@ -1,26 +1,24 @@
-import { onMounted } from 'vue'
 import { createRouter, createWebHistory, RouteLocation, RouteRecordRaw } from 'vue-router'
 import RolesService from '../services/RolesService'
 import { useAuth } from '../stores/auth'
 
-function checkAuth(): string|void {
-  onMounted(() => {
-    let auth = useAuth()
-    if (!auth.user) {
-      return '/login'
-    }
-  })
+async function checkAuth(): Promise<string | void> {
+  let auth = useAuth()
+  await auth.checkAuth()
+  
+  if (!auth.user) {
+    return '/login'
+  }
 }
 
-function checkAdmin(to: RouteLocation, from: RouteLocation): string|void {
-  onMounted(() => {
-    let auth = useAuth()
-    let user = auth.user
-  
-    if(!user || (user && !RolesService.isSomeAdmin(user.roles))) {
-      return from.path
-    }
-  })
+async function checkAdmin(to: RouteLocation, from: RouteLocation): Promise<string | void> {
+  let auth = useAuth()
+  await auth.checkAuth()
+  let user = auth.user
+
+  if (!user || (user && !RolesService.isSomeAdmin(user.roles))) {
+    return from.path
+  }
 }
 
 const routes: RouteRecordRaw[] = [
@@ -33,17 +31,17 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/HomePage.vue')
       },
       {
-        path: '/searchMentors',
+        path: '/search-mentors',
         name: 'MentorsSearching',
         component: () => import('@/pages/searching/MentorsSearchPage.vue')
       },
       {
-        path: '/searchLessons',
+        path: '/search-lessons',
         name: 'LessonsSearching',
         component: () => import('@/pages/searching/LessonsSearchPage.vue')
       },
       {
-        path: '/searchClubs',
+        path: '/search-clubs',
         name: 'ClubsSearching',
         component: () => import('@/pages/searching/ClubsSearchPage.vue')
       },
@@ -60,15 +58,9 @@ const routes: RouteRecordRaw[] = [
         beforeEnter: checkAuth
       },
       {
-        path: '/myResponses',
+        path: '/my-responses',
         name: 'MyResponses',
         component: () => import('@/pages/account/MyResponsesPage.vue'),
-        beforeEnter: checkAuth
-      },
-      {
-        path: '/myAchievements',
-        name: 'MyAchievements',
-        component: () => import('@/pages/account/MyAchievementsPage.vue'),
         beforeEnter: checkAuth
       },
       {
@@ -106,11 +98,6 @@ const routes: RouteRecordRaw[] = [
         name: 'Moderation',
         component: () => import('@/pages/admin/ModerationPage.vue'),
         beforeEnter: checkAdmin
-      },
-      {
-        path: '/termsOfUse',
-        name: 'TermsOfUse',
-        component: () => import('@/pages/TermsOfUse.vue')
       },
       {
         path: '/login',

@@ -14,7 +14,7 @@ import { useSchool } from '../../stores/school';
 import RolesService from '../../services/RolesService';
 import _ from 'lodash'
 
-localStorage.setItem('newUser', 'false')
+localStorage.removeItem('newUser')
 
 document.title = 'Натройки — Ищу наставника'
 
@@ -26,14 +26,14 @@ let schoolStore = useSchool()
 let user = auth.user as User
 let towns = townStore.towns
 
-let town = ref<Town>(user.town)
+let town = ref<Town>(user.school.town)
 let grade = ref<number>(user.grade)
 let roles = ref(user.roles)
 
 let mentor = ref(RolesService.isMentor(user.roles))
 
 let tab = ref(0)
-let tabs = ['Редактрировать профиль', 'Изменить пароль', 'Мои подписки']
+let tabs = ['Профиль', 'Изменить пароль']
 let loading = ref(false)
 
 // Form
@@ -100,12 +100,11 @@ const submit = handleSubmit(async (values) => {
   loading.value = true
 
   await auth.updateUser(Object.assign(values, {
-    town: town.value._id,
-    school: school.value.value?._id,
+    school: values.school._id,
     grade: grade.value,
     roles: roles.value
   }))
-  router.push(`/user/${user._id}`)
+  .then(() => window.location.href = `/user/${user._id}`)
   
   loading.value = false
 })
@@ -122,7 +121,7 @@ function grades() {
     <BackButton />
 
     <v-row class="mt-1 align-start">
-      <v-col cols="12" md="5" lg="4" xl="3">
+      <v-col cols="12" md="5" lg="3">
         <EntryContainer class="d-flex flex-column">
           <div 
             v-for="(tab_name, index) in tabs"
@@ -190,23 +189,24 @@ function grades() {
               
               <div
                 v-if="contacts.value.value.length > 0" 
-                class="d-flex flex-column mb-2 w-100" 
+                class="d-flex flex-column w-100" 
                 style="gap: 6px;"
               >
-                <TransitionGroup name="list">
+                <v-slide-x-transition group hide-on-leave>
                   <div 
                     class="d-flex flex-row justify-space-between" 
                     v-for="(contact, i) in contacts.value.value" 
                     :key="i"
                   >
-                    <v-text-field
-                      placeholder="ВКонтакте"
-                      v-model="contact.name"
-                      variant="outlined"
-                      density="compact"
-                      class="w-30"
-                      hide-details
-                    />
+                    <v-col cols="4" class="pa-0">
+                      <v-text-field
+                        placeholder="ВКонтакте"
+                        v-model="contact.name"
+                        variant="outlined"
+                        density="compact"
+                        hide-details
+                      />
+                    </v-col>
 
                     <v-text-field
                       placeholder="https://vk.com/vasiliy"
@@ -219,13 +219,12 @@ function grades() {
 
                     <v-btn 
                       @click="contacts.value.value = contacts.value.value.filter((item, index) => index !==i)"
-                      variant="tonal"
-                      class="ml-2 font-weight-semibold bg-button"
-                    >
-                      <v-icon>mdi-delete</v-icon>
-                    </v-btn>
+                      variant="text"
+                      icon="mdi-minus"
+                      class="ml-2 font-weight-semibold text-button"
+                    />
                   </div>
-                </TransitionGroup>
+                </v-slide-x-transition>
               </div>
 
               <div class="text-body-2 text-red">
@@ -237,7 +236,7 @@ function grades() {
                 prepend-icon="mdi-plus"
                 variant="tonal"
                 :disabled="contacts.value.value.length>3"
-                class="text-body-2 pl-5 pr-5 font-weight-semibold bg-button"
+                class="text-body-2 mt-2 pl-5 pr-5 font-weight-semibold bg-button"
               >
                 Добавить
               </v-btn>
