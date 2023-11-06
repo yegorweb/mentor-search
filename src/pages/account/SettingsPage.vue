@@ -14,7 +14,7 @@ import { useSchool } from '../../stores/school';
 import RolesService from '../../services/RolesService';
 import _ from 'lodash'
 
-localStorage.setItem('newUser', 'false')
+localStorage.removeItem('newUser')
 
 document.title = 'Натройки — Ищу наставника'
 
