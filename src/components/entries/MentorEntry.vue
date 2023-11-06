@@ -9,11 +9,14 @@ import Entry from '../../types/entry.interface';
 import { User } from '../../types/user.interface';
 import Slave from '../Slave.vue';
 import EntryContainer from './EntryContainer.vue';
+const showdown = require('showdown')
 
 let router = useRouter()
 let auth = useAuth()
 let userStore = useUser()
 let entryStore = useEntry()
+
+let markdown_converter = new showdown.Converter()
 
 let props = defineProps({
   entry: {
@@ -34,6 +37,7 @@ let props = defineProps({
 
 let user = auth.user
 let entry = reactive(props.entry as Entry)
+let description = markdown_converter.makeHtml(entry.description)
 
 let my_entry = user && entry.author._id === user._id
 let user_is_admin = user && (
@@ -176,7 +180,7 @@ async function disallow() {
       </div>
 
       <div 
-        v-html="entry.description" 
+        v-html="description" 
         class="mt-2" 
       />
     </div>
