@@ -79,7 +79,7 @@ let club_entries = entries.filter(entry => entry.type === 'club')
       v-if="entries.length === 0"
       class="d-flex mt-3 flex-column align-center align-sm-start" 
     >
-      <div class="text-h5 text-center font-weight-semibold">
+      <div class="text-h5 w-100 text-center font-weight-semibold">
         У вас нет откликов 😱
       </div>
       
