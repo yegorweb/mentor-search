@@ -37,12 +37,15 @@ let viewer_is_admin = viewer && (
 let viewer_is_some_admin = viewer && RolesService.isSomeAdmin(viewer.roles)
 
 let entries = my_page ? await entryStore.get_my_entries() : await entryStore.get_by_author(user._id)
-let mentorship_entries = entries.filter(entry => entry.type === 'mentor' && entry.on_moderation === false && entry.moderation_result === true)
-let lesson_entries = entries.filter(entry => entry.type === 'lesson' && entry.on_moderation === false && entry.moderation_result === true)
-let club_entries = entries.filter(entry => entry.type === 'club' && entry.on_moderation === false && entry.moderation_result === true)
-let entries_on_moderation = entries.filter(entry => entry.on_moderation === true || (my_page && entry.on_moderation === false && entry.moderation_result === false))
+let mentorship_entries = entries.filter(entry => my_page ? entry.type === 'mentor' && entry.on_moderation === false && entry.moderation_result === true : entry.type === 'mentor')
+let lesson_entries = entries.filter(entry => my_page ? entry.type === 'lesson' && entry.on_moderation === false && entry.moderation_result === true : entry.type === 'lesson')
+let club_entries = entries.filter(entry => my_page ? entry.type === 'club' && entry.on_moderation === false && entry.moderation_result === true : entry.type === 'club')
 
 let responsed_entries: Entry[] = []
+let entries_on_moderation: Entry[] = []
+if (my_page) {
+  entries_on_moderation = entries.filter(entry => entry.on_moderation === true || (my_page && entry.on_moderation === false && entry.moderation_result === false))
+}
 
 if (my_page && !RolesService.isMentor(user.roles)) {
   responsed_entries = await userStore.get_my_responses()
