@@ -11,6 +11,7 @@ import Entry from '../../types/entry.interface';
 import RolesService from '../../services/RolesService';
 import { useTown } from '../../stores/town';
 import RolesControl from '../../components/RolesControl.vue';
+import { useDisplay } from 'vuetify/lib/framework.mjs';
 
 let new_user = localStorage.getItem('newUser')
 
@@ -172,7 +173,7 @@ function removeRank(item: string) {
 
           <v-tooltip
             v-if="new_user"
-            location="bottom start"
+            :location="useDisplay().mdAndUp.value ? 'bottom start' : 'bottom center'"
             activator="parent"
             color="gray"
             model-value 
