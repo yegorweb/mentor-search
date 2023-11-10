@@ -48,7 +48,7 @@ let navigation_drawer_is_open = ref(false)
 
         <v-avatar 
           @click="router.push(user ? `/user/${user._id}` : '/login')"
-          :image="user?.avatar_url"
+          :image="user ? user.avatar_url ?? '' : ''"
           class="cursor-pointer" 
           size="30" 
           color="#FFFFFF" 

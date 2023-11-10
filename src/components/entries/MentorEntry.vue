@@ -129,7 +129,7 @@ async function disallow() {
         class="d-flex flex-row mr-7 mb-2 flex-nowrap align-start-center justify-start cursor-pointer"
       >
         <v-avatar 
-          :image="entry.author.avatar_url"
+          :image="entry.author ? entry.author.avatar_url ?? '' : ''"
           color="blue"
           class="pt-1"
         />

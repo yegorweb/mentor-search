@@ -94,7 +94,7 @@ function removeRank(item: string) {
     >
       <!-- Avatar -->
       <v-avatar 
-        :image="user.avatar_url" 
+        :image="user.avatar_url ?? ''" 
         color="blue" 
         size="130"
       />
