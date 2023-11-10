@@ -32,6 +32,11 @@ let props = defineProps({
     type: Boolean,
     required: false,
     default: false
+  },
+  my_entry: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 })
 
@@ -39,7 +44,7 @@ let user = auth.user
 let entry = reactive(props.entry as Entry)
 let description = markdown_converter.makeHtml(entry.description)
 
-let my_entry = user && entry.author._id === user._id
+let my_entry = props.my_entry ?? (user && entry.author._id === user._id)
 let user_is_admin = user && (
   RolesService.isGlobalAdmin(user.roles) ||
   RolesService.isAdminOfSchool(user.roles, entry.school._id) || 

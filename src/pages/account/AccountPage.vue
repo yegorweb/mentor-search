@@ -269,6 +269,7 @@ function removeRank(item: string) {
           v-for="entry in entries_on_moderation"
           :key="entry._id"
           hide_user 
+          :my_entry="entry.author._id === viewer?._id"
           :entry="entry" 
           :show_location="false" 
         />
@@ -289,6 +290,7 @@ function removeRank(item: string) {
           v-for="entry in responsed_entries"
           :key="entry._id"
           hide_user 
+          :my_entry="entry.author._id === viewer?._id"
           :entry="entry" 
           :show_location="false" 
         />
@@ -309,6 +311,7 @@ function removeRank(item: string) {
           v-for="entry in mentorship_entries"
           :key="entry._id"
           hide_user 
+          :my_entry="entry.author._id === viewer?._id"
           :entry="entry" 
           :show_location="false" 
         />
