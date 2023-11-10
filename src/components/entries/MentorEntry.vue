@@ -191,13 +191,8 @@ async function disallow() {
         class="mb-2"
         v-if="props.show_location || !user || entry.school._id !== user.school._id"
       >
-        <span class="mdi mdi-map-marker text-teal-lighten-1" />
-        
-        <span v-if="!user || entry.school.town._id !== user.school.town._id">
-          {{ entry.school.town.name + ', ' }}
-        </span>
-
-        {{ entry.school.name }}
+        <span class="mdi mdi-map-marker text-teal-lighten-1" 
+        />&nbsp;<span v-if="!user || entry.school.town._id !== user.school.town._id">{{ entry.school.town.name + ', ' }}</span>{{ entry.school.name }}
       </div>
  
       <!-- Buttons -->
