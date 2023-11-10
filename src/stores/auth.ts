@@ -45,7 +45,7 @@ export const useAuth = defineStore('auth', () => {
       localStorage.removeItem('token')
       await AuthService.logout()
 
-      localStorage.setItem('newUser', 'false')
+      localStorage.removeItem('newUser')
     } catch {}
   }
 

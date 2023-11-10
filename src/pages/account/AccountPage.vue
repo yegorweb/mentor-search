@@ -12,7 +12,7 @@ import RolesService from '../../services/RolesService';
 import { useTown } from '../../stores/town';
 import RolesControl from '../../components/RolesControl.vue';
 
-let new_user = !!localStorage.getItem('newUser')
+let new_user = localStorage.getItem('newUser')
 
 let router = useRouter()
 let auth = useAuth()
