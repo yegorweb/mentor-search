@@ -198,19 +198,19 @@ function grades() {
                     v-for="(contact, i) in contacts.value.value" 
                     :key="i"
                   >
-                    <v-col cols="4" class="pa-0">
-                      <v-text-field
-                        placeholder="ВКонтакте"
-                        v-model="contact.name"
-                        variant="outlined"
-                        density="compact"
-                        hide-details
-                      />
-                    </v-col>
+                    <v-text-field
+                      placeholder="ВКонтакте"
+                      v-model="contact.name"
+                      style="width: 30% !important;"
+                      variant="outlined"
+                      density="compact"
+                      hide-details
+                    />
 
                     <v-text-field
                       placeholder="https://vk.com/vasiliy"
                       v-model="contact.link"
+                      style="width: 40% !important;"
                       variant="outlined"
                       density="compact"
                       class="ml-2"
