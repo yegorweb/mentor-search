@@ -36,20 +36,31 @@ let viewer_is_admin = viewer && (
 )
 let viewer_is_some_admin = viewer && RolesService.isSomeAdmin(viewer.roles)
 
-let entries = my_page ? await entryStore.get_my_entries() : await entryStore.get_by_author(user._id)
-let mentorship_entries = entries.filter(entry => my_page ? entry.type === 'mentor' && entry.on_moderation === false && entry.moderation_result === true : entry.type === 'mentor')
-let lesson_entries = entries.filter(entry => my_page ? entry.type === 'lesson' && entry.on_moderation === false && entry.moderation_result === true : entry.type === 'lesson')
-let club_entries = entries.filter(entry => my_page ? entry.type === 'club' && entry.on_moderation === false && entry.moderation_result === true : entry.type === 'club')
+let loading = ref(false)
+let entries = ref<Entry[]>([])
+let mentorship_entries = ref<Entry[]>([])
+let lesson_entries = ref<Entry[]>([])
+let club_entries = ref<Entry[]>([])
+let responsed_entries = ref<Entry[]>([])
+let entries_on_moderation = ref<Entry[]>([])
 
-let responsed_entries: Entry[] = []
-let entries_on_moderation: Entry[] = []
-if (my_page) {
-  entries_on_moderation = entries.filter(entry => entry.on_moderation === true || (my_page && entry.on_moderation === false && entry.moderation_result === false))
-}
+async function fetchEntries() {
+  loading.value = true
+  entries.value = my_page ? await entryStore.get_my_entries() : await entryStore.get_by_author(user._id)
+  mentorship_entries.value = entries.value.filter(entry => my_page ? entry.type === 'mentor' && entry.on_moderation === false && entry.moderation_result === true : entry.type === 'mentor')
+  lesson_entries.value = entries.value.filter(entry => my_page ? entry.type === 'lesson' && entry.on_moderation === false && entry.moderation_result === true : entry.type === 'lesson')
+  club_entries.value = entries.value.filter(entry => my_page ? entry.type === 'club' && entry.on_moderation === false && entry.moderation_result === true : entry.type === 'club')
 
-if (my_page && !RolesService.isMentor(user.roles)) {
-  responsed_entries = await userStore.get_my_responses()
+  if (my_page) {
+    entries_on_moderation.value = entries.value.filter(entry => entry.on_moderation === true || (my_page && entry.on_moderation === false && entry.moderation_result === false))
+  }
+
+  if (my_page && !RolesService.isMentor(user.roles)) {
+    responsed_entries.value = await userStore.get_my_responses()
+  }
+  loading.value = false
 }
+fetchEntries()
 
 let roles_control_status = ref(false)
 
@@ -261,108 +272,117 @@ function removeRank(item: string) {
       </v-row>
     </div>
 
-    <!-- On moderation -->
-    <div 
-      v-if="(my_page || viewer_is_admin) && entries_on_moderation.length > 0"
-      class="d-flex flex-column pt-4 pb-4 w-100"
-    >
-      <div class="text-h5 font-weight-bold">На модерации</div>
-
-      <div class="mt-4 entries-container">
-        <MentorEntry 
-          v-for="entry in entries_on_moderation"
-          :key="entry._id"
-          hide_user 
-          :my_entry="entry.author._id === viewer?._id"
-          :entry="entry" 
-          :show_location="false" 
-        />
-      </div>
+    <div v-if="loading" class="d-flex pt-4 justify-center w-100">
+      <v-progress-circular 
+        indeterminate
+        color="primary"
+      />
     </div>
 
-    <!-- My responses -->
-    <div 
-      v-if="my_page && !RolesService.isMentor(user.roles) && responsed_entries.length > 0"
-      class="d-flex flex-column pt-4 pb-4 w-100" 
-    >
-      <div class="text-h5 mt-8 font-weight-bold">
-        Мои отклики
+    <template v-if="!loading">
+      <!-- On moderation -->
+      <div 
+        v-if="(my_page || viewer_is_admin) && entries_on_moderation.length > 0"
+        class="d-flex flex-column pt-4 pb-4 w-100"
+      >
+        <div class="text-h5 font-weight-bold">На модерации</div>
+
+        <div class="mt-4 entries-container">
+          <MentorEntry 
+            v-for="entry in entries_on_moderation"
+            :key="entry._id"
+            hide_user 
+            :my_entry="entry.author._id === viewer?._id"
+            :entry="entry" 
+            :show_location="false" 
+          />
+        </div>
       </div>
 
-      <div class="mt-4 entries-container">
-        <MentorEntry 
-          v-for="entry in responsed_entries"
-          :key="entry._id"
-          hide_user 
-          :my_entry="entry.author._id === viewer?._id"
-          :entry="entry" 
-          :show_location="false" 
-        />
-      </div>
-    </div>
+      <!-- My responses -->
+      <div 
+        v-if="my_page && !RolesService.isMentor(user.roles) && responsed_entries.length > 0"
+        class="d-flex flex-column pt-4 pb-4 w-100" 
+      >
+        <div class="text-h5 mt-8 font-weight-bold">
+          Мои отклики
+        </div>
 
-    <!-- Mentorship entries -->
-    <div
-      v-if="mentorship_entries.length > 0"
-      class="d-flex flex-column pt-4 pb-4 w-100"
-    >
-      <div class="text-h5 font-weight-bold">
-        Наставник по
-      </div>
-
-      <div class="entries-container mt-4">
-        <MentorEntry 
-          v-for="entry in mentorship_entries"
-          :key="entry._id"
-          hide_user 
-          :my_entry="entry.author._id === viewer?._id"
-          :entry="entry" 
-          :show_location="false" 
-        />
-      </div>
-    </div>
-
-    <!-- Lessons entries -->
-    <div
-      v-if="lesson_entries.length > 0"
-      class="d-flex flex-column pt-4 pb-4"
-    >
-      <div class="text-h5 font-weight-bold">
-        Уроки
+        <div class="mt-4 entries-container">
+          <MentorEntry 
+            v-for="entry in responsed_entries"
+            :key="entry._id"
+            hide_user 
+            :my_entry="entry.author._id === viewer?._id"
+            :entry="entry" 
+            :show_location="false" 
+          />
+        </div>
       </div>
 
-      <div class="mt-4 entries-container">
-        <MentorEntry 
-          v-for="entry in lesson_entries"
-          :key="entry._id"
-          :my_entry="entry.author._id === viewer?._id"
-          hide_user 
-          :entry="entry" 
-          :show_location="false" 
-        />
-      </div>
-    </div>
+      <!-- Mentorship entries -->
+      <div
+        v-if="mentorship_entries.length > 0"
+        class="d-flex flex-column pt-4 pb-4 w-100"
+      >
+        <div class="text-h5 font-weight-bold">
+          Наставник по
+        </div>
 
-    <!-- Clubs entries -->
-    <div
-      v-if="club_entries.length > 0"
-      class="d-flex flex-column pt-4 pb-4"
-    >
-      <div class="text-h5 font-weight-bold">
-        Клубы
+        <div class="entries-container mt-4">
+          <MentorEntry 
+            v-for="entry in mentorship_entries"
+            :key="entry._id"
+            hide_user 
+            :my_entry="entry.author._id === viewer?._id"
+            :entry="entry" 
+            :show_location="false" 
+          />
+        </div>
       </div>
 
-      <div class="mt-4 entries-container">
-        <MentorEntry 
-          v-for="entry in club_entries"
-          :key="entry._id"
-          :my_entry="entry.author._id === viewer?._id"
-          hide_user 
-          :entry="entry" 
-          :show_location="false" 
-        />
+      <!-- Lessons entries -->
+      <div
+        v-if="lesson_entries.length > 0"
+        class="d-flex flex-column pt-4 pb-4"
+      >
+        <div class="text-h5 font-weight-bold">
+          Уроки
+        </div>
+
+        <div class="mt-4 entries-container">
+          <MentorEntry 
+            v-for="entry in lesson_entries"
+            :key="entry._id"
+            :my_entry="entry.author._id === viewer?._id"
+            hide_user 
+            :entry="entry" 
+            :show_location="false" 
+          />
+        </div>
       </div>
-    </div>
+
+      <!-- Clubs entries -->
+      <div
+        v-if="club_entries.length > 0"
+        class="d-flex flex-column pt-4 pb-4"
+      >
+        <div class="text-h5 font-weight-bold">
+          Клубы
+        </div>
+
+        <div class="mt-4 entries-container">
+          <MentorEntry 
+            v-for="entry in club_entries"
+            :key="entry._id"
+            :my_entry="entry.author._id === viewer?._id"
+            hide_user 
+            :entry="entry" 
+            :show_location="false" 
+          />
+        </div>
+      </div>
+    </template>
   </v-container>
 </template>
 
