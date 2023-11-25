@@ -83,6 +83,9 @@ export default {
   },
 
   getType(roles: string[]): string {
+    if (this.isOwner(roles))
+      return 'создатель'
+
     if (this.isSomeAdmin(roles))
       return 'админ'
       
