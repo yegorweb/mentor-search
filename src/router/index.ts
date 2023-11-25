@@ -109,6 +109,11 @@ const routes: RouteRecordRaw[] = [
         name: 'Registration',
         component: () => import('@/pages/RegistrationPage.vue')
       },
+      {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: () => import('@/pages/404.vue')
+      }
     ]
   }
 ]
