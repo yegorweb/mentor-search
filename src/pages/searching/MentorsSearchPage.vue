@@ -33,9 +33,12 @@ let school = ref<School | null>(user ?
 )
 
 let entries = ref<Entry[]>([])
+let loading = ref(false)
 
 async function updateEntries() {
+  loading.value = true
   entries.value = school.value ? await entryStore.get('mentor', town.value._id, school.value._id) : []
+  loading.value = false
 }
 updateEntries()
 
@@ -93,7 +96,7 @@ watch(school, (new_value, old_value) => {
       </v-col>
     </v-row>
     
-    <div class="mt-8 entries-container">
+    <div v-if="!loading" class="mt-8 entries-container">
       <Suspense>
         <MentorEntry 
           v-for="entry in entries"
@@ -104,15 +107,22 @@ watch(school, (new_value, old_value) => {
       </Suspense>
     </div>
 
+    <div v-if="loading" class="w-100 mt-8 d-flex justify-center">
+      <v-progress-circular 
+        indeterminate
+        color="primary"
+      />
+    </div>
+
     <div
-      v-if="school && entries.length === 0"
+      v-if="!loading && school && entries.length === 0"
       class="w-100 text-center text-h6 font-weight-medium"
     >
       Пусто
     </div>
     
     <div 
-      v-if="!school"
+      v-if="!loading && !school"
       class="w-100 text-center text-h6 font-weight-medium"
     >
       Выберите школу
