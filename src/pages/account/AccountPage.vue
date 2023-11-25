@@ -335,6 +335,7 @@ function removeRank(item: string) {
         <MentorEntry 
           v-for="entry in lesson_entries"
           :key="entry._id"
+          :my_entry="entry.author._id === viewer?._id"
           hide_user 
           :entry="entry" 
           :show_location="false" 
@@ -355,6 +356,7 @@ function removeRank(item: string) {
         <MentorEntry 
           v-for="entry in club_entries"
           :key="entry._id"
+          :my_entry="entry.author._id === viewer?._id"
           hide_user 
           :entry="entry" 
           :show_location="false" 
