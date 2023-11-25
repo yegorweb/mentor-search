@@ -7,6 +7,7 @@ import { useAuth } from '../../stores/auth'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { User } from '../../types/user.interface'
 import School from '../../types/school.interface'
+import { ref } from 'vue'
 
 let props = defineProps(['id'])
 let id = props.id
@@ -14,7 +15,16 @@ let id = props.id
 let user = useAuth().user as User
 
 let school = await useSchool().get_by_id(id) as School
-let users = (await useUser().get_all_by_school(id)).filter(item => item._id !== user._id)
+
+let loading = ref(false)
+let users = ref<User[]>([])
+
+async function fetchUsers() {
+  loading.value = true
+  users.value = (await useUser().get_all_by_school(id)).filter(item => item._id !== user._id)
+  loading.value = false
+}
+fetchUsers()
 
 onBeforeRouteUpdate((to) => {
   window.location.href = to.path
@@ -25,7 +35,14 @@ onBeforeRouteUpdate((to) => {
   <v-container>
     <MainTitle>{{ school.town.name + ', ' + school.name }}</MainTitle>
 
-    <v-row class="mt-4">
+    <div v-if="loading" class="d-flex mt-4 justify-center">
+      <v-progress-circular
+        indeterminate
+        color="primary"
+      />
+    </div>
+
+    <v-row v-if="!loading" class="mt-4">
       <v-col
         v-for="user in users"
         :key="user._id"
