@@ -189,7 +189,7 @@ const createSchool = schoolHandleSubmit(async (values) => {
           activator="parent"
         >
           <v-col 
-            cols="12" sm="8" md="6" lg="5" xl="4"
+            cols="12" sm="8" md="6" lg="3"
             class="ma-auto ma-0 pa-0"
           >
             <v-card 
