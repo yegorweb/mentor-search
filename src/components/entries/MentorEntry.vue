@@ -351,7 +351,7 @@ async function disallow() {
         />
       </template>
 
-      <v-list density="compact">
+      <v-list density="compact" class="elevation-0 bg-grey-lighten-2 rounded-lg">
         <v-list-item 
           v-if="my_entry" 
           :to="`/edit/${entry._id}`"
