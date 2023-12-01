@@ -117,7 +117,7 @@ function grades() {
 </script>
 
 <template>
-  <v-container>
+  <v-container class="mt-1">
     <BackButton />
 
     <v-row class="mt-1 align-start">
