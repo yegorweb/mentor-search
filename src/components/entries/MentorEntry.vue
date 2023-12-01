@@ -341,6 +341,7 @@ async function disallow() {
     <v-menu 
       v-if="my_entry || user_is_admin"
       location="start top" 
+      scroll-strategy="close"
       transition="scroll-y-transition"
     >
       <template v-slot:activator="{ props }">
