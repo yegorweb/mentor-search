@@ -210,6 +210,7 @@ async function disallow() {
           size="small"
           variant="tonal" 
           :class="`text-body-2 pl-5 pr-5 mr-3 font-weight-semibold ${responsed ? 'bg-accent' : 'bg-button'}`"
+          :ripple="false"
         >
           {{ status }}
         </v-btn>
@@ -312,6 +313,7 @@ async function disallow() {
           @click="approve"
           :loading="approve_loading"
           :disabled="approve_disabled"
+          :ripple="false"
         >
           Принять
         </v-btn>
@@ -323,6 +325,7 @@ async function disallow() {
           @click="disallow"
           :loading="disallow_loading"
           :disabled="disallow_disabled"
+          :ripple="false"
         >
           Отказать
         </v-btn>
