@@ -20,13 +20,20 @@
   transition: all 0.3s ease-out;
 }
 
-.slide-fade-leave-active {
-  
-}
-
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   transform: translateY(20px);
+  opacity: 0;
+}
+
+.slide-fade-page-enter-active {
+  transition: all 0.15s ease-out;
+}
+
+.slide-fade-page-enter-from,
+.slide-fade-page-leave-to {
+  // transform: translateY(10px);
+  filter: blur(10px);
   opacity: 0;
 }
 
