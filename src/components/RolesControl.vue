@@ -62,8 +62,8 @@ let im_global_admin: boolean = false
 let im_owner: boolean = false
 
 if (I) {
-  my_schools = await useSchool().get_administered_schools()
-  my_towns = await useTown().getAdministeredTowns()
+  my_schools = useSchool().administered_schools
+  my_towns = useTown().administered_towns
   im_global_admin = RolesService.isGlobalAdmin(I.roles)
   im_owner = RolesService.isOwner(I.roles)
 }

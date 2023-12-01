@@ -5,6 +5,7 @@ import { ref } from "vue"
 
 export const useTown = defineStore('town', () => {
   let towns = ref<Town[]>([])
+  let administered_towns = ref<Town[]>([])
 
   async function fetchTowns(): Promise<void> {
     towns.value = await get_all()
@@ -30,13 +31,11 @@ export const useTown = defineStore('town', () => {
     } catch {}
   }
 
-  async function getAdministeredTowns(): Promise<Town[]> {
+  async function fetchAdministeredTowns(): Promise<void> {
     try {
-      return (await TownService.getAdministeredTowns()).data
-    } catch {
-      return []
-    }
+      administered_towns.value = (await TownService.getAdministeredTowns()).data
+    } catch {}
   }
 
-  return { towns, fetchTowns, get_by_id, get_all, create, getAdministeredTowns }
+  return { towns, administered_towns, fetchTowns, get_by_id, get_all, create, fetchAdministeredTowns }
 })

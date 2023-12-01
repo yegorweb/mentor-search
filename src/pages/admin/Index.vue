@@ -9,11 +9,12 @@ import { ref } from 'vue'
 import { useField, useForm } from 'vee-validate'
 import CloseButton from '@/components/CloseButton.vue'
 import { User } from '../../types/user.interface'
+import Town from '../../types/town.interface'
 
 let router = useRouter()
 
 let user = useAuth().user as User
-let schools = await useSchool().get_administered_schools()
+let schools = useSchool().administered_schools
 
 // Creating town
 
@@ -47,8 +48,6 @@ const createTown = townHandleSubmit(async (values) => {
 
 let creating_school_status = ref(false)
 let creating_school_loading = ref(false)
-
-let administered_towns = await useTown().getAdministeredTowns()
 
 const { meta:schoolMeta, handleSubmit:schoolHandleSubmit } = useForm({
   initialValues: {
@@ -134,7 +133,7 @@ const createSchool = schoolHandleSubmit(async (values) => {
                     <v-autocomplete
                       v-model="town_id.value.value"
                       :error-messages="town_id.errors.value"
-                      :items="administered_towns"
+                      :items="useTown().administered_towns"
                       item-title="name"
                       item-value="_id"
                       auto-select-first

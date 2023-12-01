@@ -1,8 +1,11 @@
 import { defineStore } from "pinia";
+import { ref } from "vue";
 import SchoolService from "../services/SchoolService";
 import School from "../types/school.interface";
 
 export const useSchool = defineStore('school', () => {
+  let administered_schools = ref<School[]>([])
+
   async function get_by_id(_id: string): Promise<School | undefined> {
     try {
       return (await SchoolService.get_by_id(_id)).data
@@ -25,12 +28,10 @@ export const useSchool = defineStore('school', () => {
     }
   }
 
-  async function get_administered_schools(): Promise<School[]> {
+  async function fetchAdministeredSchools(): Promise<void> {
     try {
-      return (await SchoolService.get_administered_schools()).data
-    } catch {
-      return []
-    }
+      administered_schools.value = (await SchoolService.get_administered_schools()).data
+    } catch {}
   }
 
   async function create(name: string, town_id: string): Promise<void> {
@@ -39,5 +40,5 @@ export const useSchool = defineStore('school', () => {
     } catch {}
   }
 
-  return { get_by_id, get_all, get_all_in_town, get_administered_schools, create }
+  return { administered_schools, get_by_id, get_all, get_all_in_town, fetchAdministeredSchools, create }
 })
