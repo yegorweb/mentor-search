@@ -355,16 +355,22 @@ async function disallow() {
         <v-list-item 
           v-if="my_entry" 
           :to="`/edit/${entry._id}`"
-          prepend-icon="mdi-pencil" 
         >
+          <template v-slot:prepend>
+            <v-icon style="margin-right: 19px;">mdi-pencil</v-icon>
+          </template>
+          
           Редактировать
         </v-list-item>
         
         <v-list-item 
           @click="delete_entry" 
           :loading="delete_loading"
-          prepend-icon="mdi-delete" 
         >
+          <template v-slot:prepend>
+            <v-icon style="margin-right: 19px;">mdi-delete</v-icon>
+          </template>
+          
           Удалить
         </v-list-item>
       </v-list>
