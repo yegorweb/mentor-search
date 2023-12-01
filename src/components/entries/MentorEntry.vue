@@ -340,7 +340,7 @@ async function disallow() {
     <!-- Menu -->
     <v-menu 
       v-if="my_entry || user_is_admin"
-      location="start" 
+      location="start top" 
     >
       <template v-slot:activator="{ props }">
         <v-icon
