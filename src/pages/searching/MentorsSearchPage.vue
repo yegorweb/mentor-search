@@ -7,10 +7,10 @@ import { useAuth } from '../../stores/auth';
 import { useSchool } from '../../stores/school';
 import { useTown } from '../../stores/town';
 import { useEntry } from '../../stores/entry';
-import Town from '../../types/town.interface';
-import School from '../../types/school.interface';
 import Entry from '../../types/entry.interface';
 import _ from 'lodash'
+import { storeToRefs } from 'pinia';
+import { useSearch } from '../../stores/search'
 
 document.title = 'Поиск наставников — Ищу наставника'
 
@@ -22,15 +22,7 @@ let { towns } = useTown()
 
 let user = auth.user
 
-let town = ref<Town>(user ? 
-  user.school.town : 
-  towns.find(town => town.name === 'Глазов') as any
-)
-
-let school = ref<School | null>(user ? 
-  user.school : 
-  { name: 'Все', _id: 'all' } as any
-)
+let { town, school } = storeToRefs(useSearch())
 
 let entries = ref<Entry[]>([])
 let loading = ref(false)

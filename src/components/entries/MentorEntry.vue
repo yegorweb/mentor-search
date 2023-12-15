@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { ref, reactive, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import RolesService from '../../services/RolesService';
 import { useAuth } from '../../stores/auth';
 import { useEntry } from '../../stores/entry';
+import { useSearch } from '../../stores/search';
 import { useUser } from '../../stores/user';
 import Entry from '../../types/entry.interface';
 import { User } from '../../types/user.interface';
@@ -12,6 +14,7 @@ import EntryContainer from './EntryContainer.vue';
 const showdown = require('showdown')
 
 let router = useRouter()
+let route = useRoute()
 let auth = useAuth()
 let userStore = useUser()
 let entryStore = useEntry()
@@ -120,18 +123,43 @@ async function disallow() {
   approve_disabled.value = false
   disallow_loading.value = false
 }
+
+function setLast() {
+  if (!route.path.includes('search'))
+    return
+
+  last_entry_id.value = entry._id
+  let div = document.getElementById(entry._id)
+  if (div)
+    delta.value = div.getBoundingClientRect().top
+}
+
+let { last_entry_id, delta } = storeToRefs(useSearch())
+
+onMounted(() => {
+  if (last_entry_id.value === entry._id && route.path.includes('search')) {
+    let div = document.getElementById(entry._id)
+    if (!div)
+      return
+    
+    let rect = div.getBoundingClientRect()
+    window.scrollTo({ top: rect.y - delta.value })
+    last_entry_id.value = undefined
+  }
+})
 </script>
 
 <template>
   <EntryContainer 
     class="justify-space-between" 
     style="position: relative;"
+    :id="entry._id"
   >
     <div class="d-flex align-start w-100 justify-start flex-column">
       <!-- Author -->
       <div 
         v-if="!props.hide_user"
-        @click="router.push(`/user/${entry.author._id}`)" 
+        @click="router.push(`/user/${entry.author._id}`); setLast()" 
         class="d-flex flex-row mr-7 mb-2 flex-nowrap align-start-center justify-start cursor-pointer"
       >
         <v-avatar 
