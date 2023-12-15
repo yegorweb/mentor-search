@@ -1,10 +1,14 @@
-<script setup>
+<script setup lang="ts">
 import MainTitle from '@/components/MainTitle.vue'
 import MentorEntry from '../../components/entries/MentorEntry.vue';
 import EntryService from '../../services/EntryService'
 import { useEntry } from '../../stores/entry';
 
 let entries = await useEntry().get_entries_to_moderation()
+
+function onDeleteEntry(_id: string) {
+  entries.value = entries.value.filter(entry => entry._id !== _id)
+}
 </script>
 
 <template>
@@ -14,6 +18,7 @@ let entries = await useEntry().get_entries_to_moderation()
     <div class="mt-6 entries-container">
       <MentorEntry 
         v-for="entry in entries"
+        @delete="onDeleteEntry"
         :key="entry._id"
         show_location 
         :entry="entry" 
