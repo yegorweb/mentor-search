@@ -23,7 +23,7 @@ let navigation_drawer_is_open = ref(false)
       :elevation="0" 
       density="compact" 
       color="primary"
-      style="padding-left: calc(100vw - 100%);"
+      style="padding-left: calc(100vw - 100%); z-index: 3000;"
     >
       <v-container 
         class="d-flex align-center header-container justify-space-between"
