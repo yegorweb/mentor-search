@@ -95,17 +95,6 @@ watch(school, (new_value, old_value) => {
         />
       </v-col>
     </v-row>
-    
-    <div v-if="!loading" class="mt-8 entries-container">
-      <Suspense>
-        <MentorEntry 
-          v-for="entry in entries"
-          :key="entry._id"
-          :entry="entry" 
-          :show_location="school?._id === 'all'" 
-        />
-      </Suspense>
-    </div>
 
     <div v-if="loading" class="w-100 mt-8 d-flex justify-center">
       <v-progress-circular 
@@ -115,17 +104,28 @@ watch(school, (new_value, old_value) => {
     </div>
 
     <div
-      v-if="!loading && school && entries.length === 0"
-      class="w-100 text-center text-h6 font-weight-medium"
+      v-else-if="!loading && school && entries.length === 0"
+      class="w-100 mt-8 text-center text-h6 font-weight-medium"
     >
       Пусто
     </div>
     
     <div 
-      v-if="!loading && !school"
-      class="w-100 text-center text-h6 font-weight-medium"
+      v-else-if="!loading && !school"
+      class="w-100 mt-8 text-center text-h6 font-weight-medium"
     >
       Выберите школу
+    </div>
+    
+    <div v-else class="mt-8 entries-container">
+      <Suspense>
+        <MentorEntry 
+          v-for="entry in entries"
+          :key="entry._id"
+          :entry="entry" 
+          :show_location="school?._id === 'all'" 
+        />
+      </Suspense>
     </div>
   </v-container>
 </template>
