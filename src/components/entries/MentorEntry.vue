@@ -246,16 +246,6 @@ onMounted(() => {
         
         <v-btn 
           size="small"
-          :to="`/user/${entry.author._id}`"
-          v-if="!props.hide_user"
-          variant="tonal" 
-          class="text-body-2 pl-5 pr-5 font-weight-semibold bg-button"
-        >
-          Посмотреть профиль
-        </v-btn>
-
-        <v-btn 
-          size="small"
           variant="tonal" 
           v-if="my_entry && entry.responses.length > 0"
           class="text-body-2 pl-5 pr-5 mr-3 font-weight-semibold bg-button"
