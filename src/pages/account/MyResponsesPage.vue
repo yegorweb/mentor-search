@@ -15,16 +15,24 @@ let lesson_entries = ref<Entry[]>([])
 let club_entries = ref<Entry[]>([])
 let loading = ref(false)
 
-async function fetchEntries() {
-  loading.value = true
-  entries.value = await userStore.get_my_responses()
-  loading.value = false
-  
+function updateEntries() {
   mentorship_entries.value = entries.value.filter(entry => entry.type === 'mentor')
   lesson_entries.value = entries.value.filter(entry => entry.type === 'lesson')
   club_entries.value = entries.value.filter(entry => entry.type === 'club')
 }
+
+async function fetchEntries() {
+  loading.value = true
+  entries.value = await userStore.get_my_responses()
+  updateEntries()
+  loading.value = false 
+}
 fetchEntries()
+
+function onDeleteEntry(_id: string) {
+  entries.value = entries.value.filter(entry => entry._id !== _id)
+  updateEntries()
+}
 </script>
 
 <template>
@@ -45,11 +53,12 @@ fetchEntries()
         v-if="mentorship_entries.length > 0" 
         class="entries-container pt-4 pb-4"
       >
-          <MentorEntry 
-            v-for="entry in mentorship_entries"
-            :key="entry._id"
-            :entry="entry" 
-          />
+        <MentorEntry 
+          v-for="entry in mentorship_entries"
+          @delete="onDeleteEntry"
+          :key="entry._id"
+          :entry="entry" 
+        />
       </div>
 
       <!-- Lessons -->
@@ -67,6 +76,7 @@ fetchEntries()
         <div class="entries-container">
           <MentorEntry 
             v-for="entry in lesson_entries"
+            @delete="onDeleteEntry"
             :key="entry._id"
             :entry="entry" 
           />
@@ -88,6 +98,7 @@ fetchEntries()
         <div class="entries-container">
           <MentorEntry 
             v-for="entry in club_entries"
+            @delete="onDeleteEntry"
             :key="entry._id"
             :entry="entry" 
           />
