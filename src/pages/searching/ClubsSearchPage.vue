@@ -56,6 +56,10 @@ watch(school, (new_value, old_value) => {
 
   updateEntries()
 })
+
+function onDeleteEntry(_id: string) {
+  entries.value = entries.value.filter(entry => entry._id !== _id)
+}
 </script>
 
 <template>
@@ -122,6 +126,7 @@ watch(school, (new_value, old_value) => {
       <Suspense>
         <MentorEntry 
           v-for="entry in entries"
+          @delete="onDeleteEntry"
           :key="entry._id"
           :entry="entry" 
           :show_location="school?._id === 'all'" 
