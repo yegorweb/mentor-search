@@ -10,7 +10,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@mdi/font": "^7.1.96",
+    "@mdi/font": "^7.3.67",
     "@tauri-apps/api": "^1.2.0",
     "@types/lodash": "^4.14.198",
     "@types/webfontloader": "^1.6.35",
@@ -22,10 +22,10 @@
     "vee-validate": "^4.8.3",
     "vite-plugin-require": "^1.1.11",
     "vite-plugin-vuetify": "^1.0.2",
-    "vue": "^3.3.4",
-    "vue-router": "^4.1.6",
+    "vue": "^3.3.10",
+    "vue-router": "^4.2.5",
     "vue-toastification": "^2.0.0-rc.5",
-    "vuetify": "^3.3.7",
+    "vuetify": "^3.4.6",
     "webfontloader": "^1.6.28",
     "yup": "^1.0.2"
   },
