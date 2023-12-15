@@ -10,10 +10,11 @@ import CloseButton from './CloseButton.vue';
 import Role from './Role.vue';
 import _ from 'lodash'
 import { useField, useForm } from 'vee-validate';
+import { User } from '../types/user.interface';
 
 let schoolStore = useSchool()
 let auth = useAuth()
-let I = auth.user
+let I = auth.user as User
 
 let props = defineProps({
   modelValue: {
@@ -56,17 +57,10 @@ let users_schools = RolesService.getSchoolIdsFromRoles(roles.value)
 let users_towns = RolesService.getTownIdsFromRoles(roles.value)
 let user_is_global_admin = RolesService.isGlobalAdmin(roles.value)
 
-let my_schools: School[] = []
-let my_towns: Town[] = []
-let im_global_admin: boolean = false
-let im_owner: boolean = false
-
-if (I) {
-  my_schools = useSchool().administered_schools
-  my_towns = useTown().administered_towns
-  im_global_admin = RolesService.isGlobalAdmin(I.roles)
-  im_owner = RolesService.isOwner(I.roles)
-}
+let my_schools: School[] = useSchool().administered_schools
+let my_towns: Town[] = useTown().administered_towns
+let im_global_admin: boolean = RolesService.isGlobalAdmin(I.roles)
+let im_owner: boolean = RolesService.isOwner(I.roles)
 
 let schools_to_add = my_schools.filter(school => !users_schools.includes(school._id))
 let towns_to_add = my_towns.filter(town => !users_towns.includes(town._id))
@@ -264,7 +258,7 @@ function addGlobalAdminRole() {
                 <v-autocomplete
                   label="Город"
                   v-model="town_for_admin.value.value"
-                  :error-messages="town.errorMessage.value"
+                  :error-messages="town_for_admin.errorMessage.value"
                   :items="towns_to_add"
                   item-title="name"
                   auto-select-first

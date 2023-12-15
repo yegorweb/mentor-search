@@ -18,6 +18,7 @@ let entryStore = useEntry()
 
 let markdown_converter = new showdown.Converter()
 
+let emit = defineEmits(['delete'])
 let props = defineProps({
   entry: {
     type: Object,
@@ -91,7 +92,7 @@ let responses_list = await Promise.all(entry.responses.map(async (user_id) => (a
 async function delete_entry() {
   delete_loading.value = true
   await entryStore.delete_entry(entry._id)
-  delete_loading.value = false
+  emit('delete', entry._id)
 }
 
 // Moderation
@@ -346,6 +347,7 @@ async function disallow() {
       location="start top" 
       scroll-strategy="close"
       transition="scroll-y-transition"
+      :close-on-content-click="false"
     >
       <template v-slot:activator="{ props }">
         <v-icon
@@ -370,10 +372,16 @@ async function disallow() {
         
         <v-list-item 
           @click="delete_entry" 
-          :loading="delete_loading"
         >
           <template v-slot:prepend>
-            <v-icon style="margin-right: 19px;">mdi-delete</v-icon>
+            <v-progress-circular 
+              v-if="delete_loading"
+              indeterminate
+              color="primary"
+              size="small"
+              style="margin-right: 19px;"
+            />
+            <v-icon v-else style="margin-right: 19px;">mdi-delete</v-icon>
           </template>
           
           Удалить
