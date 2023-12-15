@@ -55,7 +55,7 @@ function onDeleteEntry(_id: string) {
 
 <template>
   <v-container>
-    <MainTitle>Поиск уроков</MainTitle>
+    <MainTitle>Уроки</MainTitle>
 
     <!-- Filter -->
     <v-row class="mt-4" style="margin: -6px;">
