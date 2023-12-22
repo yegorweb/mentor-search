@@ -42,7 +42,11 @@ onBeforeRouteUpdate((to) => {
       />
     </div>
 
-    <v-row v-if="!loading" class="mt-4">
+    <h3 class="mt-4 font-weight-regular" v-else-if="!loading && !users.length">
+      Нет учеников
+    </h3>
+
+    <v-row v-else class="mt-4">
       <v-col
         v-for="user in users"
         :key="user._id"
