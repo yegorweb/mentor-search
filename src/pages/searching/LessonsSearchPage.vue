@@ -11,6 +11,7 @@ import Entry from '../../types/entry.interface';
 import _ from 'lodash'
 import { storeToRefs } from 'pinia';
 import { useSearch } from '../../stores/search';
+import School from '../../types/school.interface';
 
 document.title = 'Поиск уроков — Ищу наставника'
 
@@ -18,7 +19,7 @@ let auth = useAuth()
 let schoolStore = useSchool()
 let entryStore = useEntry()
 
-let { towns } = useTown()
+let { towns } = storeToRefs(useTown())
 
 let user = auth.user
 
@@ -34,13 +35,21 @@ async function updateEntries() {
 }
 updateEntries()
 
-let schools_in_town = ref(await schoolStore.get_all_in_town(town.value._id))
+let schools_in_town = ref<School[]>([])
+let loading_schools_in_town = ref(true)
+async function fetchSchoolsInTown() {
+  loading_schools_in_town.value = true
+  schools_in_town.value = []
+  schools_in_town.value = await schoolStore.get_all_in_town(town.value._id)
+  loading_schools_in_town.value = false
+}
+fetchSchoolsInTown()
 
 watch(town, async (new_value, old_value) => {
   if (_.isEqual(new_value, old_value)) return
 
   school.value = null
-  schools_in_town.value = await schoolStore.get_all_in_town(town.value._id)
+  fetchSchoolsInTown()
 })
 watch(school, (new_value, old_value) => {
   if (_.isEqual(new_value, old_value)) return
@@ -67,6 +76,7 @@ function onDeleteEntry(_id: string) {
           label="Город"
           v-model="town"
           :items="towns"
+          :loading="useTown().loading"
           item-title="name"
           auto-select-first
           return-object
@@ -85,6 +95,7 @@ function onDeleteEntry(_id: string) {
           :items="[{ name: 'Все', _id: 'all' }, ...schools_in_town]"
           item-title="name"
           auto-select-first
+          :loading="loading_schools_in_town"
           return-object
           variant="solo"
           hide-details
