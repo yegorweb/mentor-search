@@ -21,7 +21,7 @@ export const useSchool = defineStore('school', () => {
     }
   }
 
-  async function get_all_in_town(_id: string): Promise<School[] | undefined> {
+  async function get_all_in_town(_id: string): Promise<School[]> {
     try {
       return (await SchoolService.get_all_in_town(_id)).data
     } catch {
