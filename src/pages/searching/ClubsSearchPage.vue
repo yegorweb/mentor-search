@@ -11,6 +11,7 @@ import Entry from '../../types/entry.interface';
 import _ from 'lodash'
 import { storeToRefs } from 'pinia';
 import { useSearch } from '../../stores/search';
+import School from '../../types/school.interface';
 
 document.title = 'Поиск клубов — Ищу наставника'
 
