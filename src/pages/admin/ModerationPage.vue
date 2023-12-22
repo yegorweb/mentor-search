@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import MainTitle from '@/components/MainTitle.vue'
+import { ref } from 'vue';
 import MentorEntry from '../../components/entries/MentorEntry.vue';
-import EntryService from '../../services/EntryService'
 import { useEntry } from '../../stores/entry';
 
-let entries = await useEntry().get_entries_to_moderation()
+let entries = ref(await useEntry().get_entries_to_moderation())
 
 function onDeleteEntry(_id: string) {
   entries.value = entries.value.filter(entry => entry._id !== _id)
