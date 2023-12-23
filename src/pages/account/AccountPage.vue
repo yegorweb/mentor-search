@@ -88,6 +88,7 @@ function removeRank(item: string) {
 
 function removeEntry(_id: string): void {
   entries.value = entries.value.filter(entry => entry._id !== _id)
+  responsed_entries.value = responsed_entries.value.filter(entry => entry._id !== _id)
   updateEntries()
 }
 </script>
