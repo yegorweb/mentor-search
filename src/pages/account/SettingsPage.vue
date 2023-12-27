@@ -82,6 +82,7 @@ let contacts = useField<Contact[]>('contacts')
 let school = useField<School | null>('school')
 
 let schools_in_town = ref(await schoolStore.get_all_in_town(town.value._id))
+let loading_schools_in_town = ref(false)
 
 // Methods
 
@@ -89,7 +90,9 @@ watch(town, async (new_value, old_value) => {
   if (_.isEqual(new_value, old_value)) return
 
   school.value.value = null
+  loading_schools_in_town.value = true
   schools_in_town.value = await schoolStore.get_all_in_town(town.value._id)
+  loading_schools_in_town.value = false
 })
 
 watch(mentor, (value) => {
@@ -250,6 +253,7 @@ function grades() {
                   :items="towns"
                   item-title="name"
                   auto-select-first
+                  :loading="townStore.loading"
                   no-data-text="Не найдено"
                   return-object
                   density="comfortable"
@@ -267,6 +271,7 @@ function grades() {
                   :items="schools_in_town"
                   item-title="name"
                   auto-select-first
+                  :loading="loading_schools_in_town"
                   return-object
                   density="comfortable"
                   variant="outlined"
