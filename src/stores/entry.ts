@@ -1,9 +1,13 @@
 import { defineStore } from "pinia"
+import { ref } from "vue"
 import EntryService from "../services/EntryService"
 import Entry from "../types/entry.interface"
 import { EntryType } from "../types/entry_types"
+import { User } from "../types/user.interface"
 
 export const useEntry = defineStore('entry', () => {
+  let seen_response_id = ref()
+
   async function get(
     type: EntryType, 
     town_id: string, 
@@ -46,6 +50,14 @@ export const useEntry = defineStore('entry', () => {
     }
   }
   
+  async function getResponses(entry_id: string): Promise<User[]> {
+    try {
+      return (await EntryService.getResponses(entry_id)).data
+    } catch {
+      return []
+    }
+  }
+  
   async function create(entry: object): Promise<void> {
     try {
       await EntryService.create(entry)
@@ -83,11 +95,13 @@ export const useEntry = defineStore('entry', () => {
   }
 
   return { 
+    seen_response_id,
     get, 
     get_by_id, 
     get_by_author, 
     get_my_entries,
     get_entries_to_moderation,
+    getResponses,
     create,
     edit,
     response,

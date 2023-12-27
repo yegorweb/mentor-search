@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref, reactive, onMounted } from 'vue';
+import { ref, watch, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import RolesService from '../../services/RolesService';
 import { useAuth } from '../../stores/auth';
@@ -88,7 +88,17 @@ async function change_response_state() {
 // Responses list (if my entry)
 
 let showing_responses_status = ref(false)
-let responses_list = await Promise.all(entry.responses.map(async (user_id) => (await userStore.get_by_id(user_id))))
+
+let responses = ref<User[]>([])
+let loading_responses = ref(false)
+
+async function fetchResponses() {
+  loading_responses.value = true
+  responses.value = await entryStore.getResponses(entry._id)
+  loading_responses.value = false
+}
+
+watch(showing_responses_status, (value) => value ? fetchResponses() : null)
 
 // Delete
 
@@ -269,12 +279,17 @@ onMounted(() => {
                 >
                   mdi-close
                 </v-icon>
+
+                <div v-if="loading_responses" class="w-100 mt-8 d-flex justify-center">
+                  <v-progress-circular indeterminate />
+                </div>
 			  
                 <v-row 
+                  v-else
                   class="flex-row flex-wrap pa-8"
                 >
                   <v-col 
-                    v-for="(client, i) in responses_list"
+                    v-for="(client, i) in responses"
                     :key="i"
                     cols="12" lg="6"
                   >

@@ -27,6 +27,9 @@ export default {
   async response(entry_id: string) {
     return $api.post('/entry/response', { entry_id })
   },
+  async getResponses(entry_id: string) {
+    return $api.get('/entry/get-responses', { params: { entry_id } })
+  },
   async cancel_response(entry_id: string) {
     return $api.post('/entry/cancel-response', { entry_id })
   },
