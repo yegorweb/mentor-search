@@ -3,7 +3,7 @@ import BackButton from '../../components/BackButton.vue';
 import MentorEntry from '../../components/entries/MentorEntry.vue';
 import { useAuth } from '../../stores/auth';
 import { reactive, watch, ref } from 'vue';
-import { onBeforeRouteUpdate, useRouter } from 'vue-router';
+import { onBeforeRouteLeave, useRouter } from 'vue-router';
 import { useUser } from '../../stores/user';
 import { useEntry } from '../../stores/entry';
 import { User } from '../../types/user.interface';
@@ -77,6 +77,11 @@ async function logout() {
   await auth.logout()
   window.location.href = '/'
 }
+
+onBeforeRouteLeave((to) => {
+  if (!to.path.includes('user'))
+    useEntry().seen_response_id = null
+})
 
 function removeRank(item: string) {
   user.ranks.splice(user.ranks.indexOf(item), 1)

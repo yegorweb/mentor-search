@@ -98,6 +98,12 @@ async function fetchResponses() {
   loading_responses.value = false
 }
 
+if (entryStore.seen_response_id && entry._id === entryStore.seen_response_id && useRoute().path.includes('user')) {
+  showing_responses_status.value = true
+  entryStore.seen_response_id = null
+  fetchResponses()
+}
+
 watch(showing_responses_status, (value) => value ? fetchResponses() : null)
 
 // Delete
@@ -297,7 +303,7 @@ onMounted(() => {
                       class="align-center h-100 ma-0 response d-flex flex-column flex-sm-row"
                       style="gap: 10px;"
                     >
-                      <Slave :user="client" />
+                      <Slave @click="entryStore.seen_response_id = entry._id" :user="client" />
 
                       <div 
                         class="d-flex flex-row flex-lg-column ma-auto ma-sm-0 pa-0 align-center align-lg-end" 
