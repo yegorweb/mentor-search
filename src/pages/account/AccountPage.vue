@@ -314,7 +314,7 @@ function removeEntry(_id: string): void {
 
       <!-- My responses -->
       <div 
-        v-if="my_page && !RolesService.isMentor(user.roles) && responsed_entries.length > 0"
+        v-if="my_page && !RolesService.isMentor(user.roles) && responsed_entries.length"
         class="d-flex flex-column pt-4 pb-4 w-100" 
       >
         <div class="text-h5 mt-8 font-weight-bold">
