@@ -175,7 +175,7 @@ let navigation_drawer_is_open = ref(false)
     <!-- Content -->
     <v-main style="padding-bottom: 80px;">
       <Suspense>
-        <router-view></router-view>
+        <router-view :key="$route.path"></router-view>
       </Suspense>
     </v-main>
   </v-app>

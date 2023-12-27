@@ -73,10 +73,6 @@ watch(user, async (value) => {
   userStore.changeUser(value)
 })
 
-onBeforeRouteUpdate((to) => {
-  window.location.href = to.path
-})
-
 async function logout() {
   await auth.logout()
   window.location.href = '/'
