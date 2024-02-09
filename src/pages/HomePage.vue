@@ -77,21 +77,5 @@ function getType(): string {
         </v-card>
       </v-col>
     </v-row>
-
-    <v-row 
-      class="ma-auto mt-14 justify-center align-center flex-wrap"
-    >
-      <v-col 
-        cols="6" sm="5" md="4" lg="2"
-      >
-        <v-img src="@/assets/images/2023.png" />
-      </v-col>
-      
-      <v-col 
-        cols="6" sm="5" md="4" lg="2"
-      >
-        <v-img class="ma-8" src="@/assets/images/udmurt.png" />
-      </v-col>
-    </v-row>
   </v-container>
 </template>
