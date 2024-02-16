@@ -48,19 +48,19 @@ const { meta, handleSubmit } = useForm({
   },
   validationSchema: {
     name(value: string) {
-      if (value.length < 4) return 'слишком короткое имя'
-      if (value.length > 21) return 'слишком длинное имя'
+      if (value && value.length < 4) return 'слишком короткое имя'
+      if (value && value.length > 21) return 'слишком длинное имя'
       
       return true
     },
     description(value: string) {
-      if (value.length > 150) return 'слишком длинное описание'
+      if (value && value.length > 150) return 'слишком длинное описание'
       
       return true
     },
     contacts(value: Contact[]) {
       for (let item of value) {
-        if (item.name.length === 0 || item.link.length === 0)
+        if (!item.name.length || !item.link.length)
           return 'в каждом контакте должны быть название и ссылка'
         if (item.name.length > 15)
           return 'слишком длинное название в контакте'
