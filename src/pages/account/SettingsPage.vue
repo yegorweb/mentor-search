@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, ref, reactive } from 'vue';
+import { watch, ref, Ref, reactive } from 'vue';
 import BackButton from '../../components/BackButton.vue';
 import EntryContainer from '../../components/entries/EntryContainer.vue';
 import { FieldContext, useField, useForm } from 'vee-validate'
@@ -13,6 +13,7 @@ import { useTown } from '../../stores/town';
 import { useSchool } from '../../stores/school';
 import RolesService from '../../services/RolesService';
 import _ from 'lodash'
+import { storeToRefs } from 'pinia';
 
 localStorage.removeItem('newUser')
 
@@ -23,14 +24,14 @@ let router = useRouter()
 let townStore = useTown()
 let schoolStore = useSchool()
 
-let user = auth.user as User
+let user: Ref<User> = storeToRefs(auth).user as any
 let towns = townStore.towns
 
-let town = ref<Town>(user.school.town)
-let grade = ref<number>(user.grade)
-let roles = ref(user.roles)
+let town = ref<Town>(user.value.school.town)
+let grade = ref<number>(user.value.grade)
+let roles = ref(user.value.roles)
 
-let mentor = ref(RolesService.isMentor(user.roles))
+let mentor = ref(RolesService.isMentor(user.value.roles))
 
 let tab = ref(0)
 let tabs = ['Профиль', 'Изменить пароль']
@@ -40,10 +41,10 @@ let loading = ref(false)
 
 const { meta, handleSubmit } = useForm({
   initialValues: {
-    name: user.name,
-    description: user.description ?? '',
-    contacts: user.contacts ?? [],
-    school: user.school
+    name: user.value.name,
+    description: user.value.description ?? '',
+    contacts: user.value.contacts ?? [],
+    school: user.value.school
   },
   validationSchema: {
     name(value: string) {
@@ -107,7 +108,7 @@ const submit = handleSubmit(async (values) => {
     grade: grade.value,
     roles: roles.value
   }))
-  .then(() => window.location.href = `/user/${user._id}`)
+  .then(() => router.push(`/user/${user.value._id}`))
   
   loading.value = false
 })

@@ -21,8 +21,6 @@ let entryStore = useEntry()
 
 let { towns } = storeToRefs(useTown())
 
-let user = auth.user
-
 let { town, school } = storeToRefs(useSearch())
 
 let entries = ref<Entry[]>([])

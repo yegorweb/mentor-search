@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router"
 import RolesService from "../services/RolesService"
 import { useAuth } from '../stores/auth'
@@ -8,9 +9,9 @@ document.title = 'Ищу наставника'
 let router = useRouter()
 
 let auth = useAuth()
-let user = auth.user
+let { user } = storeToRefs(auth)
 
-let buttons = user ? [
+let buttons = user.value ? [
   {
     route: '/search-mentors',
     text: 'Найти наставника',
@@ -35,15 +36,15 @@ let buttons = user ? [
 ]
 
 function getType(): string {
-  if (!user)
+  if (!user.value)
     return 'войдите или зарегистрируйтесь'
 
-  let ranks = user.ranks && user.ranks.length > 0 ? ', '+user.ranks.join(', ') : ''
+  let ranks = user.value.ranks && user.value.ranks.length > 0 ? ', '+user.value.ranks.join(', ') : ''
 
-  if (RolesService.isSomeAdmin(user.roles))
+  if (RolesService.isSomeAdmin(user.value.roles))
     return `админ${ranks}`
 
-  if (RolesService.isMentor(user.roles))
+  if (RolesService.isMentor(user.value.roles))
     return `наставник${ranks}`
 
   return `наставляемый${ranks}`

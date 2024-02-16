@@ -12,6 +12,7 @@ import RolesService from '../../services/RolesService';
 import { useTown } from '../../stores/town';
 import RolesControl from '../../components/RolesControl.vue';
 import { useDisplay } from 'vuetify/lib/framework.mjs';
+import { storeToRefs } from 'pinia';
 
 let new_user = localStorage.getItem('newUser')
 
@@ -23,18 +24,18 @@ let entryStore = useEntry()
 let props = defineProps(['id'])
 let id = props.id
 
-let viewer = auth.user
-let user = reactive(viewer && viewer._id === id ? viewer : await userStore.get_by_id(id) as User)
+let { user:viewer } = storeToRefs(auth)
+let user = ref(viewer.value && viewer.value._id === id ? viewer.value : await userStore.get_by_id(id) as User)
 
-document.title = `${user.name} — Ищу наставника`
+document.title = `${user.value.name} — Ищу наставника`
 
-let my_page = viewer?._id === id
-let viewer_is_admin = viewer && (
-  RolesService.isAdminOfSchool(viewer.roles, user.school._id) || 
-  RolesService.isAdminOfTown(viewer.roles, user.school.town._id) || 
-  RolesService.isGlobalAdmin(viewer.roles)
+let my_page = viewer.value?._id === id
+let viewer_is_admin = viewer.value && (
+  RolesService.isAdminOfSchool(viewer.value.roles, user.value.school._id) || 
+  RolesService.isAdminOfTown(viewer.value.roles, user.value.school.town._id) || 
+  RolesService.isGlobalAdmin(viewer.value.roles)
 )
-let viewer_is_some_admin = viewer && RolesService.isSomeAdmin(viewer.roles)
+let viewer_is_some_admin = viewer.value && RolesService.isSomeAdmin(viewer.value.roles)
 
 let loading = ref(false)
 let entries = ref<Entry[]>([])
@@ -46,11 +47,11 @@ let entries_on_moderation = ref<Entry[]>([])
 
 async function fetchEntries() {
   loading.value = true
-  entries.value = my_page ? await entryStore.get_my_entries() : await entryStore.get_by_author(user._id)
+  entries.value = my_page ? await entryStore.get_my_entries() : await entryStore.get_by_author(user.value._id)
 
   updateEntries()
 
-  if (my_page && !RolesService.isMentor(user.roles)) {
+  if (my_page && !RolesService.isMentor(user.value.roles)) {
     responsed_entries.value = await userStore.get_my_responses()
   }
   loading.value = false
@@ -75,7 +76,7 @@ watch(user, async (value) => {
 
 async function logout() {
   await auth.logout()
-  window.location.href = '/'
+  router.push('/')
 }
 
 onBeforeRouteLeave((to) => {

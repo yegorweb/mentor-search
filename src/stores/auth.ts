@@ -44,6 +44,7 @@ export const useAuth = defineStore('auth', () => {
     try {
       localStorage.removeItem('token')
       await AuthService.logout()
+      user.value = null
 
       localStorage.removeItem('newUser')
     } catch {}
@@ -51,7 +52,7 @@ export const useAuth = defineStore('auth', () => {
 
   async function updateUser(new_user: any) {
     try {
-      await AuthService.updateUser(new_user)
+      user.value = (await AuthService.updateUser(new_user)).data
     } catch {}
   }
 

@@ -7,12 +7,13 @@ import { useAuth } from '../../stores/auth'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { User } from '../../types/user.interface'
 import School from '../../types/school.interface'
-import { ref } from 'vue'
+import { ref, Ref } from 'vue'
+import { storeToRefs } from 'pinia'
 
 let props = defineProps(['id'])
 let id = props.id
 
-let user = useAuth().user as User
+let user: Ref<User> = storeToRefs(useAuth()).user as any
 
 let school = await useSchool().get_by_id(id) as School
 
@@ -21,7 +22,7 @@ let users = ref<User[]>([])
 
 async function fetchUsers() {
   loading.value = true
-  users.value = (await useUser().get_all_by_school(id)).filter(item => item._id !== user._id)
+  users.value = (await useUser().get_all_by_school(id)).filter(item => item._id !== user.value._id)
   loading.value = false
 }
 fetchUsers()

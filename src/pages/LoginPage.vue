@@ -34,7 +34,7 @@ const login = handleSubmit(async values => {
   await auth.login(values.email, values.password)
   loading.value = false
   
-  window.location.href = '/'
+  router.push('/')
 })
 </script>
 

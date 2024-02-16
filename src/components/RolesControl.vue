@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, Ref, watch, computed } from 'vue';
 import RolesService from '../services/RolesService';
 import { useAuth } from '../stores/auth';
 import { useSchool } from '../stores/school';
@@ -11,10 +11,11 @@ import Role from './Role.vue';
 import _ from 'lodash'
 import { useField, useForm } from 'vee-validate';
 import { User } from '../types/user.interface';
+import { storeToRefs } from 'pinia';
 
 let schoolStore = useSchool()
 let auth = useAuth()
-let I = auth.user as User
+let I: Ref<User> = storeToRefs(auth).user as any
 
 let props = defineProps({
   modelValue: {
@@ -59,8 +60,8 @@ let user_is_global_admin = RolesService.isGlobalAdmin(roles.value)
 
 let my_schools: School[] = useSchool().administered_schools
 let my_towns: Town[] = useTown().administered_towns
-let im_global_admin: boolean = RolesService.isGlobalAdmin(I.roles)
-let im_owner: boolean = RolesService.isOwner(I.roles)
+let im_global_admin: boolean = RolesService.isGlobalAdmin(I.value.roles)
+let im_owner: boolean = RolesService.isOwner(I.value.roles)
 
 let schools_to_add = my_schools.filter(school => !users_schools.includes(school._id))
 let towns_to_add = my_towns.filter(town => !users_towns.includes(town._id))
@@ -97,7 +98,7 @@ let town = useField<Town | null>('town')
 town.value.value = school_for_admin.value.value ? school_for_admin.value.value.town : my_towns.length === 1 ? my_towns[0] : null
 
 let towns: Town[] = []
-if (I && RolesService.isGlobalAdmin(I.roles)) {
+if (I && RolesService.isGlobalAdmin(I.value.roles)) {
   towns = useTown().towns
 } else {
   towns = [...new Set([...towns_to_add, ...my_schools.map(school => school.town)])]

@@ -8,8 +8,9 @@ import { EntryType } from '../types/entry_types';
 import { useEntry } from '../stores/entry';
 import Entry from '../types/entry.interface';
 import { User } from '../types/user.interface';
+import { storeToRefs } from 'pinia';
 
-let user: User = useAuth().getUser() as any
+let user: Ref<User> = storeToRefs(useAuth()) as any
 let router = useRouter()
 
 let entryStore = useEntry()
@@ -76,7 +77,7 @@ const submit = handleSubmit(async values => {
   has_limit.value ? value.limit = limit.value.value : null
 
   await entryStore.edit(props.id, value)
-  .then(() => router.push(`/user/${user._id}`))
+  .then(() => router.push(`/user/${user.value._id}`))
   .finally(() => loading.value = false)
 })
 </script>

@@ -9,11 +9,14 @@ import School from '../types/school.interface'
 import { useSchool } from '../stores/school'
 import { useTown } from '../stores/town'
 import _ from 'lodash'
+import { storeToRefs } from 'pinia'
 
 document.title = 'Регистрация — Ищу наставника'
 
 let router = useRouter()
 let auth = useAuth()
+
+let { user } = storeToRefs(auth)
 
 let schoolStore = useSchool()
 let { towns } = useTown()
@@ -104,7 +107,9 @@ const submit = handleSubmit(async values => {
   await auth.registration(Object.assign(values, {
     roles: ['student', mentor.value ? 'mentor' : null],
   }))
-  .then(() => window.location.href = auth.user ? `/user/${auth.user._id}` : '/')
+  .then(() => { 
+    if (user.value) router.push(`/user/${user.value._id}`)
+  })
 
   loading.value = false 
 })

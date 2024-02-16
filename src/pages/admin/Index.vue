@@ -5,15 +5,16 @@ import RolesService from '../../services/RolesService'
 import { useAuth } from '../../stores/auth'
 import { useSchool } from '../../stores/school'
 import { useTown } from '../../stores/town'
-import { ref } from 'vue'
+import { ref, Ref } from 'vue'
 import { useField, useForm } from 'vee-validate'
 import CloseButton from '@/components/CloseButton.vue'
 import { User } from '../../types/user.interface'
 import Town from '../../types/town.interface'
+import { storeToRefs } from 'pinia'
 
 let router = useRouter()
 
-let user = useAuth().user as User
+let user: Ref<User> = storeToRefs(useAuth()).user as any
 let schools = useSchool().administered_schools
 
 // Creating town

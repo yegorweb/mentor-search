@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import BackButton from '../components/BackButton.vue';
 import EntryService from '../services/EntryService';
@@ -7,8 +7,9 @@ import { useAuth } from '../stores/auth';
 import { useField, useForm } from 'vee-validate'
 import { User } from '../types/user.interface';
 import { EntryType } from '../types/entry_types';
+import { storeToRefs } from 'pinia';
 
-let user = useAuth().user as User
+let user: Ref<User> = storeToRefs(useAuth()).user as any
 let router = useRouter()
 
 let variants: {
@@ -72,9 +73,9 @@ const submit = handleSubmit(async values => {
 
   await EntryService.create(Object.assign(values, {
     type: variant.value,
-    school: user.school._id,
+    school: user.value.school._id,
   }))
-  .then(() => router.push(`/user/${user._id}`))
+  .then(() => router.push(`/user/${user.value._id}`))
   
   loading.value = false
 })

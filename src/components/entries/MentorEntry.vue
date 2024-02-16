@@ -44,40 +44,40 @@ let props = defineProps({
   }
 })
 
-let user = auth.user
+let { user } = storeToRefs(auth)
 let entry = reactive(props.entry as Entry)
 let description = markdown_converter.makeHtml(entry.description)
 
-let my_entry = props.my_entry ?? (user && entry.author._id === user._id)
-let user_is_admin = user && (
-  RolesService.isGlobalAdmin(user.roles) ||
-  RolesService.isAdminOfSchool(user.roles, entry.school._id) || 
-  RolesService.isAdminOfTown(user.roles, entry.school.town._id) 
+let my_entry = props.my_entry ?? (user.value && entry.author._id === user.value._id)
+let user_is_admin = user.value && (
+  RolesService.isGlobalAdmin(user.value.roles) ||
+  RolesService.isAdminOfSchool(user.value.roles, entry.school._id) || 
+  RolesService.isAdminOfTown(user.value.roles, entry.school.town._id) 
 )
 
 // Responsing
 
-let responsed = ref(user && entry.responses.includes(user._id) as boolean)
+let responsed = ref(user.value && entry.responses.includes(user.value._id) as boolean)
 let status = ref<string>(responsed.value ? 'Убрать отклик' : 'Откликнуться')
 
 let response_loading = ref(false)
 let delete_loading = ref(false)
 
 async function change_response_state() {
-  if (!user)
+  if (!user.value)
     return router.push('/login')
 
   response_loading.value = true
 
-  if (entry.responses.includes(user._id)) {
+  if (entry.responses.includes(user.value._id)) {
     await entryStore.cancel_response(entry._id) 
-    entry.responses = entry.responses.filter(item => item !== user?._id)
+    entry.responses = entry.responses.filter(item => item !== user.value?._id)
     status.value = 'Откликнуться'
     responsed.value = false
   } 
   else {
     await entryStore.response(entry._id)
-    entry.responses.push((user as User)._id)
+    entry.responses.push((user.value as User)._id)
     status.value = 'Убрать отклик'
     responsed.value = true
   }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AchievementsService from '../services/AchievementsService';
@@ -11,7 +12,7 @@ let router = useRouter()
 let auth = useAuth()
 await auth.checkAuth()
 
-let user = auth.user
+let { user } = storeToRefs(auth)
 
 let navigation_drawer_is_open = ref(false)
 </script>
