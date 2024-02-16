@@ -88,6 +88,8 @@ let school: FieldContext<School | null> = useField('school')
 let grade: FieldContext<number> = useField('grade')
 let mentor = ref(false)
 
+let show_password = ref(false)
+
 let schools_in_town = ref(town.value.value ? await schoolStore.get_all_in_town(town.value.value._id) : [])
 
 watch(town.value, async (new_value, old_value) => {
@@ -163,9 +165,11 @@ const submit = handleSubmit(async values => {
 
           <v-text-field 
             label="Пароль"
-            type="password"
             v-model="password.value.value"
-            :error-messages="password.errors.value"
+            :append-inner-icon="show_password ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append-inner="show_password = !show_password"
+            :type="show_password ? 'text' : 'password'"
+            :error-messages="password.errorMessage.value"
             variant="outlined"
             density="compact"
             class="w-100 mt-1"
