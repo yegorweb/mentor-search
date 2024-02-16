@@ -17,7 +17,7 @@ import { storeToRefs } from 'pinia';
 
 localStorage.removeItem('newUser')
 
-document.title = 'Натройки — Ищу наставника'
+document.title = 'Настройки — Ищу наставника'
 
 let auth = useAuth()
 let router = useRouter()
