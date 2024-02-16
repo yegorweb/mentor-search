@@ -5,6 +5,8 @@ import { useRouter } from 'vue-router'
 import AchievementsService from '../services/AchievementsService';
 import RolesService from '../services/RolesService';
 import { useAuth } from '../stores/auth';
+import { useSchool } from '../stores/school';
+import { useTown } from '../stores/town';
 import { User } from '../types/user.interface';
 
 let router = useRouter()
@@ -13,6 +15,11 @@ let auth = useAuth()
 await auth.checkAuth()
 
 let { user } = storeToRefs(auth)
+
+if (user.value && RolesService.isSomeAdmin(user.value.roles)) {
+  useTown().fetchAdministeredTowns()
+  useSchool().fetchAdministeredSchools()
+}
 
 let navigation_drawer_is_open = ref(false)
 </script>
