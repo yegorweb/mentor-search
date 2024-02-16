@@ -45,19 +45,19 @@ let props = defineProps({
 })
 
 let { user } = storeToRefs(auth)
-let entry = reactive(props.entry as Entry)
-let description = markdown_converter.makeHtml(entry.description)
+let entry = ref(props.entry as Entry)
+let description = markdown_converter.makeHtml(entry.value.description)
 
-let my_entry = props.my_entry ?? (user.value && entry.author._id === user.value._id)
+let my_entry = props.my_entry ?? (user.value && entry.value.author._id === user.value._id)
 let user_is_admin = user.value && (
   RolesService.isGlobalAdmin(user.value.roles) ||
-  RolesService.isAdminOfSchool(user.value.roles, entry.school._id) || 
-  RolesService.isAdminOfTown(user.value.roles, entry.school.town._id) 
+  RolesService.isAdminOfSchool(user.value.roles, entry.value.school._id) || 
+  RolesService.isAdminOfTown(user.value.roles, entry.value.school.town._id) 
 )
 
 // Responsing
 
-let responsed = ref(user.value && entry.responses.includes(user.value._id) as boolean)
+let responsed = ref(user.value && entry.value.responses.includes(user.value._id) as boolean)
 let status = ref<string>(responsed.value ? 'Убрать отклик' : 'Откликнуться')
 
 let response_loading = ref(false)
@@ -69,15 +69,15 @@ async function change_response_state() {
 
   response_loading.value = true
 
-  if (entry.responses.includes(user.value._id)) {
-    await entryStore.cancel_response(entry._id) 
-    entry.responses = entry.responses.filter(item => item !== user.value?._id)
+  if (entry.value.responses.includes(user.value._id)) {
+    await entryStore.cancel_response(entry.value._id) 
+    entry.value.responses = entry.value.responses.filter(item => item !== user.value?._id)
     status.value = 'Откликнуться'
     responsed.value = false
   } 
   else {
-    await entryStore.response(entry._id)
-    entry.responses.push((user.value as User)._id)
+    await entryStore.response(entry.value._id)
+    entry.value.responses.push((user.value as User)._id)
     status.value = 'Убрать отклик'
     responsed.value = true
   }
@@ -94,11 +94,11 @@ let loading_responses = ref(false)
 
 async function fetchResponses() {
   loading_responses.value = true
-  responses.value = await entryStore.getResponses(entry._id)
+  responses.value = await entryStore.getResponses(entry.value._id)
   loading_responses.value = false
 }
 
-if (entryStore.seen_response_id && entry._id === entryStore.seen_response_id && useRoute().path.includes('user')) {
+if (entryStore.seen_response_id && entry.value._id === entryStore.seen_response_id && useRoute().path.includes('user')) {
   showing_responses_status.value = true
   entryStore.seen_response_id = null
   fetchResponses()
@@ -110,8 +110,8 @@ watch(showing_responses_status, (value) => value ? fetchResponses() : null)
 
 async function delete_entry() {
   delete_loading.value = true
-  await entryStore.delete_entry(entry._id)
-  emit('delete', entry._id)
+  await entryStore.delete_entry(entry.value._id)
+  emit('delete', entry.value._id)
 }
 
 // Moderation
@@ -124,7 +124,7 @@ let disallow_disabled = ref(false)
 async function approve() {
   approve_loading.value = true
 
-  await entryStore.verify(entry._id, true)
+  await entryStore.verify(entry.value._id, true)
 
   approve_disabled.value = true
   disallow_disabled.value = false
@@ -133,7 +133,7 @@ async function approve() {
 async function disallow() {
   disallow_loading.value = true
 
-  await entryStore.verify(entry._id, false)
+  await entryStore.verify(entry.value._id, false)
  
   disallow_disabled.value = true
   approve_disabled.value = false
@@ -144,8 +144,8 @@ function setLast() {
   if (!route.path.includes('search'))
     return
 
-  last_entry_id.value = entry._id
-  let div = document.getElementById(entry._id)
+  last_entry_id.value = entry.value._id
+  let div = document.getElementById(entry.value._id)
   if (div)
     delta.value = div.getBoundingClientRect().top
 }
@@ -153,8 +153,8 @@ function setLast() {
 let { last_entry_id, delta } = storeToRefs(useSearch())
 
 onMounted(() => {
-  if (last_entry_id.value === entry._id && route.path.includes('search')) {
-    let div = document.getElementById(entry._id)
+  if (last_entry_id.value === entry.value._id && route.path.includes('search')) {
+    let div = document.getElementById(entry.value._id)
     if (!div)
       return
     
