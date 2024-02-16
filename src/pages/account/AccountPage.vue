@@ -253,14 +253,6 @@ function removeEntry(_id: string): void {
       <v-row class="mt-3 d-flex flex-row flex-wrap">
         <v-col cols="auto">
           <v-btn
-            prepend-icon="mdi-star"
-          >
-            Дать награду
-          </v-btn>
-        </v-col>
-
-        <v-col cols="auto">
-          <v-btn
             v-if="!RolesService.isSomeAdmin(user.roles)"
             prepend-icon="mdi-delete"
             class="bg-red"
