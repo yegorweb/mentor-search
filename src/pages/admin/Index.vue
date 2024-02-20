@@ -15,7 +15,7 @@ import { storeToRefs } from 'pinia'
 let router = useRouter()
 
 let user: Ref<User> = storeToRefs(useAuth()).user as any
-let schools = useSchool().administered_schools
+let { administered_schools } = storeToRefs(useSchool())
 
 // Creating town
 
@@ -242,8 +242,7 @@ const createSchool = schoolHandleSubmit(async (values) => {
     
     <v-row class="mt-1">
       <v-col
-        v-for="school in schools"
-        :key="school._id"
+        v-for="school in administered_schools"
         cols="12" md="4" sm="6"
       >
         <v-card 
