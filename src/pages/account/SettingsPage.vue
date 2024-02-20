@@ -187,13 +187,13 @@ function grades() {
             </v-row>
 
             <div class="d-flex flex-column align-start">
-              <div class="text-body-1 mb-2 font-weight-bold">
+              <div class="text-body-1 font-weight-bold">
                 Контакты
               </div>
               
               <div
                 v-if="contacts.value.value.length > 0" 
-                class="d-flex flex-column w-100" 
+                class="d-flex flex-column mt-2 w-100" 
                 style="gap: 6px;"
               >
                 <v-slide-x-transition group hide-on-leave>
