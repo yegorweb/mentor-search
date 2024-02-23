@@ -56,7 +56,7 @@ function getType(): string {
     <v-row class="align-start align-md-center ma-0 pa-0 mt-6 flex-nowrap">
       <v-avatar :image="user ? user.avatar_url ?? '' : ''" size="60" color="blue" />
       <div class="d-flex ml-4 flex-column justify-start">
-        <div class="font-weight-bold text-h5">{{ user ? `Привет, ${user.name}` : 'Вы не представились'}}</div>
+        <div class="font-weight-bold text-h5" style="line-height: 1.225;">{{ user ? `Привет, ${user.name}` : 'Вы не представились'}}</div>
         <div class="text-body-3 text-text_gray">{{ getType() }}</div>
       </div>
     </v-row>
