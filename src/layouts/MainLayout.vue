@@ -168,15 +168,6 @@ let navigation_drawer_is_open = ref(false)
         >
           Мои отклики
         </v-list-item>
-
-        <v-list-item
-          @click="navigation_drawer_is_open = !navigation_drawer_is_open"
-          exact
-          to="/about"
-          class="font-weight-semibold"
-        >
-          О проекте
-        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
