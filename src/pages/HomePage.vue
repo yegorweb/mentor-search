@@ -78,5 +78,30 @@ function getType(): string {
         </v-card>
       </v-col>
     </v-row>
+
+    <v-row class="justify-center mt-8">
+      <v-col cols="auto" class="pt-0 pb-0">
+        <v-btn 
+          variant="text"
+          to="/about"
+          prepend-icon="mdi-information"
+          color="grey-darken-1" 
+        >
+          О проекте
+        </v-btn>
+      </v-col>
+
+      <v-col cols="auto" class="pt-0 pb-0">
+        <v-btn 
+          variant="text"
+          href="https://vk.com/yegorwebdev"
+          target="_blank"
+          prepend-icon="mdi-chat-alert"
+          color="grey-darken-1" 
+        >
+          Обратная связь
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
