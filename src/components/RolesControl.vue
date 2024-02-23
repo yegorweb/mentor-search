@@ -17,6 +17,9 @@ let schoolStore = useSchool()
 let auth = useAuth()
 let I: Ref<User> = storeToRefs(auth).user as any
 
+let { administered_schools } = storeToRefs(useSchool())
+let { administered_towns } = storeToRefs(useTown())
+
 let props = defineProps({
   modelValue: {
     type: Boolean,
@@ -58,8 +61,8 @@ let users_schools = RolesService.getSchoolIdsFromRoles(roles.value)
 let users_towns = RolesService.getTownIdsFromRoles(roles.value)
 let user_is_global_admin = RolesService.isGlobalAdmin(roles.value)
 
-let my_schools: School[] = useSchool().administered_schools
-let my_towns: Town[] = useTown().administered_towns
+let my_schools: School[] = administered_schools.value
+let my_towns: Town[] = administered_towns.value
 let im_global_admin: boolean = RolesService.isGlobalAdmin(I.value.roles)
 let im_owner: boolean = RolesService.isOwner(I.value.roles)
 

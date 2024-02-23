@@ -235,7 +235,7 @@ onMounted(() => {
       />
     </div>
 
-    <div class="d-flex mt-5 flex-column justify-start">
+    <div :class="`d-flex flex-column mt-${entry.on_moderation ? 2 : 5} justify-start`">
       <!-- Location -->
       <div 
         class="mb-2"
@@ -403,7 +403,7 @@ onMounted(() => {
           :to="`/edit/${entry._id}`"
         >
           <template v-slot:prepend>
-            <v-icon style="margin-right: 19px;">mdi-pencil</v-icon>
+            <v-icon style="margin-right: -9px;">mdi-pencil</v-icon>
           </template>
           
           Редактировать
@@ -418,9 +418,9 @@ onMounted(() => {
               indeterminate
               color="primary"
               size="small"
-              style="margin-right: 19px;"
+              style="margin-right: 23px;"
             />
-            <v-icon v-else style="margin-right: 19px;">mdi-delete</v-icon>
+            <v-icon v-else style="margin-right: -9px;">mdi-delete</v-icon>
           </template>
           
           Удалить
