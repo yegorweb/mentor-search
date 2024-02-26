@@ -85,7 +85,7 @@ onBeforeRouteLeave((to) => {
 })
 
 function removeRank(item: string) {
-  user.ranks.splice(user.ranks.indexOf(item), 1)
+  user.value.ranks.splice(user.value.ranks.indexOf(item), 1)
 }
 
 function removeEntry(_id: string): void {
