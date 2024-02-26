@@ -184,6 +184,16 @@ function grades() {
                   class="w-100"
                 />
               </v-col>
+
+              <v-col cols="12" sm="6">
+                <v-avatar 
+                  :image="user ? user.avatar_url ?? '' : ''" 
+                  size="60" color="blue"
+                  class="d-flex justify-center align-center"
+                >
+                  <v-btn size="large" icon="mdi-camera"></v-btn>
+                </v-avatar> 
+              </v-col>
             </v-row>
 
             <div class="d-flex flex-column align-start">
