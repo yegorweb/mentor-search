@@ -13,7 +13,6 @@ import { useField, useForm } from 'vee-validate';
 import { User } from '../types/user.interface';
 import { storeToRefs } from 'pinia';
 
-let schoolStore = useSchool()
 let auth = useAuth()
 let I: Ref<User> = storeToRefs(auth).user as any
 
@@ -47,7 +46,7 @@ let state = computed<boolean>({
 })
 let roles = computed<string[]>({
   get(): string[] {
-    return props.roles.filter(role => role !== 'mentor' && role !== 'student')
+    return props.roles
   },
   set(value) {
     emit('update:roles', value)
