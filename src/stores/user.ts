@@ -32,13 +32,17 @@ export const useUser = defineStore('user', () => {
     } catch {}
   }
 
-  async function haveIAccessToRole(role: string): Promise<boolean> {
+  async function getRoles(user_id: string): Promise<{
+    role: string,
+    name: string,
+    have_access: boolean
+  }[]> {
     try {
-      return (await UserService.haveIAccessToRole(role)).data
+      return (await UserService.getRoles(user_id)).data
     } catch {
-      return false
+      return []
     }
   }
 
-  return { get_by_id, get_my_responses, get_all_by_school, changeUser, haveIAccessToRole }
+  return { get_by_id, get_my_responses, get_all_by_school, changeUser, getRoles }
 })
