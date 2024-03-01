@@ -403,7 +403,7 @@ onMounted(() => {
           :to="`/edit/${entry._id}`"
         >
           <template v-slot:prepend>
-            <v-icon style="margin-right: -9px;">mdi-pencil</v-icon>
+            <v-icon style="margin-right: -13px;">mdi-pencil</v-icon>
           </template>
           
           Редактировать
@@ -418,9 +418,9 @@ onMounted(() => {
               indeterminate
               color="primary"
               size="small"
-              style="margin-right: 23px;"
+              style="margin-right: 19px;"
             />
-            <v-icon v-else style="margin-right: -9px;">mdi-delete</v-icon>
+            <v-icon v-else style="margin-right: -13px;">mdi-delete</v-icon>
           </template>
           
           Удалить
