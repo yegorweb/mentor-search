@@ -263,15 +263,21 @@ function removeEntry(_id: string): void {
 
         <v-col cols="auto">
           <v-btn
-            @click="roles_control_status = !roles_control_status"
             prepend-icon="mdi-security"
           >
             Роли
           
-            <RolesControl 
+            <v-dialog 
               v-model="roles_control_status"
-              v-model:roles="user.roles"
-            />
+              activator="parent"
+              :close-on-content-click="false"
+            >
+              <RolesControl 
+                @close="roles_control_status = false"
+                v-model:roles="user.roles"
+                :user_id="user._id"
+              />
+            </v-dialog>
           </v-btn>
         </v-col>
       </v-row>
