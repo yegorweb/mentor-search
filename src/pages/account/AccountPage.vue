@@ -71,8 +71,8 @@ function updateEntries(): void {
 let roles_control_status = ref(false)
 
 watch(user, async (value) => {
-  userStore.changeUser(value)
-})
+  await userStore.changeUser(value)
+}, { deep: true })
 
 async function logout() {
   await auth.logout()
