@@ -97,7 +97,7 @@ let towns: Town[] = []
 if (I && RolesService.isGlobalAdmin(I.value.roles)) {
   towns = useTown().towns
 } else {
-  towns = [...new Set([...towns_to_add, ...my_schools.map(school => school.town)])]
+  towns = _.uniq(my_schools.map(school => school.town))
 }
 let schools_in_town = ref(town.value.value ? schools_to_add.filter(school => school.town._id === (town.value.value as Town)._id) : [])
 
