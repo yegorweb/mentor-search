@@ -251,9 +251,11 @@ function removeEntry(_id: string): void {
       </v-col>
   
       <v-row class="mt-3 d-flex flex-row flex-wrap">
-        <v-col cols="auto">
+        <v-col 
+          v-if="!RolesService.isSomeAdmin(user.roles)"      
+          cols="auto"
+        >
           <v-btn
-            v-if="!RolesService.isSomeAdmin(user.roles)"
             prepend-icon="mdi-delete"
             class="bg-red"
           >
