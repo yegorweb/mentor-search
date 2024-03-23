@@ -1,18 +1,18 @@
 import { defineStore } from "pinia";
-import UserService from "../services/UserService";
+import UserAPI from "../api/UserAPI";
 import Entry from "../types/entry.interface";
 import { User } from "../types/user.interface";
 
 export const useUser = defineStore('user', () => {
   async function get_by_id(_id: string): Promise<User | undefined> {
     try {
-      return (await UserService.get_by_id(_id)).data
+      return (await UserAPI.get_by_id(_id)).data
     } catch {}
   }
 
   async function get_my_responses(): Promise<Entry[]> {
     try {
-      return (await UserService.get_my_responses()).data
+      return (await UserAPI.get_my_responses()).data
     } catch {
       return []
     }
@@ -20,7 +20,7 @@ export const useUser = defineStore('user', () => {
 
   async function get_all_by_school(_id: string): Promise<User[]> {
     try {
-      return (await UserService.get_all_by_school(_id)).data
+      return (await UserAPI.get_all_by_school(_id)).data
     } catch {
       return []
     }
@@ -28,7 +28,7 @@ export const useUser = defineStore('user', () => {
 
   async function changeUser(user: object): Promise<void> {
     try {
-      await UserService.changeUser(user)
+      await UserAPI.changeUser(user)
     } catch {}
   }
 
@@ -38,7 +38,7 @@ export const useUser = defineStore('user', () => {
     have_access: boolean
   }[]> {
     try {
-      return (await UserService.getRoles(user_id)).data
+      return (await UserAPI.getRoles(user_id)).data
     } catch {
       return []
     }

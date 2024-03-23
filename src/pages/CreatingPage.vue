@@ -2,7 +2,7 @@
 import { ref, Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import BackButton from '../components/BackButton.vue';
-import EntryService from '../services/EntryService';
+import EntryAPI from '../api/EntryAPI';
 import { useAuth } from '../stores/auth';
 import { useField, useForm } from 'vee-validate'
 import { User } from '../types/user.interface';
@@ -71,7 +71,7 @@ let limit = useField<string>('limit')
 const submit = handleSubmit(async values => {
   loading.value = true
 
-  await EntryService.create(Object.assign(values, {
+  await EntryAPI.create(Object.assign(values, {
     type: variant.value,
     school: user.value.school._id,
   }))

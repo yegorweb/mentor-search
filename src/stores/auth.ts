@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import AuthService from "../services/AuthService"
+import AuthAPI from "../api/AuthAPI"
 import { User } from "../types/user.interface"
 import { ref } from "vue"
 
@@ -8,7 +8,7 @@ export const useAuth = defineStore('auth', () => {
 
   async function registration(data: any): Promise<void> {
     try {
-      const response = await AuthService.registration(data)
+      const response = await AuthAPI.registration(data)
       localStorage.setItem('token', response.data.accessToken)
 
       user.value = response.data.user
@@ -19,7 +19,7 @@ export const useAuth = defineStore('auth', () => {
 
   async function login(email: string, password: string): Promise<void> {
     try {
-      const response = await AuthService.login(email, password)
+      const response = await AuthAPI.login(email, password)
       localStorage.setItem('token', response.data.accessToken)
 
       user.value = response.data.user
@@ -31,7 +31,7 @@ export const useAuth = defineStore('auth', () => {
       if (!localStorage.getItem('token'))
         return
         
-      const response = await AuthService.refresh()
+      const response = await AuthAPI.refresh()
       localStorage.setItem('token', response.data.accessToken)
 
       user.value = response.data.user
@@ -43,7 +43,7 @@ export const useAuth = defineStore('auth', () => {
   async function logout(): Promise<void> {
     try {
       localStorage.removeItem('token')
-      await AuthService.logout()
+      await AuthAPI.logout()
       user.value = null
 
       localStorage.removeItem('newUser')
@@ -52,7 +52,7 @@ export const useAuth = defineStore('auth', () => {
 
   async function updateUser(new_user: any) {
     try {
-      user.value = (await AuthService.updateUser(new_user)).data
+      user.value = (await AuthAPI.updateUser(new_user)).data
     } catch {}
   }
 
