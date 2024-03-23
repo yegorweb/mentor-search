@@ -1,19 +1,19 @@
 import $api from "../plugins/axios"
 
 export default {
-  async get_by_id(_id: string) {
+  get_by_id(_id: string) {
     return $api.get('/school/get-by-id', { params: { _id }})
   },
-  async get_all() {
+  get_all() {
     return $api.get('/school/get-all')
   },
-  async get_all_in_town(_id: string) {
+  get_all_in_town(_id: string) {
     return $api.get('/school/get-all-in-town', { params: { _id }})
   },
-  async get_administered_schools() {
+  get_administered_schools() {
     return $api.get('/school/get-administered-schools')
   },
-  async create(name: string, town_id: string) {
+  create(name: string, town_id: string) {
     return $api.post('school/create', { name, town_id })
   },
 }

@@ -1,19 +1,19 @@
 import $api from '../plugins/axios'
 
 export default {
-  async get_by_id(_id: string) {
+  get_by_id(_id: string) {
     return $api.get('/user/get-by-id', { params: { _id } })
   },
-  async get_my_responses() {
+  get_my_responses() {
     return $api.get('/user/get-my-responses')
   },
-  async get_all_by_school(_id: string) {
+  get_all_by_school(_id: string) {
     return $api.get('/user/get-all-by-school', { params: { _id } })
   },
-  async changeUser(user: object) {
+  changeUser(user: object) {
     return $api.post('/user/change-user', { user })
   },
-  async getRoles(user_id: string) {
+  getRoles(user_id: string) {
     return $api.get('/user/get-roles', { params: { user_id } })
   },
 }
