@@ -31,11 +31,14 @@ let variants: {
 ]
 let variant = ref<EntryType|null>(null)
 
+let additional = ref(false)
 let has_limit = ref(false)
+let in_another_school = ref(false)
 let loading = ref(false)
 
 const { meta, handleSubmit, validate } = useForm({
   initialValues: {
+    school: user.value.school._id,
     subject: '',
     description: '',
     limit: null
@@ -72,8 +75,7 @@ const submit = handleSubmit(async values => {
   loading.value = true
 
   await EntryService.create(Object.assign(values, {
-    type: variant.value,
-    school: user.value.school._id,
+    type: variant.value
   }))
   .then(() => router.push(`/user/${user.value._id}`))
   
@@ -124,28 +126,47 @@ const submit = handleSubmit(async values => {
             :error-messages="description.errorMessage.value"
             :counter="150"
             variant="solo"
-            class="w-100"
+            :class="{ 'w-100': true, 'mt-2': !subject.meta.valid }"
           />
-          
-          <v-checkbox 
-            label="Лимит учеников"
-            v-model="has_limit"
-            @click="validate()"
-            class="w-100"
-            hide-details
-          />
-          
-          <Transition name="bounce">
-            <v-text-field 
-              type="number"
-              variant="solo"
-              v-show="has_limit"
-              label="Сколько?"
-              v-model="limit.value.value"
-              :error-messages="limit.errorMessage.value"
-              class="w-100 mb-3"
-            />
-          </Transition>
+
+          <div 
+            @click="additional = !additional" 
+            :class="`${description.meta.valid ? '' : 'mt-2'} pt-2 pb-2 w-100 cursor-pointer text-grey-darken-3 user-select-none`"
+          >
+            <span :class="`mdi mdi-triangle${additional ? '' : '-down'}`" />
+
+            <span> Дополнительно</span>
+          </div>
+
+          <TransitionGroup name="slide-fade">
+            <template v-if="additional">
+              <v-checkbox 
+                label="Лимит учеников"
+                v-model="has_limit"
+                @click="validate()"
+                class="w-100"
+                hide-details
+              />
+              
+                <v-text-field 
+                  type="number"
+                  variant="solo"
+                  v-show="has_limit"
+                  label="Сколько?"
+                  v-model="limit.value.value"
+                  :error-messages="limit.errorMessage.value"
+                  class="w-100 mb-3"
+                />
+
+              <v-checkbox 
+                label="Добавить школу"
+                v-model="in_another_school"
+                @click="validate()"
+                class="w-100"
+                hide-details
+              />
+            </template>
+          </TransitionGroup>
   
           <v-btn 
             color="accent" 
@@ -160,3 +181,7 @@ const submit = handleSubmit(async values => {
     </v-col>
   </v-container>
 </template>
+
+<style lang="scss">
+
+</style>
