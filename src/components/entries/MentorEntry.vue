@@ -11,15 +11,12 @@ import Entry from '../../types/entry.interface';
 import { User } from '../../types/user.interface';
 import Slave from '../Slave.vue';
 import EntryContainer from './EntryContainer.vue';
-const showdown = require('showdown')
 
 let router = useRouter()
 let route = useRoute()
 let auth = useAuth()
 let userStore = useUser()
 let entryStore = useEntry()
-
-let markdown_converter = new showdown.Converter()
 
 let emit = defineEmits(['delete'])
 let props = defineProps({
@@ -46,7 +43,6 @@ let props = defineProps({
 
 let { user } = storeToRefs(auth)
 let entry = ref(props.entry as Entry)
-let description = markdown_converter.makeHtml(entry.value.description)
 
 let my_entry = props.my_entry ?? (user.value && entry.value.author._id === user.value._id)
 let user_is_admin = user.value && (
@@ -230,7 +226,7 @@ onMounted(() => {
       </div>
 
       <div 
-        v-html="description" 
+        v-html="entry.description" 
         class="mt-2" 
       />
     </div>
