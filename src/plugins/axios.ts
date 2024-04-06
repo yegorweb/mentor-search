@@ -1,8 +1,5 @@
 import axios from 'axios'
-import axiosRetry from 'axios-retry'
 import { POSITION, useToast } from 'vue-toastification'
-import AuthService from '../services/AuthService'
-import { useAuth } from '../stores/auth'
 const toast = useToast()
 
 export const API_URL = import.meta.env.VITE_API_URL

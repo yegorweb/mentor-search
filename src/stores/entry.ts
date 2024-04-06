@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios"
 import { defineStore } from "pinia"
 import { ref } from "vue"
-import EntryService from "../services/EntryService"
+import EntryAPI from "../api/EntryAPI"
 import Entry from "../types/entry.interface"
 import { EntryType } from "../types/entry_types"
 import { User } from "../types/user.interface"
@@ -15,7 +15,7 @@ export const useEntry = defineStore('entry', () => {
     school_id: string
   ): Promise<Entry[]> {
     try {
-      return (await EntryService.get(type, town_id, school_id)).data
+      return (await EntryAPI.get(type, town_id, school_id)).data
     } catch {
       return []
     }
@@ -23,13 +23,13 @@ export const useEntry = defineStore('entry', () => {
 
   async function get_by_id(_id: string): Promise<Entry | undefined> {
     try {
-      return (await EntryService.get_by_id(_id)).data
+      return (await EntryAPI.get_by_id(_id)).data
     } catch {}
   }
   
   async function get_by_author(_id: string): Promise<Entry[]> {
     try {
-      return (await EntryService.get_by_author(_id)).data
+      return (await EntryAPI.get_by_author(_id)).data
     } catch {
       return []
     }
@@ -37,7 +37,7 @@ export const useEntry = defineStore('entry', () => {
   
   async function get_my_entries(): Promise<Entry[]> {
     try {
-      return (await EntryService.get_my_entries()).data
+      return (await EntryAPI.get_my_entries()).data
     } catch {
       return []
     }
@@ -45,7 +45,7 @@ export const useEntry = defineStore('entry', () => {
   
   async function get_entries_to_moderation(): Promise<Entry[]> {
     try {
-      return (await EntryService.get_entries_to_moderation()).data
+      return (await EntryAPI.get_entries_to_moderation()).data
     } catch {
       return []
     }
@@ -53,7 +53,7 @@ export const useEntry = defineStore('entry', () => {
   
   async function getResponses(entry_id: string): Promise<User[]> {
     try {
-      return (await EntryService.getResponses(entry_id)).data
+      return (await EntryAPI.getResponses(entry_id)).data
     } catch {
       return []
     }
@@ -61,37 +61,37 @@ export const useEntry = defineStore('entry', () => {
   
   async function create(entry: object): Promise<AxiosResponse | void> {
     try {
-      return await EntryService.create(entry)
+      return await EntryAPI.create(entry)
     } catch {}
   }
   
   async function edit(entry_id: string, data: object): Promise<AxiosResponse | void> {
     try {
-      return await EntryService.edit(entry_id, data)
+      return await EntryAPI.edit(entry_id, data)
     } catch {}
   }
 
   async function response(entry_id: string): Promise<AxiosResponse | void> {
     try {
-      return await EntryService.response(entry_id)
+      return await EntryAPI.response(entry_id)
     } catch {}
   }
 
   async function cancel_response(entry_id: string): Promise<AxiosResponse | void> {
     try {
-      return await EntryService.cancel_response(entry_id)
+      return await EntryAPI.cancel_response(entry_id)
     } catch {}
   }
 
   async function verify(entry_id: string, moderation_result: boolean): Promise<void> {
     try {
-      await EntryService.verify(entry_id, moderation_result)
+      await EntryAPI.verify(entry_id, moderation_result)
     } catch {}
   }
 
   async function delete_entry(entry_id: string): Promise<void> {
     try {
-      await EntryService.delete(entry_id)
+      await EntryAPI.delete(entry_id)
     } catch {}
   }
 

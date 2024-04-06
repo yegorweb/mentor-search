@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import TownService from "../services/TownService"
+import TownAPI from "../api/TownAPI"
 import Town from "../types/town.interface"
 import { ref } from "vue"
 
@@ -20,13 +20,13 @@ export const useTown = defineStore('town', () => {
 
   async function get_by_id(_id: string): Promise<Town | undefined> {
     try {
-      return (await TownService.get_by_id(_id)).data
+      return (await TownAPI.get_by_id(_id)).data
     } catch {}
   }
 
   async function get_all(): Promise<Town[]> {
     try {
-      return (await TownService.get_all()).data
+      return (await TownAPI.get_all()).data
     } catch {
       return []
     }
@@ -34,14 +34,14 @@ export const useTown = defineStore('town', () => {
 
   async function create(name: string): Promise<void> {
     try {
-      await TownService.create(name)
+      await TownAPI.create(name)
     } catch {}
   }
 
   async function fetchAdministeredTowns(): Promise<void> {
     loading_administered_towns.value = true
     try {
-      administered_towns.value = (await TownService.getAdministeredTowns()).data
+      administered_towns.value = (await TownAPI.getAdministeredTowns()).data
     } catch {}
     loading_administered_towns.value = false
   }
