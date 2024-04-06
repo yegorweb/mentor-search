@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios"
 import { defineStore } from "pinia"
 import { ref } from "vue"
 import EntryService from "../services/EntryService"
@@ -58,27 +59,27 @@ export const useEntry = defineStore('entry', () => {
     }
   }
   
-  async function create(entry: object): Promise<void> {
+  async function create(entry: object): Promise<AxiosResponse | void> {
     try {
-      await EntryService.create(entry)
+      return await EntryService.create(entry)
     } catch {}
   }
   
-  async function edit(entry_id: string, data: object): Promise<void> {
+  async function edit(entry_id: string, data: object): Promise<AxiosResponse | void> {
     try {
-      await EntryService.edit(entry_id, data)
+      return await EntryService.edit(entry_id, data)
     } catch {}
   }
 
-  async function response(entry_id: string): Promise<void> {
+  async function response(entry_id: string): Promise<AxiosResponse | void> {
     try {
-      await EntryService.response(entry_id)
+      return await EntryService.response(entry_id)
     } catch {}
   }
 
-  async function cancel_response(entry_id: string): Promise<void> {
+  async function cancel_response(entry_id: string): Promise<AxiosResponse | void> {
     try {
-      await EntryService.cancel_response(entry_id)
+      return await EntryService.cancel_response(entry_id)
     } catch {}
   }
 
