@@ -69,9 +69,12 @@ function updateEntries(): void {
 }
 
 let roles_control_status = ref(false)
+let user_updating_loading = ref(false)
 
 watch(user, async (value) => {
+  user_updating_loading.value = true
   await userStore.changeUser(value)
+  user_updating_loading.value = false
 }, { deep: true })
 
 async function logout() {
@@ -275,6 +278,7 @@ function removeEntry(_id: string): void {
               <RolesControl 
                 @close="roles_control_status = false"
                 v-model:roles="user.roles"
+                v-model:loading="user_updating_loading"
                 :user_id="user._id"
               />
             </v-dialog>

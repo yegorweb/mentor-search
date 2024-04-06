@@ -19,17 +19,11 @@ let I: Ref<User> = storeToRefs(auth).user as any
 let { administered_schools } = storeToRefs(useSchool())
 let { administered_towns } = storeToRefs(useTown())
 
-let props = defineProps({
-  roles: {
-    type: Array<string>,
-    default: [],
-    required: true
-  },
-  user_id: {
-    type: String,
-    required: true
-  }
-})
+let props = defineProps<{
+  roles: string[],
+  user_id: string,
+  loading: boolean
+}>()
 
 let emit = defineEmits(['update:modelValue', 'update:roles', 'close'])
 
@@ -45,9 +39,12 @@ let roles = computed<string[]>({
 type TabItem = 'main' | 'choise' | 'deletion' | 'school_admin' | 'town_admin' | 'global_admin'
 let tab = ref<TabItem>('main')
 
+let roles_loading = ref(false)
 let user_roles = ref<{ role: string; name: string; have_access: boolean }[]>([])
 async function fetchUserRoles() {
+  roles_loading.value = true
   user_roles.value = await useUser().getRoles(props.user_id)
+  roles_loading.value = false
 }
 fetchUserRoles()
 let users_schools = RolesService.getSchoolIdsFromRoles(roles.value)
@@ -110,7 +107,6 @@ watch(town.value, (new_value, old_value) => {
 
 let addSchoolAdminRole = schoolAdminSubmit(values => {
   roles.value = RolesService.getRolesWithSchool(roles.value, (values.school_for_admin as School)._id)
-  tab.value = 'main'
 })
 
 let { meta:town_admin_meta, handleSubmit:townAdminSubmit, handleReset:townAdminReset } = useForm({
@@ -128,12 +124,19 @@ let town_for_admin = useField<Town | null>('town_for_admin')
 
 let addTownAdminRole = townAdminSubmit(values => {
   roles.value = RolesService.getRolesWithTown(roles.value, (values.town_for_admin as Town)._id)
-  tab.value = 'main'
 })
 
 function addGlobalAdminRole() {
   roles.value = RolesService.getRolesWithGlobalAdmin(roles.value)
 }
+
+watch(() => props.loading, async (value) => {
+  if (value) return 
+  await fetchUserRoles()
+  tab.value = 'main'
+  schoolAdminReset()
+  townAdminReset()
+}, { immediate: true, deep: true })
 
 let page = ref('Управление ролями')
 watch(tab, value => {
@@ -170,40 +173,39 @@ watch(tab, value => {
     
           <v-window v-model="tab" class="pa-2">
             <v-window-item value="main">
-              <v-row class="flex-column">
-                <v-col cols="12">
-                  <v-btn
-                    @click="tab = 'choise'"
-                    variant="text"
-                    prepend-icon="mdi-plus"
-                    class="text-blue-darken-1"
-                  >
-                    Добавить роль
-                  </v-btn>
-                </v-col>
-    
-                <v-col 
-                  v-for="role, index in user_roles"
-                  :key="index"
-                  cols="12"
-                >
-                <v-row>
-                  <v-col cols="1">
-                    <v-btn
-                      v-if="role.have_access"
-                      @click="onDeleteRole(role.role, role.name)"
-                      variant="text"
-                      icon="mdi-minus"
-                    />
-                  </v-col>
+              <v-btn
+                @click="tab = 'choise'"
+                variant="text"
+                prepend-icon="mdi-plus"
+                class="text-blue-darken-1 mb-3"
+              >
+                Добавить роль
+              </v-btn>
 
-                  <v-col 
-                    cols="11"
-                    class="d-flex align-center"
-                  >
-                    {{ role.name }}
-                  </v-col>
-                </v-row>
+              <div v-if="roles_loading" class="w-100 d-flex justify-center">
+                <v-progress-circular indeterminate></v-progress-circular>
+              </div>
+  
+              <v-row
+                v-else 
+                v-for="role, index in user_roles"
+                :key="index"
+                class="align-center"
+              >
+                <v-col cols="1" class="pt-0 pb-0">
+                  <v-btn
+                    v-if="role.have_access"
+                    @click="onDeleteRole(role.role, role.name)"
+                    icon="mdi-minus"
+                    variant="text"
+                  />
+                </v-col>
+
+                <v-col 
+                  cols="11"
+                  class="d-flex align-center pt-0 pb-0"
+                >
+                  {{ role.name }}
                 </v-col>
               </v-row>
             </v-window-item>
@@ -227,6 +229,7 @@ watch(tab, value => {
                   <v-btn
                     @click="deleteRole"
                     color="red"
+                    :loading="loading || roles_loading"
                   >
                     Удалить
                   </v-btn>
@@ -305,6 +308,7 @@ watch(tab, value => {
                         type="submit"
                         :class="`pr-3 pl-3 ${town_admin_meta.valid ? 'bg-accent' : ''}`"
                         :disabled="!town_admin_meta.valid"
+                        :loading="loading || roles_loading"
                       >
                         Добавить
                       </v-btn>
@@ -344,7 +348,7 @@ watch(tab, value => {
 
                   <v-row>
                     <v-col cols="auto">
-                      <v-btn @click="tab = 'choise'; townAdminReset()" class="pl-3 pr-3">
+                      <v-btn @click="tab = 'choise'; schoolAdminReset()" class="pl-3 pr-3">
                         назад
                       </v-btn>
                     </v-col>
@@ -354,6 +358,7 @@ watch(tab, value => {
                         type="submit"
                         :class="`pr-3 pl-3 ${school_admin_meta.valid ? 'bg-accent' : ''}`"
                         :disabled="!school_admin_meta.valid"
+                        :loading="loading || roles_loading"
                       >
                         Добавить
                       </v-btn>
@@ -383,6 +388,7 @@ watch(tab, value => {
                       <v-btn 
                         type="submit"
                         color="accent"
+                        :loading="loading || roles_loading"
                       >
                         Назначить
                       </v-btn>
